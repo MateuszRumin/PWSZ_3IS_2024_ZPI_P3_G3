@@ -1,1 +1,3 @@
-# PWSZ_3IS_2024_ZPI_P3_G3
+# TEMAT:
+# Przetwarzanie chmury punktów do plików obj/stl file. Analiza powierzchni i morfizacja obiektów.
+# Rumin Mateusz, Popiół Kacper, Szal Paweł, Radzik Rafał  
