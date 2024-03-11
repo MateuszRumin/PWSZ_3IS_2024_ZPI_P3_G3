@@ -74,3 +74,9 @@ class FileFunctions:
                 self._scene.setup_camera(60, bounds, bounds.get_center())
             except Exception as e:
                 print(e)
+
+    def _on_export_to_obj(self):
+        print("Exported to obj")
+
+    def _on_export_to_stl(self):
+        print("Exported to stl")

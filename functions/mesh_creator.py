@@ -1,7 +1,7 @@
 from libraries import *
 
 class MeshCreator:
-    def _make_mesh(self, path):
+    def _make_mesh(self, path, points_number, max_points, normalize_points):
         # Wczytaj plik LASer (LiDAR)
         las_file = laspy.read(path)
 
@@ -22,3 +22,7 @@ class MeshCreator:
             (1, 3)))  # invalidate existing normals
 
         self._scene.scene.add_geometry("__mesh__", rec_mesh, self.settings.material)
+
+        print("Points: " + str(points_number))
+        print("Max points: " + str(max_points))
+        print("Normalize: " + str(normalize_points))

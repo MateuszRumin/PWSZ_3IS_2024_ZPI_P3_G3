@@ -72,6 +72,9 @@ class Settings:
         self.enable_buttons = False
         self.new_ibl_name = None  # clear to None after loading
         self.file_path = "aaa"
+        self.points_enabled = False
+        self.max_points_enabled = False
+        self.normalize_all_points = False
 
 
         self.apply_material = True  # clear to False after processing

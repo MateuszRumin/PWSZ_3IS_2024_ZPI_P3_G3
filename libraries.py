@@ -8,7 +8,6 @@ import platform
 import sys
 import laspy
 
-from libraries import *
 from settings import Settings
 from functions.edit_cloud import PointEditor
 from functions.mesh_creator import MeshCreator

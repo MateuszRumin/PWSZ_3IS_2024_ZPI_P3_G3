@@ -60,3 +60,15 @@ class GuiFunctions:
         self._settings_panel.visible = not self._settings_panel.visible
         gui.Application.instance.menubar.set_checked(
             AppWindow.MENU_SHOW_SETTINGS, self._settings_panel.visible)
+
+    def _on_points_checkbox(self, decision):
+        self.settings.points_enabled = decision
+        self._apply_settings()
+
+    def _on_max_points_checkbox(self, decision):
+        self.settings.max_points_enabled = decision
+        self._apply_settings()
+
+    def _on_normalize_points_checkbox(self, decision):
+        self.settings.normalize_all_points = decision
+        self._apply_settings()
