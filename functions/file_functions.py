@@ -79,11 +79,21 @@ class FileFunctions:
                 print(e)
 
     def _on_export_to_obj(self, mesh):
-        print(mesh)
+        if mesh is not None:
+            try:
+                dlg = gui.FileDialog(gui.FileDialog.SAVE, "Choose file to save",
+                                     self.window.theme)
+                dlg.add_filter(".obj", "Wavefront OBJ files (.obj)")
+                dlg.add_filter("", "All files")
+                dlg.set_on_cancel(self._on_file_dialog_cancel)
+                dlg.set_on_done(self._on_export_dialog_done)
+                self.window.show_dialog(dlg)
+            except Exception as e:
+                print("[Error] An error occurred while preparing the export:", str(e))
+        else:
+            print("[Warning] No mesh to export.")
 
     def _on_export_to_stl(self, mesh):
-        # print(mesh)
-
         if mesh is not None:
             try:
                 dlg = gui.FileDialog(gui.FileDialog.SAVE, "Choose file to save",
@@ -102,7 +112,7 @@ class FileFunctions:
 
     def _on_export_dialog_done(self, filename):
         self.window.close_dialog()
-        if filename.endswith(".stl"):
+        if filename.endswith(".stl") or filename.endswith(".obj"):
             try:
                 o3d.io.write_triangle_mesh(filename, self.create_mesh)
                 print("[Info] Successfully exported to", filename)
