@@ -289,7 +289,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         #Export to STL
         self.export_to_stl_button = gui.Button("STL/file")
-        self.export_to_stl_button.set_on_clicked(self._on_export_to_stl)
+        self.export_to_stl_button.set_on_clicked(lambda: self._on_export_to_stl(self.create_mesh))
         self.export_to_stl_button.horizontal_padding_em = 0.5
         self.export_to_stl_button.vertical_padding_em = 0
         export_buttons_layout.add_child(self.export_to_stl_button)

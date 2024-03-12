@@ -81,5 +81,5 @@ class FileFunctions:
     def _on_export_to_obj(self, mesh):
         print(mesh)
 
-    def _on_export_to_stl(self):
-        print("Exported to stl")
+    def _on_export_to_stl(self, mesh):
+        print(mesh)
