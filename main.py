@@ -196,6 +196,53 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self._settings_panel.add_fixed(separation_height)
         self._settings_panel.add_child(material_settings)
 
+        #-------------------------------------------------------
+
+        complement_ctrls = gui.CollapsableVert("Complements", 0.25 * em,
+                                         gui.Margins(em, 0, 0, 0))
+
+        #Slider1
+        self._complement_slider_1 = gui.Slider(gui.Slider.INT)
+        self._complement_slider_1.set_limits(1, 10)
+        self._complement_slider_1.set_on_value_changed(self._on_complement_slider_1_change)
+
+        # Slider2
+        self._complement_slider_2 = gui.Slider(gui.Slider.INT)
+        self._complement_slider_2.set_limits(1, 10)
+        self._complement_slider_2.set_on_value_changed(self._on_complement_slider_2_change)
+
+        # Slider3
+        self._complement_slider_3 = gui.Slider(gui.Slider.INT)
+        self._complement_slider_3.set_limits(1, 10)
+        self._complement_slider_3.set_on_value_changed(self._on_complement_slider_3_change)
+
+
+        sliders_layout = gui.Horiz(0.25 * em)  # row 1
+        sliders_layout.add_stretch()
+        sliders_layout.add_child(self._complement_slider_1)
+        sliders_layout.add_stretch()
+
+        # Adding first row to CollapsableVert
+        complement_ctrls.add_child(sliders_layout)
+
+        sliders_layout = gui.Horiz(0.25 * em)  # row 2
+        sliders_layout.add_stretch()
+        sliders_layout.add_child(self._complement_slider_2)
+        sliders_layout.add_stretch()
+
+        # Adding second row to CollapsableVert
+        complement_ctrls.add_child(sliders_layout)
+
+        sliders_layout = gui.Horiz(0.25 * em)  # row 3
+        sliders_layout.add_stretch()
+        sliders_layout.add_child(self._complement_slider_3)
+        sliders_layout.add_stretch()
+
+        # Adding third row to CollapsableVert
+        complement_ctrls.add_child(sliders_layout)
+
+        #Adding sliders to CollapsableVert
+        self._settings_panel.add_child(complement_ctrls)
 
         #-------------------------------------------------------
         #Creating CollapsableVert for mesh controls

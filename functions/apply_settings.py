@@ -26,6 +26,12 @@ class ApplySettings:
         self._max_points_numer.enabled = self.settings.max_points_enabled
         self._normalize_points_checkbox.checked = self.settings.normalize_all_points
 
+        self._complement_slider_1.double_value = self.settings.complement_slider_1_value
+        self._complement_slider_2.double_value = self.settings.complement_slider_2_value
+        self._complement_slider_3.double_value = self.settings.complement_slider_3_value
+
+
+
         if self.settings.apply_material:
             self._scene.scene.update_material(self.settings.material)
             self.settings.apply_material = False

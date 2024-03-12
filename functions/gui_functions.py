@@ -76,3 +76,15 @@ class GuiFunctions:
     def _on_normalize_points_checkbox(self, decision):
         self.settings.normalize_all_points = decision
         self._apply_settings()
+
+    def _on_complement_slider_1_change(self, value):
+        self.settings.complement_slider_1_value = int(value)
+        self._apply_settings()
+
+    def _on_complement_slider_2_change(self, value):
+        self.settings.complement_slider_2_value = int(value)
+        self._apply_settings()
+
+    def _on_complement_slider_3_change(self, value):
+        self.settings.complement_slider_3_value = int(value)
+        self._apply_settings()
