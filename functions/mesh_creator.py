@@ -1,14 +1,17 @@
 from libraries import *
 
 class MeshCreator:
-    def _make_mesh(self, path, points_number, max_points, normalize_points):
-        # Wczytaj plik LASer (LiDAR)
-        las_file = laspy.read(path)
+    create_mesh = None
+    def _make_mesh(self, path, points_number, max_points, normalize_points, cloud):
+        # # Wczytaj plik LASer (LiDAR)
+        # las_file = laspy.read(path)
+        #
+        # # Tworzenie chmury z pliku
+        # points = np.vstack([las_file.x, las_file.y, las_file.z]).T
+        # cloud = o3d.geometry.PointCloud()
+        # cloud.points = o3d.utility.Vector3dVector(points)
 
-        # Tworzenie chmury z pliku
-        points = np.vstack([las_file.x, las_file.y, las_file.z]).T
-        cloud = o3d.geometry.PointCloud()
-        cloud.points = o3d.utility.Vector3dVector(points)
+
 
         # Obliczanie normalnych
         cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
@@ -23,6 +26,9 @@ class MeshCreator:
 
         self._scene.scene.add_geometry("__mesh__", rec_mesh, self.settings.material)
 
+        self.create_mesh = rec_mesh
+
+        print("Path: " + str(path))
         print("Points: " + str(points_number))
         print("Max points: " + str(max_points))
         print("Normalize: " + str(normalize_points))

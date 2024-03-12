@@ -1,6 +1,9 @@
 from libraries import *
 
 class FileFunctions:
+
+    cloud = None
+
     def _on_menu_open(self):
         dlg = gui.FileDialog(gui.FileDialog.OPEN, "Choose file to load",
                              self.window.theme)
@@ -40,24 +43,24 @@ class FileFunctions:
             mesh = o3d.io.read_triangle_model(path)
         if mesh is None:
             print("[Info]", path, "appears to be a point cloud")
-            cloud = None
+            self.cloud = None
             try:
                 if extension == "ply":
-                    cloud = o3d.io.read_point_cloud(path)
+                    self.cloud = o3d.io.read_point_cloud(path)
                 else:
                     las_file = laspy.read(path)
                     points = np.vstack([las_file.x, las_file.y, las_file.z]).T
-                    cloud = o3d.geometry.PointCloud()
-                    cloud.points = o3d.utility.Vector3dVector(points)
+                    self.cloud = o3d.geometry.PointCloud()
+                    self.cloud.points = o3d.utility.Vector3dVector(points)
 
             except Exception:
                 pass
-            if cloud is not None:
+            if self.cloud is not None:
                 print("[Info] Successfully read", path)
-                if not cloud.has_normals():
-                    cloud.estimate_normals()
-                cloud.normalize_normals()
-                geometry = cloud
+                if not self.cloud.has_normals():
+                    self.cloud.estimate_normals()
+                self.cloud.normalize_normals()
+                geometry = self.cloud
             else:
                 print("[WARNING] Failed to read points", path)
 
@@ -75,8 +78,8 @@ class FileFunctions:
             except Exception as e:
                 print(e)
 
-    def _on_export_to_obj(self):
-        print("Exported to obj")
+    def _on_export_to_obj(self, mesh):
+        print(mesh)
 
     def _on_export_to_stl(self):
         print("Exported to stl")

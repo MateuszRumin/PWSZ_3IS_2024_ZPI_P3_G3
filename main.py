@@ -206,6 +206,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         points_grid = gui.VGrid(4, 0.25 * em)
 
         points_grid.add_child(gui.Label("Points (m^2):"))
+
         self._points_number = gui.NumberEdit(gui.NumberEdit.Type.INT)
         self._points_number.set_limits(1, 1000)
         self._points_number.set_value(100)
@@ -259,15 +260,11 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         #Create mesh button
         self.make_mesh_button = gui.Button("Create mesh")
-        self.make_mesh_button.set_on_clicked(lambda: self._make_mesh(self.settings.file_path, self._points_number.int_value, self._max_points_numer.int_value, self.settings.normalize_all_points))
+        self.make_mesh_button.set_on_clicked(lambda: self._make_mesh(self.settings.file_path, self._points_number.int_value, self._max_points_numer.int_value, self.settings.normalize_all_points, self.cloud))
         self.make_mesh_button.horizontal_padding_em = 0.5
         self.make_mesh_button.vertical_padding_em = 0
         button_layout.add_child(self.make_mesh_button)
 
-        print(self.settings.file_path)
-        print(self._points_number.int_value)
-        print(self._max_points_numer.int_value)
-        print(self.settings.normalize_all_points)
 
         #Edit mesh button
         self.edit_points_button = gui.Button("Edit points")
@@ -285,7 +282,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         #Export to OBJ
         self.export_to_obj_button = gui.Button("OBJ/file")
-        self.export_to_obj_button.set_on_clicked(self._on_export_to_obj)
+        self.export_to_obj_button.set_on_clicked(lambda: self._on_export_to_obj(self.create_mesh))
         self.export_to_obj_button.horizontal_padding_em = 0.5
         self.export_to_obj_button.vertical_padding_em = 0
         export_buttons_layout.add_child(self.export_to_obj_button)

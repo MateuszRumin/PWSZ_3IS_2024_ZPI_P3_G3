@@ -71,7 +71,7 @@ class Settings:
         self.show_axes = False
         self.enable_buttons = False
         self.new_ibl_name = None  # clear to None after loading
-        self.file_path = "aaa"
+        self.file_path = None
         self.points_enabled = False
         self.max_points_enabled = False
         self.normalize_all_points = False
