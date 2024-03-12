@@ -32,3 +32,6 @@ class MeshCreator:
         print("Points: " + str(points_number))
         print("Max points: " + str(max_points))
         print("Normalize: " + str(normalize_points))
+
+        if self.create_mesh is not None:
+            self._on_enable_buttons_export()

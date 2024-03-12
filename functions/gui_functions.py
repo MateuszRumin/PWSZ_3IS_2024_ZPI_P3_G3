@@ -30,6 +30,10 @@ class GuiFunctions:
         self.settings.enable_buttons = True
         self._apply_settings()
 
+    def _on_enable_buttons_export(self):
+        self.settings.enable_buttons_export = True
+        self._apply_settings()
+
     def _on_sun_dir(self, sun_dir):
         self.settings.sun_dir = sun_dir
         self._profiles.selected_text = Settings.CUSTOM_PROFILE_NAME

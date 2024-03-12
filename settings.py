@@ -70,6 +70,7 @@ class Settings:
         self.show_skybox = False
         self.show_axes = False
         self.enable_buttons = False
+        self.enable_buttons_export = False
         self.new_ibl_name = None  # clear to None after loading
         self.file_path = None
         self.points_enabled = False
