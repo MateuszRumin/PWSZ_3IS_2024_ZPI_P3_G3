@@ -16,7 +16,9 @@ from functions import gui_functions
 from functions import on_layout
 from functions import mesh_creator
 from functions import edit_cloud
+
 from settings import Settings
+
 from functions.mesh_creator import MeshCreator
 from functions.edit_cloud import PointEditor
 
@@ -283,6 +285,9 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self._max_points_numer.enabled = self.settings.max_points_enabled
         max_points_layout.add_child(self._max_points_numer)
 
+
+
+
         # Max points on object checbox
         self._max_points_checkbox = gui.Checkbox("")
         self._max_points_checkbox.set_on_checked(self._on_max_points_checkbox)
@@ -291,6 +296,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         max_points_layout.add_stretch()
         mesh_ctrls.add_child(max_points_layout)
+
 
         #Normalize all points
         normalize_points_layout = gui.Horiz(0.25 * em)
@@ -311,6 +317,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self.make_mesh_button.horizontal_padding_em = 0.5
         self.make_mesh_button.vertical_padding_em = 0
         button_layout.add_child(self.make_mesh_button)
+
 
 
         #Edit mesh button
