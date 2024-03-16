@@ -3,6 +3,7 @@ from libraries import *
 class FileFunctions:
 
     cloud = None
+    cloud_backup = None
 
     def _on_menu_open(self):
         dlg = gui.FileDialog(gui.FileDialog.OPEN, "Choose file to load",
@@ -47,11 +48,17 @@ class FileFunctions:
             try:
                 if extension == "ply":
                     self.cloud = o3d.io.read_point_cloud(path)
+                    self.cloud_backup = self.cloud
                 else:
                     las_file = laspy.read(path)
                     points = np.vstack([las_file.x, las_file.y, las_file.z]).T
                     self.cloud = o3d.geometry.PointCloud()
                     self.cloud.points = o3d.utility.Vector3dVector(points)
+                    self.cloud_backup = self.cloud
+                    voxel_cloud = self.cloud.voxel_down_sample(voxel_size=(float(self.settings.complement_slider_1_value)/10000))
+                    self.cloud = voxel_cloud
+
+                    print(self.cloud)
 
             except Exception:
                 pass
@@ -69,10 +76,14 @@ class FileFunctions:
                 if mesh is not None:
                     # Triangle model
                     self._scene.scene.add_model("__model__", mesh)
+                    self.settings.add_geometry_name_to_table("__model__")
+                    self._refresh_list()
                 else:
                     # Point cloud
                     self._scene.scene.add_geometry("__model__", geometry,
                                                    self.settings.material)
+                    self.settings.add_geometry_name_to_table("__model__")
+                    self._refresh_list()
                 bounds = self._scene.scene.bounding_box
                 self._scene.setup_camera(60, bounds, bounds.get_center())
             except Exception as e:

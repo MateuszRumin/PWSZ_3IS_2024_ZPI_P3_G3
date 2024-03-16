@@ -1,8 +1,10 @@
 from libraries import *
 
-class MeshCreator:
+from functions import create_gui_mesh
+
+class MeshCreator(create_gui_mesh.CreateGuiMesh):
     create_mesh = None
-    def _make_mesh(self, path, points_number, max_points, normalize_points, cloud):
+    def _make_mesh(self, path, points_number, max_points, normalize_points, cloud, voxel):
         # # Wczytaj plik LASer (LiDAR)
         # las_file = laspy.read(path)
         #
@@ -21,17 +23,28 @@ class MeshCreator:
             cloud, o3d.utility.DoubleVector(radii))
 
         pcd = rec_mesh.sample_points_poisson_disk(5000)
+
+        pcd.voxel_down_sample(voxel_size=int(voxel))
+
         pcd.normals = o3d.utility.Vector3dVector(np.zeros(
             (1, 3)))  # invalidate existing normals
 
         self._scene.scene.add_geometry("__mesh__", rec_mesh, self.settings.material)
+        self.settings.add_geometry_name_to_table("__mesh__")
+        self._refresh_list()
 
         self.create_mesh = rec_mesh
+
+
 
         print("Path: " + str(path))
         print("Points: " + str(points_number))
         print("Max points: " + str(max_points))
         print("Normalize: " + str(normalize_points))
+        print("Voxel: " + str(voxel))
 
         if self.create_mesh is not None:
             self._on_enable_buttons_export()
+
+        #self.point_clouds(cloud)
+

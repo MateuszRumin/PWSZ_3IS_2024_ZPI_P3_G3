@@ -2,6 +2,7 @@ from trimesh import rendering
 
 from libraries import *
 
+
 class Settings:
     UNLIT = "defaultUnlit"
     LIT = "defaultLit"
@@ -79,6 +80,7 @@ class Settings:
         self.complement_slider_1_value = 1
         self.complement_slider_2_value = 1
         self.complement_slider_3_value = 1
+        self.geometry_visibility = []
 
 
         self.apply_material = True  # clear to False after processing
@@ -109,3 +111,21 @@ class Settings:
         prefab = Settings.PREFAB[name]
         for key, val in prefab.items():
             setattr(self.material, "base_" + key, val)
+
+    def add_geometry_name_to_table(self, geometry_name, visibility=True):
+        if geometry_name not in [geom[0] for geom in self.geometry_visibility]:
+            self.geometry_visibility.append((geometry_name, visibility))
+
+    def toggle_visibility_true_to_false(self, geometry_name):
+        for i, (geom, visibility) in enumerate(self.geometry_visibility):
+            if geom == geometry_name:
+                self.geometry_visibility[i] = (geom, False)
+                break
+
+    def toggle_visibility_false_to_true(self, geometry_name):
+        for i, (geom, visibility) in enumerate(self.geometry_visibility):
+            if geom == geometry_name:
+                self.geometry_visibility[i] = (geom, True)
+                break
+
+

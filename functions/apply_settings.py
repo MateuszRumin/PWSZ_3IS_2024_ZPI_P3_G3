@@ -31,7 +31,6 @@ class ApplySettings:
         self._complement_slider_3.double_value = self.settings.complement_slider_3_value
 
 
-
         if self.settings.apply_material:
             self._scene.scene.update_material(self.settings.material)
             self.settings.apply_material = False
@@ -44,3 +43,5 @@ class ApplySettings:
                       self.settings.material.base_color[3])
         self._material_color.color_value = c
         self._point_size.double_value = self.settings.material.point_size
+
+

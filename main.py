@@ -42,6 +42,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self._scene.scene = rendering.Open3DScene(w.renderer)
         self._scene.set_on_sun_direction_changed(self._on_sun_dir)
 
+
         # ---- Settings panel ----
         # Rather than specifying sizes in pixels, which may vary in size based
         # on the monitor, especially on macOS which has 220 dpi monitors, use
@@ -203,8 +204,13 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         #Slider1
         self._complement_slider_1 = gui.Slider(gui.Slider.INT)
-        self._complement_slider_1.set_limits(1, 10)
+        self._complement_slider_1.set_limits(1, 100)
         self._complement_slider_1.set_on_value_changed(self._on_complement_slider_1_change)
+
+        self._complement_slider_1_button = gui.Button("Reset")
+        self._complement_slider_1_button.set_on_clicked(self._reset_object)
+        self._complement_slider_1_button.horizontal_padding_em = 0.5
+        self._complement_slider_1_button.vertical_padding_em = 0
 
         # Slider2
         self._complement_slider_2 = gui.Slider(gui.Slider.INT)
@@ -218,15 +224,15 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
 
         sliders_layout = gui.Horiz(0.25 * em)  # row 1
-        sliders_layout.add_stretch()
+        sliders_layout.add_child(gui.Label("Voxel Size: "))
         sliders_layout.add_child(self._complement_slider_1)
-        sliders_layout.add_stretch()
+        sliders_layout.add_child(self._complement_slider_1_button)
 
         # Adding first row to CollapsableVert
         complement_ctrls.add_child(sliders_layout)
 
         sliders_layout = gui.Horiz(0.25 * em)  # row 2
-        sliders_layout.add_stretch()
+        sliders_layout.add_child(gui.Label("Settings 1: "))
         sliders_layout.add_child(self._complement_slider_2)
         sliders_layout.add_stretch()
 
@@ -234,7 +240,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         complement_ctrls.add_child(sliders_layout)
 
         sliders_layout = gui.Horiz(0.25 * em)  # row 3
-        sliders_layout.add_stretch()
+        sliders_layout.add_child(gui.Label("Settings 2: "))
         sliders_layout.add_child(self._complement_slider_3)
         sliders_layout.add_stretch()
 
@@ -307,7 +313,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         #Create mesh button
         self.make_mesh_button = gui.Button("Create mesh")
-        self.make_mesh_button.set_on_clicked(lambda: self._make_mesh(self.settings.file_path, self._points_number.int_value, self._max_points_numer.int_value, self.settings.normalize_all_points, self.cloud))
+        self.make_mesh_button.set_on_clicked(lambda: self._make_mesh(self.settings.file_path, self._points_number.int_value, self._max_points_numer.int_value, self.settings.normalize_all_points, self.cloud, self._complement_slider_1.int_value))
         self.make_mesh_button.horizontal_padding_em = 0.5
         self.make_mesh_button.vertical_padding_em = 0
         button_layout.add_child(self.make_mesh_button)
@@ -345,6 +351,21 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         #Adding CollapsableVert to settings panel
         self._settings_panel.add_child(mesh_ctrls)
+
+        # -------------------------------------------------------
+        # Creating CollapsableVert for scene controls
+        scene_ctrls = gui.CollapsableVert("Scene geometries", 0.25 * em,
+                                         gui.Margins(em, 0, 0, 0))
+
+        # Tworzenie widoku listy
+        self.list_view = gui.ListView()
+        self.list_view.set_on_selection_changed(self.on_selection_changed)
+
+
+        scene_ctrls.add_child(self.list_view)
+
+        # Adding CollapsableVert to settings panel
+        self._settings_panel.add_child(scene_ctrls)
         # ----
 
         # Normally our user interface can be children of all one layout (usually
