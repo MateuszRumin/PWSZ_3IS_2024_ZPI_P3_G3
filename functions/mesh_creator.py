@@ -30,8 +30,7 @@ class MeshCreator(create_gui_mesh.CreateGuiMesh):
             (1, 3)))  # invalidate existing normals
 
         self._scene.scene.add_geometry("__mesh__", rec_mesh, self.settings.material)
-        self.settings.add_geometry_name_to_table("__mesh__")
-        self._refresh_list()
+        self._add_geometry_name("__mesh__")
 
         self.create_mesh = rec_mesh
 

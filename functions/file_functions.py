@@ -76,14 +76,12 @@ class FileFunctions:
                 if mesh is not None:
                     # Triangle model
                     self._scene.scene.add_model("__model__", mesh)
-                    self.settings.add_geometry_name_to_table("__model__")
-                    self._refresh_list()
+                    self._add_geometry_name("__model__")
                 else:
                     # Point cloud
                     self._scene.scene.add_geometry("__model__", geometry,
                                                    self.settings.material)
-                    self.settings.add_geometry_name_to_table("__model__")
-                    self._refresh_list()
+                    self._add_geometry_name("__model__")
                 bounds = self._scene.scene.bounding_box
                 self._scene.setup_camera(60, bounds, bounds.get_center())
             except Exception as e:

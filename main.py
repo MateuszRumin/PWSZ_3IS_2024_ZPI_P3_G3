@@ -357,12 +357,10 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         scene_ctrls = gui.CollapsableVert("Scene geometries", 0.25 * em,
                                          gui.Margins(em, 0, 0, 0))
 
-        # Tworzenie widoku listy
-        self.list_view = gui.ListView()
-        self.list_view.set_on_selection_changed(self.on_selection_changed)
-
-
-        scene_ctrls.add_child(self.list_view)
+        # Selection of the displayed model
+        self.geometry_models_tree = gui.TreeView()
+        self.root = self.geometry_models_tree.get_root_item()
+        scene_ctrls.add_child(self.geometry_models_tree)
 
         # Adding CollapsableVert to settings panel
         self._settings_panel.add_child(scene_ctrls)

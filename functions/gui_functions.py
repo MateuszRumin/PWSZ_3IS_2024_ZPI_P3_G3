@@ -85,7 +85,6 @@ class GuiFunctions:
             self.cloud = voxel_cloud
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
 
-
         self._apply_settings()
 
     def _reset_object(self):
@@ -102,24 +101,27 @@ class GuiFunctions:
         self.settings.complement_slider_3_value = int(value)
         self._apply_settings()
 
-    def _refresh_list(self):
-        # Wyodrębnienie nazw geometrii z self.settings.geometry_visibility
+    def _add_geometry_name(self, name):
         geometry_names = [geom[0] for geom in self.settings.geometry_visibility]
-        # Ustawienie listy nazw geometrii w ListView
-        self.list_view.set_items(geometry_names)
 
-    def on_selection_changed(self, geometry, is_double_click):
-        # Sprawdzenie, czy geometria znajduje się w tabeli geometry_visibility
+        if name not in geometry_names:
+            self.settings.add_geometry_name_to_table(name)
+            self._add_element_to_tree(name)
+
+
+
+    def _add_element_to_tree(self, name, visibility=True):
+        self.geometry_models_tree.add_item(self.root, gui.CheckableTextTreeCell(
+            name, visibility, lambda value, name=name: self.geometry_models_tree_check(name, value)
+        ))
+
+    def geometry_models_tree_check(self, name, value):
         for geom, visibility in self.settings.geometry_visibility:
-            if geom == geometry:
-                # Wykonanie odpowiedniego kodu w zależności od wartości widoczności
+            if geom == name:
                 if visibility:
-                    # Wykonaj kod, gdy widoczność geometrii to True
                     self.settings.toggle_visibility_true_to_false(geom)
                     self._scene.scene.show_geometry(geom, False)
                 else:
-                    # Wykonaj kod, gdy widoczność geometrii to False
                     self.settings.toggle_visibility_false_to_true(geom)
                     self._scene.scene.show_geometry(geom, True)
                 break
-
