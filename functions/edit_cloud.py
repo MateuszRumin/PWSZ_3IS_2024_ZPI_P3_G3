@@ -3,26 +3,26 @@ import numpy as np
 from libraries import *
 
 class PointEditor:
-    def _edit_points(self, path):
-        # Wczytaj plik LASer (LiDAR)
-        las_file = laspy.read(path)
+    def _edit_points(self):
+        self.manual_registration()
 
-        # Tworzenie chmury z pliku
-        points = np.vstack([las_file.x, las_file.y, las_file.z]).T
-        cloud = o3d.geometry.PointCloud()
-        cloud.points = o3d.utility.Vector3dVector(points)
-        print(np.asarray(cloud.points[1]))
 
-        print(cloud)
-        # Filtracja punktów
-        # Filtracja punktów
-        filtered_indices = [idx for idx, point in enumerate(cloud.points) if
-                            point[1] <= 0]  # Sprawdzamy współrzędną y (indeks 1)
-        cloud_filtered = cloud.select_by_index(filtered_indices)
-        cloud = cloud_filtered
-        print(cloud)
+    def manual_registration(self):
+        self.source = self.cloud
+        source_points = self.pick_points(self.source)
+        print(source_points)
 
-        # Obliczanie normalnych
-        cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
-
-        o3d.visualization.draw_plotly([cloud])
+    def pick_points(self, pcd):
+        print(
+            "1) Please pick at least three correspondences using [shift + left click]"
+        )
+        print("   Press [shift + right click] to undo point picking")
+        print("2) After picking points, press 'Q' to close the window")
+        vis = o3d.visualization.VisualizerWithEditing()
+        vis.create_window()
+        vis.add_geometry(pcd)
+        vis.run()  # user picks points
+        vis.destroy_window()
+        print("---------------------------------------------")
+        print(vis.get_cropped_geometry())
+        return vis.get_picked_points()

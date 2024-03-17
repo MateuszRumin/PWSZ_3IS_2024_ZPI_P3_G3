@@ -265,6 +265,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self._points_number.set_value(100)
         self._points_number.enabled = self.settings.points_enabled
 
+
         #Checkbox to enable points change
         points_grid.add_child(gui.Label(""))
         self._points_checkbox = gui.Checkbox("")
@@ -321,7 +322,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         #Edit mesh button
         self.edit_points_button = gui.Button("Edit points")
-        self.edit_points_button.set_on_clicked(lambda: self._edit_points(self.settings.file_path))
+        self.edit_points_button.set_on_clicked(self._edit_points)
         self.edit_points_button.horizontal_padding_em = 0.5
         self.edit_points_button.vertical_padding_em = 0
         button_layout.add_child(self.edit_points_button)
