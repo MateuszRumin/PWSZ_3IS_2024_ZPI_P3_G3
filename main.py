@@ -8,6 +8,7 @@
 #imports
 import open3d.visualization.gui as gui
 import open3d.visualization.rendering as rendering
+import igl
 
 from libraries import *
 from functions import apply_settings
@@ -43,6 +44,8 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self._scene = gui.SceneWidget()
         self._scene.scene = rendering.Open3DScene(w.renderer)
         self._scene.set_on_sun_direction_changed(self._on_sun_dir)
+        self.settings.enable_back_face_rendering = True
+
 
         # ---- Settings panel ----
         # Rather than specifying sizes in pixels, which may vary in size based

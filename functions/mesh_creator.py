@@ -13,6 +13,8 @@ class MeshCreator:
 
 
 
+
+
         # Obliczanie normalnych
         # cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
 
@@ -20,8 +22,15 @@ class MeshCreator:
         max_distance = np.max(cloud.compute_nearest_neighbor_distance())
         min_distance = np.min(cloud.compute_nearest_neighbor_distance())
 
+
+        scale_points = 1.05
+        scaled_points = points * scale_points
         center = np.mean(points, axis=0)
-        normals = points - center
+        center2 = np.mean(scaled_points, axis=0)
+        dierence_center = center2 - center
+        scaled_points = scaled_points - dierence_center
+
+        normals = scaled_points - points
         normals /= np.linalg.norm(normals, axis=1)[:, np.newaxis]
         cloud.normals = o3d.utility.Vector3dVector(normals)
 
@@ -38,6 +47,9 @@ class MeshCreator:
         radii_double_vector = o3d.utility.DoubleVector(radii)
         rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud, radii_double_vector)
         rec_mesh.compute_vertex_normals()
+
+
+
 
         self._scene.scene.add_geometry("__mesh__", rec_mesh, self.settings.material)
 
