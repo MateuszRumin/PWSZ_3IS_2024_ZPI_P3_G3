@@ -120,6 +120,15 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         # Adding second row to CollapsableVert
         view_ctrls.add_child(h)
 
+        #SET button
+        self._set_button = gui.Button("SET")
+        self._set_button.horizontal_padding_em = 0.5
+        self._set_button.vertical_padding_em = 0
+        self._set_button.set_on_clicked(self._on_set_set)
+
+        #Adding set button to collapsableVert
+        view_ctrls.add_child(self._set_button)
+
         #Color picker
         self._bg_color = gui.ColorEdit()
         self._bg_color.set_on_value_changed(self._on_bg_color)
@@ -215,13 +224,23 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         # Slider2
         self._complement_slider_2 = gui.Slider(gui.Slider.INT)
-        self._complement_slider_2.set_limits(1, 10)
+        self._complement_slider_2.set_limits(1, 100)
         self._complement_slider_2.set_on_value_changed(self._on_complement_slider_2_change)
+
+        self._complement_slider_2_button = gui.Button("Reset")
+        self._complement_slider_2_button.set_on_clicked(self._reset_object)
+        self._complement_slider_2_button.horizontal_padding_em = 0.5
+        self._complement_slider_2_button.vertical_padding_em = 0
 
         # Slider3
         self._complement_slider_3 = gui.Slider(gui.Slider.INT)
-        self._complement_slider_3.set_limits(1, 10)
+        self._complement_slider_3.set_limits(1, 100)
         self._complement_slider_3.set_on_value_changed(self._on_complement_slider_3_change)
+
+        self._complement_slider_3_button = gui.Button("Reset")
+        self._complement_slider_3_button.set_on_clicked(self._reset_object)
+        self._complement_slider_3_button.horizontal_padding_em = 0.5
+        self._complement_slider_3_button.vertical_padding_em = 0
 
 
         sliders_layout = gui.Horiz(0.25 * em)  # row 1
@@ -233,17 +252,17 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         complement_ctrls.add_child(sliders_layout)
 
         sliders_layout = gui.Horiz(0.25 * em)  # row 2
-        sliders_layout.add_child(gui.Label("Settings 1: "))
+        sliders_layout.add_child(gui.Label("Scale smaller: "))
         sliders_layout.add_child(self._complement_slider_2)
-        sliders_layout.add_stretch()
+        sliders_layout.add_child(self._complement_slider_2_button)
 
         # Adding second row to CollapsableVert
         complement_ctrls.add_child(sliders_layout)
 
         sliders_layout = gui.Horiz(0.25 * em)  # row 3
-        sliders_layout.add_child(gui.Label("Settings 2: "))
+        sliders_layout.add_child(gui.Label("Scale bigger: "))
         sliders_layout.add_child(self._complement_slider_3)
-        sliders_layout.add_stretch()
+        sliders_layout.add_child(self._complement_slider_3_button)
 
         # Adding third row to CollapsableVert
         complement_ctrls.add_child(sliders_layout)

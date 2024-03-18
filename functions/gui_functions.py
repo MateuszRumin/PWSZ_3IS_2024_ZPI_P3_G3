@@ -5,7 +5,6 @@ class GuiFunctions:
     def on_window_close(self):
         self.window.hide()
         return False
-
     def _set_mouse_mode_rotate(self):
         self._scene.set_view_controls(gui.SceneWidget.Controls.ROTATE_CAMERA)
 
@@ -20,6 +19,16 @@ class GuiFunctions:
 
     def _set_mouse_mode_model(self):
         self._scene.set_view_controls(gui.SceneWidget.Controls.ROTATE_MODEL)
+
+    def _on_set_set(self):
+        if self.cloud is not None:
+            transform_matrix = self._scene.scene.get_geometry_transform("__model__")
+            transformed_point_cloud = self.cloud.transform(np.linalg.inv(transform_matrix))
+            self.cloud = transformed_point_cloud
+        if self.create_mesh is not None:
+            transform_matrix = self._scene.scene.get_geometry_transform("__mesh__")
+            transformed_mesh = self.create_mesh.transform(np.linalg.inv(transform_matrix))
+            self.create_mesh = transformed_mesh
 
     def _on_bg_color(self, new_color):
         self.settings.bg_color = new_color
@@ -99,10 +108,28 @@ class GuiFunctions:
 
     def _on_complement_slider_2_change(self, value):
         self.settings.complement_slider_2_value = int(value)
+
+        if self.cloud is not None:
+            self._scene.scene.remove_geometry("__model__")
+            scale_factor = (float(self.settings.complement_slider_2_value) - 1) / 99 * -0.9999 + 1
+            center = self.cloud.get_center()
+            scale_cloud = self.cloud.scale(scale_factor, center=center)
+            self.cloud = scale_cloud
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
         self._apply_settings()
 
     def _on_complement_slider_3_change(self, value):
         self.settings.complement_slider_3_value = int(value)
+
+        if self.cloud is not None:
+            self._scene.scene.remove_geometry("__model__")
+            scale_factor = (float(self.settings.complement_slider_3_value) - 1) / 99 * 9 + 1
+            center = self.cloud.get_center()
+            scale_cloud = self.cloud.scale(scale_factor, center=center)
+            self.cloud = scale_cloud
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
         self._apply_settings()
 
     def _add_geometry_name(self, name):
