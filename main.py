@@ -36,6 +36,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self.window = gui.Application.instance.create_window(
             "Open3D", width, height)
         w = self.window  # to make the code more concise
+        w.set_on_close(self.on_window_close)
 
         # 3D widget
         self._scene = gui.SceneWidget()
@@ -350,6 +351,36 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         mesh_ctrls.add_child(export_buttons_layout)
 
+        #-----------------------------------------------------
+
+        #Export buttons cloud
+        export_buttons_cloud_layout = gui.Horiz(0.25 * em)
+
+        # Export to LAS
+        self.export_to_las_button = gui.Button("LAS")
+        self.export_to_las_button.set_on_clicked(self._on_export_to_las)
+        self.export_to_las_button.horizontal_padding_em = 0.5
+        self.export_to_las_button.vertical_padding_em = 0
+        export_buttons_cloud_layout.add_child(self.export_to_las_button)
+
+        # Export to LAZ
+        self.export_to_laz_button = gui.Button("LAZ")
+        self.export_to_laz_button.set_on_clicked(self._on_export_to_laz)
+        self.export_to_laz_button.horizontal_padding_em = 0.5
+        self.export_to_laz_button.vertical_padding_em = 0
+        export_buttons_cloud_layout.add_child(self.export_to_laz_button)
+
+        # Export to STL
+        self.export_to_ply_button = gui.Button("PLY")
+        self.export_to_ply_button.set_on_clicked(self._on_export_to_ply)
+        self.export_to_ply_button.horizontal_padding_em = 0.5
+        self.export_to_ply_button.vertical_padding_em = 0
+        export_buttons_cloud_layout.add_child(self.export_to_ply_button)
+
+        mesh_ctrls.add_child(export_buttons_cloud_layout)
+
+
+
         #Adding CollapsableVert to settings panel
         self._settings_panel.add_child(mesh_ctrls)
 
@@ -391,8 +422,6 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
                 file_menu.add_separator()
                 file_menu.add_item("Quit", AppWindow.MENU_QUIT)
             settings_menu = gui.Menu()
-            settings_menu.add_item("Settings",
-                                   AppWindow.MENU_SHOW_SETTINGS)
             settings_menu.set_checked(AppWindow.MENU_SHOW_SETTINGS, True)
 
 

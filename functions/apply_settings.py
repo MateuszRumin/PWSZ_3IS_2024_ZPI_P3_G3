@@ -22,6 +22,9 @@ class ApplySettings:
         self.edit_points_button.enabled = self.settings.enable_buttons
         self.export_to_obj_button.enabled = self.settings.enable_buttons_export
         self.export_to_stl_button.enabled = self.settings.enable_buttons_export
+        self.export_to_las_button.enabled = self.settings.enable_buttons
+        self.export_to_laz_button.enabled = self.settings.enable_buttons
+        self.export_to_ply_button.enabled = self.settings.enable_buttons
         self._points_number.enabled = self.settings.points_enabled
         self._max_points_numer.enabled = self.settings.max_points_enabled
         self._normalize_points_checkbox.checked = self.settings.normalize_all_points

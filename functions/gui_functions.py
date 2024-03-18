@@ -2,6 +2,10 @@ from libraries import *
 
 class GuiFunctions:
 
+    def on_window_close(self):
+        self.window.hide()
+        return False
+
     def _set_mouse_mode_rotate(self):
         self._scene.set_view_controls(gui.SceneWidget.Controls.ROTATE_CAMERA)
 

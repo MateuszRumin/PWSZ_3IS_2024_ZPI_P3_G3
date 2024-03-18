@@ -14,7 +14,6 @@ class MeshCreator(create_gui_mesh.CreateGuiMesh):
         # cloud.points = o3d.utility.Vector3dVector(points)
 
 
-
         # Obliczanie normalnych
         cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
 

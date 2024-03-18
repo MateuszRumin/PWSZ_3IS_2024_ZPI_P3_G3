@@ -1,3 +1,5 @@
+import os
+
 from libraries import *
 
 class FileFunctions:
@@ -119,12 +121,86 @@ class FileFunctions:
             # alert = gui.Dialog("No mesh to export.")
             # self.window.show_dialog(alert)
 
+    def _on_export_to_las(self):
+        if self.cloud is not None:
+            try:
+                dlg = gui.FileDialog(gui.FileDialog.SAVE, "Choose file to save",
+                                     self.window.theme)
+                dlg.add_filter(".las", "Point Cloud files (.las)")
+                dlg.set_on_cancel(self._on_file_dialog_cancel)
+                dlg.set_on_done(self._on_export_cloud_dialog_done)
+                self.window.show_dialog(dlg)
+            except Exception as e:
+                print("[Error] An error occurred while preparing the export:", str(e))
+        else:
+            print("[Warning] No point cloud to export.")
+
+    def _on_export_to_laz(self):
+        if self.cloud is not None:
+            try:
+                dlg = gui.FileDialog(gui.FileDialog.SAVE, "Choose file to save",
+                                     self.window.theme)
+                dlg.add_filter(".laz", "Compresed Cloud files (.laz)")
+                dlg.set_on_cancel(self._on_file_dialog_cancel)
+                dlg.set_on_done(self._on_export_cloud_dialog_done)
+                self.window.show_dialog(dlg)
+            except Exception as e:
+                print("[Error] An error occurred while preparing the export:", str(e))
+        else:
+            print("[Warning] No point cloud to export.")
+
+    def _on_export_to_ply(self):
+        if self.cloud is not None:
+            try:
+                dlg = gui.FileDialog(gui.FileDialog.SAVE, "Choose file to save",
+                                     self.window.theme)
+                dlg.add_filter(".ply", "Polygon files (.ply)")
+                dlg.set_on_cancel(self._on_file_dialog_cancel)
+                dlg.set_on_done(self._on_export_cloud_dialog_done)
+                self.window.show_dialog(dlg)
+            except Exception as e:
+                print("[Error] An error occurred while preparing the export:", str(e))
+        else:
+            print("[Warning] No point cloud to export.")
+
     def _on_export_dialog_done(self, filename):
         self.window.close_dialog()
         if filename.endswith(".stl") or filename.endswith(".obj"):
             try:
                 o3d.io.write_triangle_mesh(filename, self.create_mesh)
                 print("[Info] Successfully exported to", filename)
+            except Exception as e:
+                print("[Error] An error occurred during the export:", str(e))
+        else:
+            print("[Warning] Invalid file format for export.")
+
+    def _on_export_cloud_dialog_done(self, filename):
+        self.window.close_dialog()
+        transform_matrix = self._scene.scene.get_geometry_transform("__model__")
+        transformed_point_cloud = self.cloud.transform(np.linalg.inv(transform_matrix))
+
+        if filename.endswith(".ply"):
+            try:
+                o3d.io.write_point_cloud(filename, transformed_point_cloud)
+                print("[Info] Successfully exported to", filename)
+            except Exception as e:
+                print("[Error] An error occurred during the export:", str(e))
+        elif filename.endswith(".laz"):
+            try:
+                temp_filename = filename[:-4] + "_temp.ply"
+                o3d.io.write_point_cloud(temp_filename, transformed_point_cloud)
+                os.system(f"laszip -i {temp_filename} -o {filename}")
+                print("[Info] Successfully exported to", filename)
+                os.remove(temp_filename)
+            except Exception as e:
+                print("[Error] An error occurred during the export:", str(e))
+        elif filename.endswith(".las"):
+            try:
+                temp_filename = filename[:-4] + "_temp.ply"
+                o3d.io.write_point_cloud(temp_filename, transformed_point_cloud)
+                os.system(f"pdal translate {temp_filename} {filename}")
+                print("[Info] Successfully converted to LAS and saved to", filename)
+                os.remove(temp_filename)
             except Exception as e:
                 print("[Error] An error occurred during the export:", str(e))
         else:
