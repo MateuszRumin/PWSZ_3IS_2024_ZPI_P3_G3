@@ -94,42 +94,39 @@ class GuiFunctions:
 
         if self.cloud is not None:
             self._scene.scene.remove_geometry("__model__")
-            voxel_cloud = self.cloud.voxel_down_sample(voxel_size=(float(self.settings.complement_slider_1_value) / 10000))
+            voxel_cloud = self.cloud_backup.voxel_down_sample(voxel_size=(float(value) / 10000))
             self.cloud = voxel_cloud
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
 
         self._apply_settings()
-
-    def _reset_object(self):
-        self._scene.scene.remove_geometry("__model__")
-        self.cloud = self.cloud_backup
-        self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
 
 
     def _on_complement_slider_2_change(self, value):
         self.settings.complement_slider_2_value = int(value)
 
         if self.cloud is not None:
-            self._scene.scene.remove_geometry("__model__")
-            scale_factor = (float(self.settings.complement_slider_2_value) - 1) / 99 * -0.9999 + 1
-            center = self.cloud.get_center()
-            scale_cloud = self.cloud.scale(scale_factor, center=center)
-            self.cloud = scale_cloud
-            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+            if value > 0:
+                self._scene.scene.remove_geometry("__model__")
+                scale_factor = (float(value) / 100) + 1
+                center = self.cloud.get_center()
+                scale_cloud = self.cloud_backup.scale(scale_factor, center=center)
+                self.cloud = scale_cloud
+                self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+                print(scale_factor)
+
+            elif value < 0 and value > -100:
+                self._scene.scene.remove_geometry("__model__")
+                scale_factor = (0.01 * value) + 1
+                center = self.cloud.get_center()
+                scale_cloud = self.cloud_backup.scale(scale_factor, center=center)
+                self.cloud = scale_cloud
+                self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+                print(scale_factor)
 
         self._apply_settings()
 
     def _on_complement_slider_3_change(self, value):
         self.settings.complement_slider_3_value = int(value)
-
-        if self.cloud is not None:
-            self._scene.scene.remove_geometry("__model__")
-            scale_factor = (float(self.settings.complement_slider_3_value) - 1) / 99 * 9 + 1
-            center = self.cloud.get_center()
-            scale_cloud = self.cloud.scale(scale_factor, center=center)
-            self.cloud = scale_cloud
-            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
-
         self._apply_settings()
 
     def _add_geometry_name(self, name):
@@ -156,3 +153,48 @@ class GuiFunctions:
                     self.settings.toggle_visibility_false_to_true(geom)
                     self._scene.scene.show_geometry(geom, True)
                 break
+
+    def move_in_x_axis(self, key):
+        if self.cloud is not None:
+            self._scene.scene.remove_geometry("__model__")
+            if key == "+":
+                move_amount = 0.005
+            elif key == "-":
+                move_amount = -0.005
+
+            transform = np.eye(4)
+            transform[0, 3] = move_amount
+
+            transform_cloud = self.cloud.transform(transform)
+            self.cloud = transform_cloud
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+
+    def move_in_y_axis(self, key):
+        if self.cloud is not None:
+            self._scene.scene.remove_geometry("__model__")
+            if key == "+":
+                move_amount = 0.005
+            elif key == "-":
+                move_amount = -0.005
+
+            transform = np.eye(4)
+            transform[1, 3] = move_amount
+
+            transform_cloud = self.cloud.transform(transform)
+            self.cloud = transform_cloud
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+    def move_in_z_axis(self, key):
+        if self.cloud is not None:
+            self._scene.scene.remove_geometry("__model__")
+            if key == "+":
+                move_amount = 0.005
+            elif key == "-":
+                move_amount = -0.005
+
+            transform = np.eye(4)
+            transform[2, 3] = move_amount
+
+            transform_cloud = self.cloud.transform(transform)
+            self.cloud = transform_cloud
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)

@@ -217,52 +217,36 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self._complement_slider_1.set_limits(1, 100)
         self._complement_slider_1.set_on_value_changed(self._on_complement_slider_1_change)
 
-        self._complement_slider_1_button = gui.Button("Reset")
-        self._complement_slider_1_button.set_on_clicked(self._reset_object)
-        self._complement_slider_1_button.horizontal_padding_em = 0.5
-        self._complement_slider_1_button.vertical_padding_em = 0
-
         # Slider2
         self._complement_slider_2 = gui.Slider(gui.Slider.INT)
-        self._complement_slider_2.set_limits(1, 100)
+        self._complement_slider_2.set_limits(-100, 100)
         self._complement_slider_2.set_on_value_changed(self._on_complement_slider_2_change)
-
-        self._complement_slider_2_button = gui.Button("Reset")
-        self._complement_slider_2_button.set_on_clicked(self._reset_object)
-        self._complement_slider_2_button.horizontal_padding_em = 0.5
-        self._complement_slider_2_button.vertical_padding_em = 0
 
         # Slider3
         self._complement_slider_3 = gui.Slider(gui.Slider.INT)
         self._complement_slider_3.set_limits(1, 100)
         self._complement_slider_3.set_on_value_changed(self._on_complement_slider_3_change)
 
-        self._complement_slider_3_button = gui.Button("Reset")
-        self._complement_slider_3_button.set_on_clicked(self._reset_object)
-        self._complement_slider_3_button.horizontal_padding_em = 0.5
-        self._complement_slider_3_button.vertical_padding_em = 0
-
-
         sliders_layout = gui.Horiz(0.25 * em)  # row 1
         sliders_layout.add_child(gui.Label("Voxel Size: "))
         sliders_layout.add_child(self._complement_slider_1)
-        sliders_layout.add_child(self._complement_slider_1_button)
+        sliders_layout.add_stretch()
 
         # Adding first row to CollapsableVert
         complement_ctrls.add_child(sliders_layout)
 
         sliders_layout = gui.Horiz(0.25 * em)  # row 2
-        sliders_layout.add_child(gui.Label("Scale smaller: "))
+        sliders_layout.add_child(gui.Label("Scale: "))
         sliders_layout.add_child(self._complement_slider_2)
-        sliders_layout.add_child(self._complement_slider_2_button)
+        sliders_layout.add_stretch()
 
         # Adding second row to CollapsableVert
         complement_ctrls.add_child(sliders_layout)
 
         sliders_layout = gui.Horiz(0.25 * em)  # row 3
-        sliders_layout.add_child(gui.Label("Scale bigger: "))
+        sliders_layout.add_child(gui.Label("Slider 3: "))
         sliders_layout.add_child(self._complement_slider_3)
-        sliders_layout.add_child(self._complement_slider_3_button)
+        sliders_layout.add_stretch()
 
         # Adding third row to CollapsableVert
         complement_ctrls.add_child(sliders_layout)
@@ -415,6 +399,81 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         # Adding CollapsableVert to settings panel
         self._settings_panel.add_child(scene_ctrls)
+
+
+        #----------------------------------------------------------
+        move_obj_ctrls = gui.CollapsableVert("Move object", 0.25 * em,
+                                               gui.Margins(em, 0, 0, 0))
+
+
+        #x+
+        self.x_plus_button = gui.Button("+")
+        self.x_plus_button.set_on_clicked(lambda: self.move_in_x_axis("+"))
+        self.x_plus_button.horizontal_padding_em = 0.5
+        self.x_plus_button.vertical_padding_em = 0
+
+        # x-
+        self.x_minus_button = gui.Button("-")
+        self.x_minus_button.set_on_clicked(lambda: self.move_in_x_axis("-"))
+        self.x_minus_button.horizontal_padding_em = 0.5
+        self.x_minus_button.vertical_padding_em = 0
+
+        # y+
+        self.y_plus_button = gui.Button("+")
+        self.y_plus_button.set_on_clicked(lambda: self.move_in_y_axis("+"))
+        self.y_plus_button.horizontal_padding_em = 0.5
+        self.y_plus_button.vertical_padding_em = 0
+
+        # y-
+        self.y_minus_button = gui.Button("-")
+        self.y_minus_button.set_on_clicked(lambda: self.move_in_y_axis("-"))
+        self.y_minus_button.horizontal_padding_em = 0.5
+        self.y_minus_button.vertical_padding_em = 0
+
+        # z+
+        self.z_plus_button = gui.Button("+")
+        self.z_plus_button.set_on_clicked(lambda: self.move_in_z_axis("+"))
+        self.z_plus_button.horizontal_padding_em = 0.5
+        self.z_plus_button.vertical_padding_em = 0
+
+        # z-
+        self.z_minus_button = gui.Button("-")
+        self.z_minus_button.set_on_clicked(lambda: self.move_in_z_axis("-"))
+        self.z_minus_button.horizontal_padding_em = 0.5
+        self.z_minus_button.vertical_padding_em = 0
+
+        t = gui.Horiz(0.25 * em)  # row 1
+        t.add_stretch()
+        t.add_child(gui.Label("x"))
+        t.add_child(self.x_plus_button)
+        t.add_child(self.x_minus_button)
+        t.add_stretch()
+
+        # Adding first row to CollapsableVert
+        move_obj_ctrls.add_child(t)
+
+        t = gui.Horiz(0.25 * em)  # row 2
+        t.add_stretch()
+        t.add_child(gui.Label("y"))
+        t.add_child(self.y_plus_button)
+        t.add_child(self.y_minus_button)
+        t.add_stretch()
+
+        # Adding second row to CollapsableVert
+        move_obj_ctrls.add_child(t)
+
+        t = gui.Horiz(0.25 * em)  # row 3
+        t.add_stretch()
+        t.add_child(gui.Label("z"))
+        t.add_child(self.z_plus_button)
+        t.add_child(self.z_minus_button)
+        t.add_stretch()
+
+        # Adding third row to CollapsableVert
+        move_obj_ctrls.add_child(t)
+
+        self._settings_panel.add_child(move_obj_ctrls)
+
         # ----
 
         # Normally our user interface can be children of all one layout (usually
