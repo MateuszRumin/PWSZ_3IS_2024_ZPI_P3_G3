@@ -22,13 +22,19 @@ class ApplySettings:
         self.edit_points_button.enabled = self.settings.enable_buttons
         self.export_to_obj_button.enabled = self.settings.enable_buttons_export
         self.export_to_stl_button.enabled = self.settings.enable_buttons_export
+        self.export_to_pcd_button.enabled = self.settings.enable_buttons
+        self.export_to_ply_button.enabled = self.settings.enable_buttons
         self._points_number.enabled = self.settings.points_enabled
         self._max_points_numer.enabled = self.settings.max_points_enabled
         self._normalize_points_checkbox.checked = self.settings.normalize_all_points
 
         self._complement_slider_1.double_value = self.settings.complement_slider_1_value
-        self._complement_slider_2.double_value = self.settings.complement_slider_2_value
+        self.scale_value_label.text = str(self.settings.scale_value)
         self._complement_slider_3.double_value = self.settings.complement_slider_3_value
+
+        self._rotation_slider_x.double_value = self.settings.rotate_slider_x_value
+        self._rotation_slider_y.double_value = self.settings.rotate_slider_y_value
+        self._rotation_slider_z.double_value = self.settings.rotate_slider_z_value
 
 
         if self.settings.apply_material:

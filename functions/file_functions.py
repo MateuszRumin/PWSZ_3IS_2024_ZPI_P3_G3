@@ -1,3 +1,6 @@
+import os
+import pdal
+
 from libraries import *
 
 class FileFunctions:
@@ -13,6 +16,7 @@ class FileFunctions:
         dlg.add_filter(".stl", "Stereolithography files (.stl)")
         dlg.add_filter(".obj", "Wavefront OBJ files (.obj)")
         dlg.add_filter(".ply", "Polygon files (.ply)")
+        dlg.add_filter(".pcd", "Point cloud files (.pcd)")
         dlg.add_filter("", "All files")
 
         # A file dialog MUST define on_cancel and on_done functions
@@ -46,7 +50,7 @@ class FileFunctions:
             print("[Info]", path, "appears to be a point cloud")
             self.cloud = None
             try:
-                if extension == "ply":
+                if extension == "ply" or extension == "pcd":
                     self.cloud = o3d.io.read_point_cloud(path)
                     self.cloud_backup = self.cloud
                 else:
@@ -119,6 +123,34 @@ class FileFunctions:
             # alert = gui.Dialog("No mesh to export.")
             # self.window.show_dialog(alert)
 
+    def _on_export_to_pcd(self):
+        if self.cloud is not None:
+            try:
+                dlg = gui.FileDialog(gui.FileDialog.SAVE, "Choose file to save",
+                                     self.window.theme)
+                dlg.add_filter(".pcd", "Point Cloud files (.pcd)")
+                dlg.set_on_cancel(self._on_file_dialog_cancel)
+                dlg.set_on_done(self._on_export_cloud_dialog_done)
+                self.window.show_dialog(dlg)
+            except Exception as e:
+                print("[Error] An error occurred while preparing the export:", str(e))
+        else:
+            print("[Warning] No point cloud to export.")
+
+    def _on_export_to_ply(self):
+        if self.cloud is not None:
+            try:
+                dlg = gui.FileDialog(gui.FileDialog.SAVE, "Choose file to save",
+                                     self.window.theme)
+                dlg.add_filter(".ply", "Polygon files (.ply)")
+                dlg.set_on_cancel(self._on_file_dialog_cancel)
+                dlg.set_on_done(self._on_export_cloud_dialog_done)
+                self.window.show_dialog(dlg)
+            except Exception as e:
+                print("[Error] An error occurred while preparing the export:", str(e))
+        else:
+            print("[Warning] No point cloud to export.")
+
     def _on_export_dialog_done(self, filename):
         self.window.close_dialog()
         if filename.endswith(".stl") or filename.endswith(".obj"):
@@ -127,5 +159,20 @@ class FileFunctions:
                 print("[Info] Successfully exported to", filename)
             except Exception as e:
                 print("[Error] An error occurred during the export:", str(e))
+        else:
+            print("[Warning] Invalid file format for export.")
+
+    def _on_export_cloud_dialog_done(self, filename):
+        self.window.close_dialog()
+        #transform_matrix = self._scene.scene.get_geometry_transform("__model__")
+        #transformed_point_cloud = self.cloud.transform(np.linalg.inv(transform_matrix))
+
+        if filename.endswith(".ply") or filename.endswith(".pcd"):
+            try:
+                o3d.io.write_point_cloud(filename, self.cloud)
+                print("[Info] Successfully exported to", filename)
+            except Exception as e:
+                print("[Error] An error occurred during the export:", str(e))
+
         else:
             print("[Warning] Invalid file format for export.")

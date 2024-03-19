@@ -1,7 +1,12 @@
+import math
+
 from libraries import *
 
 class GuiFunctions:
 
+    def on_window_close(self):
+        self.window.hide()
+        return False
     def _set_mouse_mode_rotate(self):
         self._scene.set_view_controls(gui.SceneWidget.Controls.ROTATE_CAMERA)
 
@@ -81,20 +86,32 @@ class GuiFunctions:
 
         if self.cloud is not None:
             self._scene.scene.remove_geometry("__model__")
-            voxel_cloud = self.cloud.voxel_down_sample(voxel_size=(float(self.settings.complement_slider_1_value) / 10000))
+            voxel_cloud = self.cloud_backup.voxel_down_sample(voxel_size=(float(value) / 10000))
             self.cloud = voxel_cloud
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
 
         self._apply_settings()
 
-    def _reset_object(self):
-        self._scene.scene.remove_geometry("__model__")
-        self.cloud = self.cloud_backup
-        self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
 
-
-    def _on_complement_slider_2_change(self, value):
-        self.settings.complement_slider_2_value = int(value)
+    def _change_scale(self, key):
+        if self.cloud is not None:
+            if key == "+":
+                self._scene.scene.remove_geometry("__model__")
+                self.settings.scale_value = round((self.settings.scale_value + 0.1), 1)
+                center = self.cloud_backup.get_center()
+                scale_cloud = self.cloud_backup.scale(self.settings.scale_value, center=center)
+                self.cloud = scale_cloud
+                self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+                print(self.settings.scale_value)
+            elif key == "-":
+                if self.settings.scale_value > 0.1:
+                    self._scene.scene.remove_geometry("__model__")
+                    self.settings.scale_value = round((self.settings.scale_value - 0.1), 1)
+                    center = self.cloud_backup.get_center()
+                    scale_cloud = self.cloud_backup.scale(self.settings.scale_value, center=center)
+                    self.cloud = scale_cloud
+                    self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+                    print(self.settings.scale_value)
         self._apply_settings()
 
     def _on_complement_slider_3_change(self, value):
@@ -125,3 +142,115 @@ class GuiFunctions:
                     self.settings.toggle_visibility_false_to_true(geom)
                     self._scene.scene.show_geometry(geom, True)
                 break
+
+    def move_in_x_axis(self, key):
+        if self.cloud is not None:
+            self._scene.scene.remove_geometry("__model__")
+            if key == "+":
+                move_amount = 0.005
+            elif key == "-":
+                move_amount = -0.005
+
+            transform = np.eye(4)
+            transform[0, 3] = move_amount
+
+            transform_cloud = self.cloud.transform(transform)
+            self.cloud = transform_cloud
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+
+    def move_in_y_axis(self, key):
+        if self.cloud is not None:
+            self._scene.scene.remove_geometry("__model__")
+            if key == "+":
+                move_amount = 0.005
+            elif key == "-":
+                move_amount = -0.005
+
+            transform = np.eye(4)
+            transform[1, 3] = move_amount
+
+            transform_cloud = self.cloud.transform(transform)
+            self.cloud = transform_cloud
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+    def move_in_z_axis(self, key):
+        if self.cloud is not None:
+            self._scene.scene.remove_geometry("__model__")
+            if key == "+":
+                move_amount = 0.005
+            elif key == "-":
+                move_amount = -0.005
+
+            transform = np.eye(4)
+            transform[2, 3] = move_amount
+
+            transform_cloud = self.cloud.transform(transform)
+            self.cloud = transform_cloud
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+    def _rotation_slider_x_change(self, value):
+        if self.cloud is not None:
+            self.settings.rotate_slider_x_value = int(value)
+            self._scene.scene.remove_geometry("__model__")
+
+            theta = math.radians(value)
+
+            center = self.cloud.get_center()
+
+            R = np.array([
+                [1, 0, 0],
+                [0, np.cos(theta), -np.sin(theta)],
+                [0, np.sin(theta), np.cos(theta)]
+            ])
+
+            rotated_cloud = self.cloud.rotate(R, center=center)
+            self.cloud = rotated_cloud
+
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+            self._apply_settings()
+
+    def _rotation_slider_y_change(self, value):
+        if self.cloud is not None:
+            self.settings.rotate_slider_y_value = int(value)
+
+            self._scene.scene.remove_geometry("__model__")
+
+            theta = math.radians(value)
+
+            center = self.cloud.get_center()
+
+            R = np.array([
+                [np.cos(theta), 0, np.sin(theta)],
+                [0, 1, 0],
+                [-np.sin(theta), 0, np.cos(theta)]
+            ])
+
+            rotated_cloud = self.cloud.rotate(R, center=center)
+            self.cloud = rotated_cloud
+
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+            self._apply_settings()
+
+    def _rotation_slider_z_change(self, value):
+        if self.cloud is not None:
+            self.settings.rotate_slider_z_value = int(value)
+
+            self._scene.scene.remove_geometry("__model__")
+
+            theta = math.radians(value)
+
+            center = self.cloud.get_center()
+
+            R = np.array([
+                [np.cos(theta), -np.sin(theta), 0],
+                [np.sin(theta), np.cos(theta), 0],
+                [0, 0, 1]
+            ])
+
+            rotated_cloud = self.cloud.rotate(R, center=center)
+            self.cloud = rotated_cloud
+
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+            self._apply_settings()

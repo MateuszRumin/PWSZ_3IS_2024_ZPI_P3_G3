@@ -78,9 +78,12 @@ class Settings:
         self.max_points_enabled = False
         self.normalize_all_points = False
         self.complement_slider_1_value = 1
-        self.complement_slider_2_value = 1
+        self.scale_value = 1
         self.complement_slider_3_value = 1
         self.geometry_visibility = []
+        self.rotate_slider_x_value = 0
+        self.rotate_slider_y_value = 0
+        self.rotate_slider_z_value = 0
 
 
         self.apply_material = True  # clear to False after processing
