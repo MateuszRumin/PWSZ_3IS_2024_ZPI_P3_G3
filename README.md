@@ -5,11 +5,10 @@
 - [Getting Started](#getting-started)
   - [Setup your Environment](#setup-your-environment)
 - [Use and extension of the program](#use-and-extension-of-the-program)
-  - [Program structure with description](program-structure-with-description)
-  - [Adding a new element to the gui](adding-a-new-element-to-the-gui)
-  - [Single line item](single-line-item)
-- [How to collect values in the application and send them to functions](how-to-collect-values-in-the-application-and-send-them-to-functions)
-- [How to create new classes and connect them to the main application](how-to-create-new-classes-and-connect-them-to-the-main-application)
+  - [Program structure with description](#i-program-structure-with-description)
+  - [Adding a new element to the gui](#ii-adding-a-new-element-to-the-gui)
+  - [How to collect values in the application and send them to functions](#iii-how-to-collect-values-in-the-application-and-send-them-to-functions)
+  - [How to create new classes and connect them to the main application](#iv-how-to-create-new-classes-and-connect-them-to-the-main-application)
 - [Documentation](#documentation)
 
 
