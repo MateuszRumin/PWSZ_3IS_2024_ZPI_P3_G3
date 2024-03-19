@@ -120,15 +120,6 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         # Adding second row to CollapsableVert
         view_ctrls.add_child(h)
 
-        #SET button
-        self._set_button = gui.Button("SET")
-        self._set_button.horizontal_padding_em = 0.5
-        self._set_button.vertical_padding_em = 0
-        self._set_button.set_on_clicked(self._on_set_set)
-
-        #Adding set button to collapsableVert
-        view_ctrls.add_child(self._set_button)
-
         #Color picker
         self._bg_color = gui.ColorEdit()
         self._bg_color.set_on_value_changed(self._on_bg_color)
@@ -217,10 +208,21 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self._complement_slider_1.set_limits(1, 100)
         self._complement_slider_1.set_on_value_changed(self._on_complement_slider_1_change)
 
-        # Slider2
-        self._complement_slider_2 = gui.Slider(gui.Slider.INT)
-        self._complement_slider_2.set_limits(-100, 100)
-        self._complement_slider_2.set_on_value_changed(self._on_complement_slider_2_change)
+        # scale button+
+        self.scale_plus_button = gui.Button("+")
+        self.scale_plus_button.set_on_clicked(lambda: self._change_scale("+"))
+        self.scale_plus_button.horizontal_padding_em = 0.5
+        self.scale_plus_button.vertical_padding_em = 0
+
+        # scale button-
+        self.scale_minus_button = gui.Button("-")
+        self.scale_minus_button.set_on_clicked(lambda: self._change_scale("-"))
+        self.scale_minus_button.horizontal_padding_em = 0.5
+        self.scale_minus_button.vertical_padding_em = 0
+
+        #Scale value
+        self.scale_value_label = gui.Label(str(self.settings.scale_value))
+
 
         # Slider3
         self._complement_slider_3 = gui.Slider(gui.Slider.INT)
@@ -237,7 +239,12 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         sliders_layout = gui.Horiz(0.25 * em)  # row 2
         sliders_layout.add_child(gui.Label("Scale: "))
-        sliders_layout.add_child(self._complement_slider_2)
+        sliders_layout.add_stretch()
+        sliders_layout.add_child(self.scale_value_label)
+
+        sliders_layout.add_stretch()
+        sliders_layout.add_child(self.scale_plus_button)
+        sliders_layout.add_child(self.scale_minus_button)
         sliders_layout.add_stretch()
 
         # Adding second row to CollapsableVert
@@ -334,56 +341,6 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         #Adding elements to CollapsableVert
         mesh_ctrls.add_child(button_layout)
 
-        #------
-        #Export buttons
-        export_buttons_layout = gui.Horiz(0.25 * em)
-
-        #Export to OBJ
-        self.export_to_obj_button = gui.Button("OBJ/file")
-        self.export_to_obj_button.set_on_clicked(lambda: self._on_export_to_obj(self.create_mesh))
-        self.export_to_obj_button.horizontal_padding_em = 0.5
-        self.export_to_obj_button.vertical_padding_em = 0
-        export_buttons_layout.add_child(self.export_to_obj_button)
-
-        #Export to STL
-        self.export_to_stl_button = gui.Button("STL/file")
-        self.export_to_stl_button.set_on_clicked(lambda: self._on_export_to_stl(self.create_mesh))
-        self.export_to_stl_button.horizontal_padding_em = 0.5
-        self.export_to_stl_button.vertical_padding_em = 0
-        export_buttons_layout.add_child(self.export_to_stl_button)
-
-        mesh_ctrls.add_child(export_buttons_layout)
-
-        #-----------------------------------------------------
-
-        #Export buttons cloud
-        export_buttons_cloud_layout = gui.Horiz(0.25 * em)
-
-        # Export to LAS
-        self.export_to_las_button = gui.Button("LAS")
-        self.export_to_las_button.set_on_clicked(self._on_export_to_las)
-        self.export_to_las_button.horizontal_padding_em = 0.5
-        self.export_to_las_button.vertical_padding_em = 0
-        export_buttons_cloud_layout.add_child(self.export_to_las_button)
-
-        # Export to LAZ
-        self.export_to_laz_button = gui.Button("LAZ")
-        self.export_to_laz_button.set_on_clicked(self._on_export_to_laz)
-        self.export_to_laz_button.horizontal_padding_em = 0.5
-        self.export_to_laz_button.vertical_padding_em = 0
-        export_buttons_cloud_layout.add_child(self.export_to_laz_button)
-
-        # Export to STL
-        self.export_to_ply_button = gui.Button("PLY")
-        self.export_to_ply_button.set_on_clicked(self._on_export_to_ply)
-        self.export_to_ply_button.horizontal_padding_em = 0.5
-        self.export_to_ply_button.vertical_padding_em = 0
-        export_buttons_cloud_layout.add_child(self.export_to_ply_button)
-
-        mesh_ctrls.add_child(export_buttons_cloud_layout)
-
-
-
         #Adding CollapsableVert to settings panel
         self._settings_panel.add_child(mesh_ctrls)
 
@@ -472,9 +429,107 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         # Adding third row to CollapsableVert
         move_obj_ctrls.add_child(t)
 
+        #Rotation sliders
+        move_obj_ctrls.add_child(gui.Label("Rotation Sliders"))
+
+        # x slider
+        self._rotation_slider_x = gui.Slider(gui.Slider.INT)
+        self._rotation_slider_x.set_limits(0, 360)
+        self._rotation_slider_x.set_on_value_changed(self._rotation_slider_x_change)
+
+        # y slider
+        self._rotation_slider_y = gui.Slider(gui.Slider.INT)
+        self._rotation_slider_y.set_limits(0, 360)
+        self._rotation_slider_y.set_on_value_changed(self._rotation_slider_y_change)
+
+        # z slider
+        self._rotation_slider_z = gui.Slider(gui.Slider.INT)
+        self._rotation_slider_z.set_limits(0, 360)
+        self._rotation_slider_z.set_on_value_changed(self._rotation_slider_z_change)
+
+        rotation_sliders = gui.Horiz(0.25 * em)  # row 1
+        rotation_sliders.add_stretch()
+        rotation_sliders.add_child(gui.Label("x"))
+        rotation_sliders.add_child(self._rotation_slider_x)
+        rotation_sliders.add_stretch()
+
+        move_obj_ctrls.add_child(rotation_sliders)
+
+        rotation_sliders = gui.Horiz(0.25 * em)  # row 2
+        rotation_sliders.add_stretch()
+        rotation_sliders.add_child(gui.Label("y"))
+        rotation_sliders.add_child(self._rotation_slider_y)
+        rotation_sliders.add_stretch()
+
+        move_obj_ctrls.add_child(rotation_sliders)
+
+        rotation_sliders = gui.Horiz(0.25 * em)  # row 3
+        rotation_sliders.add_stretch()
+        rotation_sliders.add_child(gui.Label("z"))
+        rotation_sliders.add_child(self._rotation_slider_z)
+        rotation_sliders.add_stretch()
+
+        move_obj_ctrls.add_child(rotation_sliders)
+
+
         self._settings_panel.add_child(move_obj_ctrls)
 
+        # ----------------------------------------------------------
+        export_ctrls = gui.CollapsableVert("Exports", 0.25 * em,
+                                             gui.Margins(em, 0, 0, 0))
+
+        # Export buttons
+        export_buttons_layout = gui.Horiz(0.25 * em)
+
+        # Export to OBJ
+        self.export_to_obj_button = gui.Button("OBJ/file")
+        self.export_to_obj_button.set_on_clicked(lambda: self._on_export_to_obj(self.create_mesh))
+        self.export_to_obj_button.horizontal_padding_em = 0.5
+        self.export_to_obj_button.vertical_padding_em = 0
+        export_buttons_layout.add_child(self.export_to_obj_button)
+
+        # Export to STL
+        self.export_to_stl_button = gui.Button("STL/file")
+        self.export_to_stl_button.set_on_clicked(lambda: self._on_export_to_stl(self.create_mesh))
+        self.export_to_stl_button.horizontal_padding_em = 0.5
+        self.export_to_stl_button.vertical_padding_em = 0
+        export_buttons_layout.add_child(self.export_to_stl_button)
+
+        export_ctrls.add_child(export_buttons_layout)
+
+        # -----------------------------------------------------
+
+        # Export buttons cloud
+        export_buttons_cloud_layout = gui.Horiz(0.25 * em)
+
+        # Export to PLY
+        self.export_to_ply_button = gui.Button("PLY")
+        self.export_to_ply_button.set_on_clicked(self._on_export_to_ply)
+        self.export_to_ply_button.horizontal_padding_em = 0.5
+        self.export_to_ply_button.vertical_padding_em = 0
+        export_buttons_cloud_layout.add_child(self.export_to_ply_button)
+
+        # Export to PCD
+        self.export_to_pcd_button = gui.Button("PCD")
+        self.export_to_pcd_button.set_on_clicked(self._on_export_to_pcd)
+        self.export_to_pcd_button.horizontal_padding_em = 0.5
+        self.export_to_pcd_button.vertical_padding_em = 0
+        export_buttons_cloud_layout.add_child(self.export_to_pcd_button)
+
+        export_ctrls.add_child(export_buttons_cloud_layout)
+
+        self._settings_panel.add_child(export_ctrls)
+
         # ----
+
+        #Set ColapsableVert to close
+        view_ctrls.set_is_open(False)
+        material_settings.set_is_open(False)
+        complement_ctrls.set_is_open(False)
+        mesh_ctrls.set_is_open(False)
+        scene_ctrls.set_is_open(False)
+        move_obj_ctrls.set_is_open(False)
+        export_ctrls.set_is_open(False)
 
         # Normally our user interface can be children of all one layout (usually
         # a vertical layout), which is then the only child of the window. In our

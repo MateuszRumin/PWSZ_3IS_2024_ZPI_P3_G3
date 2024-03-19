@@ -1,3 +1,5 @@
+import math
+
 from libraries import *
 
 class GuiFunctions:
@@ -19,16 +21,6 @@ class GuiFunctions:
 
     def _set_mouse_mode_model(self):
         self._scene.set_view_controls(gui.SceneWidget.Controls.ROTATE_MODEL)
-
-    def _on_set_set(self):
-        if self.cloud is not None:
-            transform_matrix = self._scene.scene.get_geometry_transform("__model__")
-            transformed_point_cloud = self.cloud.transform(np.linalg.inv(transform_matrix))
-            self.cloud = transformed_point_cloud
-        if self.create_mesh is not None:
-            transform_matrix = self._scene.scene.get_geometry_transform("__mesh__")
-            transformed_mesh = self.create_mesh.transform(np.linalg.inv(transform_matrix))
-            self.create_mesh = transformed_mesh
 
     def _on_bg_color(self, new_color):
         self.settings.bg_color = new_color
@@ -101,28 +93,25 @@ class GuiFunctions:
         self._apply_settings()
 
 
-    def _on_complement_slider_2_change(self, value):
-        self.settings.complement_slider_2_value = int(value)
-
+    def _change_scale(self, key):
         if self.cloud is not None:
-            if value > 0:
+            if key == "+":
                 self._scene.scene.remove_geometry("__model__")
-                scale_factor = (float(value) / 100) + 1
-                center = self.cloud.get_center()
-                scale_cloud = self.cloud_backup.scale(scale_factor, center=center)
+                self.settings.scale_value = round((self.settings.scale_value + 0.1), 1)
+                center = self.cloud_backup.get_center()
+                scale_cloud = self.cloud_backup.scale(self.settings.scale_value, center=center)
                 self.cloud = scale_cloud
                 self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
-                print(scale_factor)
-
-            elif value < 0 and value > -100:
-                self._scene.scene.remove_geometry("__model__")
-                scale_factor = (0.01 * value) + 1
-                center = self.cloud.get_center()
-                scale_cloud = self.cloud_backup.scale(scale_factor, center=center)
-                self.cloud = scale_cloud
-                self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
-                print(scale_factor)
-
+                print(self.settings.scale_value)
+            elif key == "-":
+                if self.settings.scale_value > 0.1:
+                    self._scene.scene.remove_geometry("__model__")
+                    self.settings.scale_value = round((self.settings.scale_value - 0.1), 1)
+                    center = self.cloud_backup.get_center()
+                    scale_cloud = self.cloud_backup.scale(self.settings.scale_value, center=center)
+                    self.cloud = scale_cloud
+                    self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+                    print(self.settings.scale_value)
         self._apply_settings()
 
     def _on_complement_slider_3_change(self, value):
@@ -198,3 +187,70 @@ class GuiFunctions:
             transform_cloud = self.cloud.transform(transform)
             self.cloud = transform_cloud
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+    def _rotation_slider_x_change(self, value):
+        if self.cloud is not None:
+            self.settings.rotate_slider_x_value = int(value)
+            self._scene.scene.remove_geometry("__model__")
+
+            theta = math.radians(value)
+
+            center = self.cloud.get_center()
+
+            R = np.array([
+                [1, 0, 0],
+                [0, np.cos(theta), -np.sin(theta)],
+                [0, np.sin(theta), np.cos(theta)]
+            ])
+
+            rotated_cloud = self.cloud.rotate(R, center=center)
+            self.cloud = rotated_cloud
+
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+            self._apply_settings()
+
+    def _rotation_slider_y_change(self, value):
+        if self.cloud is not None:
+            self.settings.rotate_slider_y_value = int(value)
+
+            self._scene.scene.remove_geometry("__model__")
+
+            theta = math.radians(value)
+
+            center = self.cloud.get_center()
+
+            R = np.array([
+                [np.cos(theta), 0, np.sin(theta)],
+                [0, 1, 0],
+                [-np.sin(theta), 0, np.cos(theta)]
+            ])
+
+            rotated_cloud = self.cloud.rotate(R, center=center)
+            self.cloud = rotated_cloud
+
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+            self._apply_settings()
+
+    def _rotation_slider_z_change(self, value):
+        if self.cloud is not None:
+            self.settings.rotate_slider_z_value = int(value)
+
+            self._scene.scene.remove_geometry("__model__")
+
+            theta = math.radians(value)
+
+            center = self.cloud.get_center()
+
+            R = np.array([
+                [np.cos(theta), -np.sin(theta), 0],
+                [np.sin(theta), np.cos(theta), 0],
+                [0, 0, 1]
+            ])
+
+            rotated_cloud = self.cloud.rotate(R, center=center)
+            self.cloud = rotated_cloud
+
+            self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+            self._apply_settings()
