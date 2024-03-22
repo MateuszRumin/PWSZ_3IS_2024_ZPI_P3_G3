@@ -2,3 +2,4 @@
 data/Sydney_fig_tree.laz
 /__pycache__
 /functions/__pycache__
+*.pyc

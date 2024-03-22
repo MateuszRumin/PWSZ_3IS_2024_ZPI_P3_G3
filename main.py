@@ -150,13 +150,6 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         #Material settings CollapsableVert
         material_settings = gui.CollapsableVert("Material settings", 0,
                                                 gui.Margins(em, 0, 0, 0))
-        #Shader
-        self._shader = gui.Combobox()
-        self._shader.add_item(AppWindow.MATERIAL_NAMES[0])
-        self._shader.add_item(AppWindow.MATERIAL_NAMES[1])
-        self._shader.add_item(AppWindow.MATERIAL_NAMES[2])
-        self._shader.add_item(AppWindow.MATERIAL_NAMES[3])
-        self._shader.set_on_selection_changed(self._on_shader)
 
         #Material prefab
         self._material_prefab = gui.Combobox()
@@ -176,10 +169,6 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
 
         #Grid layout
         grid = gui.VGrid(2, 0.25 * em)
-
-        #Grid type
-        grid.add_child(gui.Label("Type"))
-        grid.add_child(self._shader)
 
         #Grid material
         grid.add_child(gui.Label("Material"))
@@ -564,14 +553,11 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
                 # (in our case, probably "Python"), regardless of what we call
                 # it. This is the application menu, and it is where the
                 # About..., Preferences..., and Quit menu items typically go.
-                menu.add_menu("Example", app_menu)
                 menu.add_menu("File", file_menu)
-                menu.add_menu("Settings", settings_menu)
                 # Don't include help menu unless it has something more than
                 # About...
             else:
                 menu.add_menu("File", file_menu)
-                menu.add_menu("Settings", settings_menu)
             gui.Application.instance.menubar = menu
 
         # The menubar is global, but we need to connect the menu items to the

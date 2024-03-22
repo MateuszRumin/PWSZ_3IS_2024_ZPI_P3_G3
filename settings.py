@@ -84,6 +84,10 @@ class Settings:
         self.rotate_slider_x_value = 0
         self.rotate_slider_y_value = 0
         self.rotate_slider_z_value = 0
+        self.object_move_in_x_direction = 0
+        self.object_move_in_y_direction = 0
+        self.object_move_in_z_direction = 0
+
 
 
         self.apply_material = True  # clear to False after processing
