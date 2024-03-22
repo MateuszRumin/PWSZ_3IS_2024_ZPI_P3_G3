@@ -1,5 +1,4 @@
 import os
-import pdal
 
 from libraries import *
 
@@ -7,6 +6,7 @@ class FileFunctions:
 
     cloud = None
     cloud_backup = None
+    cloud_backup_backup = None
 
     def _on_menu_open(self):
         dlg = gui.FileDialog(gui.FileDialog.OPEN, "Choose file to load",
@@ -53,12 +53,14 @@ class FileFunctions:
                 if extension == "ply" or extension == "pcd":
                     self.cloud = o3d.io.read_point_cloud(path)
                     self.cloud_backup = self.cloud
+                    self.cloud_backup_backup = self.cloud
                 else:
                     las_file = laspy.read(path)
                     points = np.vstack([las_file.x, las_file.y, las_file.z]).T
                     self.cloud = o3d.geometry.PointCloud()
                     self.cloud.points = o3d.utility.Vector3dVector(points)
                     self.cloud_backup = self.cloud
+                    self.cloud_backup_backup = self.cloud
                     voxel_cloud = self.cloud.voxel_down_sample(voxel_size=(float(self.settings.complement_slider_1_value)/10000))
                     self.cloud = voxel_cloud
 

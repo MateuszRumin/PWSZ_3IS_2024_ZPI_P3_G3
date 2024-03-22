@@ -1,4 +1,5 @@
 import math
+import copy
 
 from libraries import *
 
@@ -86,33 +87,45 @@ class GuiFunctions:
 
         if self.cloud is not None:
             self._scene.scene.remove_geometry("__model__")
-            voxel_cloud = self.cloud_backup.voxel_down_sample(voxel_size=(float(value) / 10000))
+            voxel_cloud = self.cloud_backup_backup.voxel_down_sample(voxel_size=(float(value) / 10000))
             self.cloud = voxel_cloud
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
 
         self._apply_settings()
-
 
     def _change_scale(self, key):
         if self.cloud is not None:
             if key == "+":
                 self._scene.scene.remove_geometry("__model__")
                 self.settings.scale_value = round((self.settings.scale_value + 0.1), 1)
-                center = self.cloud_backup.get_center()
-                scale_cloud = self.cloud_backup.scale(self.settings.scale_value, center=center)
-                self.cloud = scale_cloud
+                self.cloud = copy.deepcopy(self.cloud_backup)
+                self.cloud.scale(self.settings.scale_value, center = self.cloud.get_center())
+                self.cloud_backup_backup = copy.deepcopy(self.cloud)
                 self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+                if self.create_mesh is not None:
+                    self._scene.scene.remove_geometry("__mesh__")
+                    self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                    self.create_mesh.scale(self.settings.scale_value, center = self.cloud.get_center())
+                    self.create_mesh_backup_backup = copy.deepcopy(self.create_mesh)
+                    self._scene.scene.add_geometry("__mesh__", self.create_mesh, self.settings.material)
                 print(self.settings.scale_value)
             elif key == "-":
                 if self.settings.scale_value > 0.1:
                     self._scene.scene.remove_geometry("__model__")
                     self.settings.scale_value = round((self.settings.scale_value - 0.1), 1)
-                    center = self.cloud_backup.get_center()
-                    scale_cloud = self.cloud_backup.scale(self.settings.scale_value, center=center)
-                    self.cloud = scale_cloud
+                    self.cloud = copy.deepcopy(self.cloud_backup)
+                    self.cloud.scale(self.settings.scale_value, center=self.cloud.get_center())
+                    self.cloud_backup_backup = copy.deepcopy(self.cloud)
                     self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+                    if self.create_mesh is not None:
+                        self._scene.scene.remove_geometry("__mesh__")
+                        self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                        self.create_mesh.scale(self.settings.scale_value, center=self.cloud.get_center())
+                        self.create_mesh_backup_backup = copy.deepcopy(self.create_mesh)
+                        self._scene.scene.add_geometry("__mesh__", self.create_mesh, self.settings.material)
                     print(self.settings.scale_value)
         self._apply_settings()
+
 
     def _on_complement_slider_3_change(self, value):
         self.settings.complement_slider_3_value = int(value)
@@ -156,7 +169,17 @@ class GuiFunctions:
 
             transform_cloud = self.cloud.transform(transform)
             self.cloud = transform_cloud
+            self.cloud_backup = copy.deepcopy(self.cloud)
+            self.cloud_backup_backup = copy.deepcopy(self.cloud)
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+            if self.create_mesh is not None:
+                self._scene.scene.remove_geometry("__mesh__")
+                transform_mesh = self.create_mesh.transform(transform)
+                self.create_mesh = transform_mesh
+                self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                self.create_mesh_backup_backup = copy.deepcopy(self.create_mesh)
+                self._scene.scene.add_geometry("__mesh__", self.create_mesh, self.settings.material)
 
 
     def move_in_y_axis(self, key):
@@ -172,7 +195,18 @@ class GuiFunctions:
 
             transform_cloud = self.cloud.transform(transform)
             self.cloud = transform_cloud
+            self.cloud_backup = copy.deepcopy(self.cloud)
+            self.cloud_backup_backup = copy.deepcopy(self.cloud)
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+            if self.create_mesh is not None:
+                self._scene.scene.remove_geometry("__mesh__")
+                transform_mesh = self.create_mesh.transform(transform)
+                self.create_mesh = transform_mesh
+                self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                self.create_mesh_backup_backup = copy.deepcopy(self.create_mesh)
+                self._scene.scene.add_geometry("__mesh__", self.create_mesh, self.settings.material)
+
     def move_in_z_axis(self, key):
         if self.cloud is not None:
             self._scene.scene.remove_geometry("__model__")
@@ -186,7 +220,17 @@ class GuiFunctions:
 
             transform_cloud = self.cloud.transform(transform)
             self.cloud = transform_cloud
+            self.cloud_backup = copy.deepcopy(self.cloud)
+            self.cloud_backup_backup = copy.deepcopy(self.cloud)
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+            if self.create_mesh is not None:
+                self._scene.scene.remove_geometry("__mesh__")
+                transform_mesh = self.create_mesh.transform(transform)
+                self.create_mesh = transform_mesh
+                self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                self.create_mesh_backup_backup = copy.deepcopy(self.create_mesh)
+                self._scene.scene.add_geometry("__mesh__", self.create_mesh, self.settings.material)
 
     def _rotation_slider_x_change(self, value):
         if self.cloud is not None:
@@ -195,18 +239,23 @@ class GuiFunctions:
 
             theta = math.radians(value)
 
-            center = self.cloud.get_center()
-
             R = np.array([
                 [1, 0, 0],
                 [0, np.cos(theta), -np.sin(theta)],
                 [0, np.sin(theta), np.cos(theta)]
             ])
 
-            rotated_cloud = self.cloud.rotate(R, center=center)
-            self.cloud = rotated_cloud
+            self.cloud = copy.deepcopy(self.cloud_backup_backup)
+            self.cloud.rotate(R, center=self.cloud.get_center())
 
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+            if self.create_mesh is not None:
+                self._scene.scene.remove_geometry("__mesh__")
+                self.create_mesh = copy.deepcopy(self.create_mesh_backup_backup)
+                self.create_mesh.rotate(R, center=self.create_mesh.get_center())
+                self._scene.scene.add_geometry("__mesh__", self.create_mesh, self.settings.material)
+
             self._apply_settings()
 
     def _rotation_slider_y_change(self, value):
@@ -217,18 +266,22 @@ class GuiFunctions:
 
             theta = math.radians(value)
 
-            center = self.cloud.get_center()
-
             R = np.array([
                 [np.cos(theta), 0, np.sin(theta)],
                 [0, 1, 0],
                 [-np.sin(theta), 0, np.cos(theta)]
             ])
 
-            rotated_cloud = self.cloud.rotate(R, center=center)
-            self.cloud = rotated_cloud
+            self.cloud = copy.deepcopy(self.cloud_backup_backup)
+            self.cloud.rotate(R, center=self.cloud.get_center())
 
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+            if self.create_mesh is not None:
+                self._scene.scene.remove_geometry("__mesh__")
+                self.create_mesh = copy.deepcopy(self.create_mesh_backup_backup)
+                self.create_mesh.rotate(R, center=self.create_mesh.get_center())
+                self._scene.scene.add_geometry("__mesh__", self.create_mesh, self.settings.material)
 
             self._apply_settings()
 
@@ -240,17 +293,21 @@ class GuiFunctions:
 
             theta = math.radians(value)
 
-            center = self.cloud.get_center()
-
             R = np.array([
                 [np.cos(theta), -np.sin(theta), 0],
                 [np.sin(theta), np.cos(theta), 0],
                 [0, 0, 1]
             ])
 
-            rotated_cloud = self.cloud.rotate(R, center=center)
-            self.cloud = rotated_cloud
+            self.cloud = copy.deepcopy(self.cloud_backup_backup)
+            self.cloud.rotate(R, center=self.cloud.get_center())
 
             self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+            if self.create_mesh is not None:
+                self._scene.scene.remove_geometry("__mesh__")
+                self.create_mesh = copy.deepcopy(self.create_mesh_backup_backup)
+                self.create_mesh.rotate(R, center=self.create_mesh.get_center())
+                self._scene.scene.add_geometry("__mesh__", self.create_mesh, self.settings.material)
 
             self._apply_settings()

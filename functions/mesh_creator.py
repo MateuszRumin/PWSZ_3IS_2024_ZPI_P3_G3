@@ -4,6 +4,8 @@ from functions import create_gui_mesh
 
 class MeshCreator(create_gui_mesh.CreateGuiMesh):
     create_mesh = None
+    create_mesh_backup = None
+    create_mesh_backup_backup = None
     def _make_mesh(self, path, points_number, max_points, normalize_points, cloud, voxel):
         # # Wczytaj plik LASer (LiDAR)
         # las_file = laspy.read(path)
@@ -32,6 +34,8 @@ class MeshCreator(create_gui_mesh.CreateGuiMesh):
         self._add_geometry_name("__mesh__")
 
         self.create_mesh = rec_mesh
+        self.create_mesh_backup = rec_mesh
+        self.create_mesh_backup_backup = rec_mesh
 
 
 
