@@ -1,6 +1,8 @@
 import math
 import copy
 
+import numpy as np
+
 from libraries import *
 
 class GuiFunctions:
@@ -226,3 +228,77 @@ class GuiFunctions:
             self._scene.scene.add_geometry("__mesh__", self.create_mesh, self.settings.material)
 
         self._apply_settings()
+
+    def on_point_selection(self, event):
+        if event.type == gui.MouseEvent.Type.BUTTON_DOWN and event.is_button_down(gui.MouseButton.LEFT) and event.is_modifier_down(gui.KeyModifier.CTRL):
+            def depth_callback(depth_image):
+                x = event.x - self._scene.frame.x
+                y = event.y - self._scene.frame.y
+
+                depth = np.asarray(depth_image)[x, y]
+
+                # Adjust the depth value check or interpretation as needed
+                if depth == 1.0:
+                    text = ""
+                else:
+                    world = self._scene.scene.camera.unproject(x, y, depth, self._scene.frame.width, self._scene.frame.height)
+
+                    text = "({:.3f}, {:.3f}, {:.3f})".format(world[0],world[1],world[2])
+
+                    idx = self._calc_prefer_indicate(world)
+                    true_point = np.asarray(self.cloud.points)[idx]
+
+                    self._pick_num += 1
+                    self._picked_indicates.append(idx)
+                    self._picked_points.append(true_point)
+
+
+                    print(f"Pick point #{idx} at ({true_point[0]}, {true_point[1]}, {true_point[2]})")
+
+                def draw_point():
+                    self._info.text = text
+                    self._info.visible = (text != "")
+                    self.window.set_needs_layout()
+
+                    if depth != 1.0:
+                        label3d = self._scene.add_3d_label(true_point, "#"+str(self._pick_num))
+                        self._label3d_list.append(label3d)
+
+                        sphere = o3d.geometry.TriangleMesh.create_sphere(0.0025)
+                        sphere.paint_uniform_color([1,0,0])
+                        sphere.translate(true_point)
+                        material = rendering.MaterialRecord()
+                        material.shader = 'defaultUnlit'
+                        self._scene.scene.add_geometry("sphere"+str(self._pick_num),sphere,material)
+                        self._scene.force_redraw()
+
+                gui.Application.instance.post_to_main_thread(self.window, draw_point)
+
+            self._scene.scene.scene.render_to_depth_image(depth_callback)
+            return gui.Widget.EventCallbackResult.HANDLED
+        elif event.type == gui.MouseEvent.Type.BUTTON_DOWN and event.is_button_down(gui.MouseButton.RIGHT) and event.is_modifier_down(gui.KeyModifier.CTRL):
+            if self._pick_num > 0:
+                idx = self._picked_indicates.pop()
+                point = self._picked_points.pop()
+
+                print(f"Undo pick: #{idx} at ({point[0]}, {point[1]}, {point[2]})")
+
+                self._scene.scene.remove_geometry('sphere'+str(self._pick_num))
+                self._pick_num -= 1
+                self._scene.remove_3d_label(self._label3d_list.pop())
+                self._scene.force_redraw()
+            else:
+                print("Undo no point!")
+            return gui.Widget.EventCallbackResult.HANDLED
+        else:
+            return gui.Widget.EventCallbackResult.IGNORED
+
+
+    def _calc_prefer_indicate(self, point):
+        cloud = copy.deepcopy(self.cloud)
+        cloud.points.append(np.asarray(point))
+
+        cloud_tree = o3d.geometry.KDTreeFlann(cloud)
+        [k, idx, _] = cloud_tree.search_knn_vector_3d(cloud.points[-1], 2)
+        return idx[-1]
+

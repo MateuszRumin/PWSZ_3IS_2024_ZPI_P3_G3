@@ -28,6 +28,12 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
     MENU_SHOW_SETTINGS = 11
     MENU_ABOUT = 21
 
+    _picked_indicates = []
+    _picked_points = []
+    _pick_num = 0
+
+    _label3d_list = []
+
     def __init__(self, width, height):
         self.settings = Settings()
         resource_path = gui.Application.instance.resource_path
@@ -43,6 +49,11 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self._scene.scene = rendering.Open3DScene(w.renderer)
         self._scene.set_on_sun_direction_changed(self._on_sun_dir)
 
+        self._info = gui.Label("")
+        self._info.visible = False
+
+
+        self._scene.set_on_mouse(self.on_point_selection)
 
         # ---- Settings panel ----
         # Rather than specifying sizes in pixels, which may vary in size based
@@ -529,6 +540,7 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         # done the window will layout the grandchildren.
         w.set_on_layout(self._on_layout)
         w.add_child(self._scene)
+        w.add_child(self._info)
         w.add_child(self._settings_panel)
 
         # ---- Menu ----
