@@ -36,6 +36,8 @@ class ApplySettings:
         self._rotation_slider_y.double_value = self.settings.rotate_slider_y_value
         self._rotation_slider_z.double_value = self.settings.rotate_slider_z_value
 
+        self.selected_points_label.text = str(self._pick_num)
+
 
         if self.settings.apply_material:
             self._scene.scene.update_material(self.settings.material)

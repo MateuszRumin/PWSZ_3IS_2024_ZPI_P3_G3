@@ -262,6 +262,33 @@ class AppWindow(apply_settings.ApplySettings, file_functions.FileFunctions, gui_
         self._settings_panel.add_child(complement_ctrls)
 
         #-------------------------------------------------------
+        selections_ctrls = gui.CollapsableVert("Selections", 0.25 * em,
+                                               gui.Margins(em, 0, 0, 0))
+
+
+        self.delete_points_button = gui.Button("Delete points")
+        self.delete_points_button.set_on_clicked(self._delete_selected_points)
+        self.delete_points_button.horizontal_padding_em = 0.5
+        self.delete_points_button.vertical_padding_em = 0
+
+        self.selected_points_label = gui.Label(str(self._pick_num))
+
+
+        selections_layout = gui.Horiz(0.25 * em)  # row 1
+        selections_layout.add_child(gui.Label("Selected points: "))
+        selections_layout.add_child(self.selected_points_label)
+        selections_layout.add_stretch()
+
+        selections_ctrls.add_child(selections_layout)
+
+        selections_layout = gui.Horiz(0.25 * em)  # row 2
+        selections_layout.add_child(self.delete_points_button)
+        selections_layout.add_stretch()
+
+        selections_ctrls.add_child(selections_layout)
+
+        self._settings_panel.add_child(selections_ctrls)
+        #-------------------------------------------------------
         #Creating CollapsableVert for mesh controls
         mesh_ctrls = gui.CollapsableVert("Convert to mesh", 0.25 * em,
                                          gui.Margins(em, 0, 0, 0))
@@ -600,7 +627,6 @@ def main():
 
     # Run the event loop. This will not return until the last window is closed.
     gui.Application.instance.run()
-
 
 if __name__ == "__main__":
     main()

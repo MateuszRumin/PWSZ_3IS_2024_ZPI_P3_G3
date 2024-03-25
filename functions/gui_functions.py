@@ -252,6 +252,9 @@ class GuiFunctions:
                     self._picked_indicates.append(idx)
                     self._picked_points.append(true_point)
 
+                    self._apply_settings() #Update value in gui
+
+
 
                     print(f"Pick point #{idx} at ({true_point[0]}, {true_point[1]}, {true_point[2]})")
 
@@ -285,8 +288,10 @@ class GuiFunctions:
 
                 self._scene.scene.remove_geometry('sphere'+str(self._pick_num))
                 self._pick_num -= 1
+                self._apply_settings()  # Update value in gui
                 self._scene.remove_3d_label(self._label3d_list.pop())
                 self._scene.force_redraw()
+                self._apply_settings()
             else:
                 print("Undo no point!")
             return gui.Widget.EventCallbackResult.HANDLED
@@ -301,4 +306,35 @@ class GuiFunctions:
         cloud_tree = o3d.geometry.KDTreeFlann(cloud)
         [k, idx, _] = cloud_tree.search_knn_vector_3d(cloud.points[-1], 2)
         return idx[-1]
+
+
+    def _delete_selected_points(self):
+
+        #Remove all geometries
+        self._scene.scene.clear_geometry()
+
+        #Remove all labels
+        for label in self._label3d_list:
+            self._scene.remove_3d_label(label)
+
+        #Remove selected points
+        print(self.cloud)
+        filtered_indices = [idx for idx in range(len(self.cloud.points)) if idx not in self._picked_indicates]
+        cloud_filtered = self.cloud.select_by_index(filtered_indices)
+        self.cloud = cloud_filtered
+        print(self.cloud)
+
+        #Add modified cloud to scene
+        self._scene.scene.add_geometry("__model__", self.cloud, self.settings.material)
+
+
+        #cleaning after removal
+        self._picked_indicates = []
+        self._picked_points = []
+        self._pick_num = 0
+        self._label3d_list = []
+
+        #Update gui
+        self._apply_settings()
+
 

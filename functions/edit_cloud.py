@@ -24,7 +24,7 @@ class PointEditor:
         )
         print("   Press [shift + right click] to undo point picking")
         print("2) After picking points, press 'Q' to close the window")
-        vis = o3d.visualization.VisualizerWithVertexSelection()
+        vis = o3d.visualization.VisualizerWithEditing()
         vis.create_window()
         vis.add_geometry(pcd)
         vis.run()  # user picks points
