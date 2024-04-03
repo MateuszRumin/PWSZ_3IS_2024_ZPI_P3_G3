@@ -247,14 +247,14 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
-            <height>220</height>
+            <width>220</width>
+            <height>250</height>
            </rect>
           </property>
           <property name="minimumSize">
            <size>
             <width>206</width>
-            <height>100</height>
+            <height>250</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -433,6 +433,21 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QPushButton" name="delete_selected_points_button">
                 <property name="enabled">
@@ -440,12 +455,58 @@
                 </property>
                 <property name="minimumSize">
                  <size>
-                  <width>207</width>
-                  <height>27</height>
+                  <width>0</width>
+                  <height>0</height>
                  </size>
                 </property>
                 <property name="text">
                  <string>Delete Selected Points</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_2">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="edit_meshBtn">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>300</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Edit mesh</string>
                 </property>
                </widget>
               </item>
@@ -459,7 +520,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
+            <width>206</width>
             <height>80</height>
            </rect>
           </property>
@@ -541,8 +602,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
-            <height>432</height>
+            <width>220</width>
+            <height>417</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -584,7 +645,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
+            <width>206</width>
             <height>300</height>
            </rect>
           </property>
@@ -1014,7 +1075,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
+            <width>206</width>
             <height>140</height>
            </rect>
           </property>

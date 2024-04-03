@@ -75,6 +75,10 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
 
         self.select_points_button.clicked.connect(self._select_points)
         self.delete_points_button.clicked.connect(self._delete_points)
+
+
+        self.edit_meshBtn.clicked.connect(self._edit_mesh)
+        # edit_meshBtn
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
 
 def main():
