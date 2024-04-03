@@ -66,9 +66,6 @@ class CloudSelection():
         self.plotter.enable_cell_picking(self.showSelectedArea, style='surface',
                                          show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'))
 
-    def _edit_mesh(self):
-        print('edit mesh')
-
     def _delete_points(self):
         self.plotter.disable_picking()
         self.plotter.enable_point_picking(self.showSelectedPoints, style='surface',

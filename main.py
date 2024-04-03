@@ -20,10 +20,11 @@ from functions import apply_settings
 from functions import gui_functions
 from functions import mesh_creator
 from functions import cloud_selection
+from functions import mesh_selection
 
 
 
-class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection):
+class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection, mesh_selection.MeshSelection):
 
     def __init__(self):
         self.settings = Settings()
