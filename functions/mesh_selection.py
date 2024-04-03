@@ -28,10 +28,12 @@ class MeshSelection():
             id = self.idx_table[0]
 
             print(f"IDD     ", id)
-            # print(self.mesh.points)
-            print(f"mesh.points[id]     ", self.mesh.points[id])
+            # print(self.cloud.points)
+            print(f"cloud.points[id]     ", self.mesh.points[id])
 
-            self.mesh.points[self.idx_table[0]] = point
+            iii = self.mesh.points[self.idx_table[0]] - 1
+            self.mesh.points[iii] = point
+
         else:
             self.mesh.points[self.idx_table[0]] = point
 
@@ -47,12 +49,12 @@ class MeshSelection():
             self.picked_points = points
             # print(self.picked_points)
 
-            # for point in points:
-                # self._calc_prefer_indicate(point)
+            for point in points:
+                self._calc_prefer_indicate_mesh(point)
 
-            print(f"fdfffffffffff",  self.idx_table)
+            # print(f"fdfffffffffff",  self.idx_table)
 
-            # self._calc_prefer_indicate(point)   # po jednym punkcie
+            # self._calc_prefer_indicate_mesh(point)   # po jednym punkcie
             self.plotter.add_sphere_widget(callback=self.move_sphere, center=self.picked_points, radius=0.0010)
 
     def _edit_mesh(self):
@@ -60,5 +62,32 @@ class MeshSelection():
         self.plotter.enable_cell_picking(callback=self.select_area, style='surface',
                                          show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'))
 
+    def _calc_prefer_indicate_mesh(self, point):
+        if self.cloud_for_indicates is None:
+            pyvista_points = self.mesh.points
+
+            points_open3d = o3d.utility.Vector3dVector(pyvista_points)
+
+            cloud_o3d = o3d.geometry.PointCloud()
+            cloud_o3d.points = points_open3d
+            self.cloud_for_indicates = copy.deepcopy(cloud_o3d)
+
+            cloud = copy.deepcopy(self.cloud_for_indicates)
+
+            cloud.points.append(np.asarray(point))
+
+            cloud_tree = o3d.geometry.KDTreeFlann(cloud)
+            [k, idx, _] = cloud_tree.search_knn_vector_3d(cloud.points[-1], 2)
+            # return idx[-1]
+            self.idx_table.append(idx[-1])
+        else:
+            cloud = copy.deepcopy(self.cloud_for_indicates)
+
+            cloud.points.append(np.asarray(point))
+
+            cloud_tree = o3d.geometry.KDTreeFlann(cloud)
+            [k, idx, _] = cloud_tree.search_knn_vector_3d(cloud.points[-1], 2)
+            # return idx[-1]
+            self.idx_table.append(idx[-1])
 
 
