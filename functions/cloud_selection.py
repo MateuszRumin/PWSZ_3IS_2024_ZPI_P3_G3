@@ -60,6 +60,7 @@ class CloudSelection():
         rounded_point = tuple(round(coord, 4) for coord in picked)
         self._calc_prefer_indicate(rounded_point)
         self.selected_points_value.setText("1")
+        print(self.idx_table[0])
 
     def _select_points(self):
         self.plotter.disable_picking()

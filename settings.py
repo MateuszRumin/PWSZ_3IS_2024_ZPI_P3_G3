@@ -25,5 +25,5 @@ class Settings:
 
 
         self.font_color_plotter = 'white'
-        self.background_plotter = '#333333'
+        self.background_plotter = 'white'
 

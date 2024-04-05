@@ -21,10 +21,11 @@ from functions import gui_functions
 from functions import mesh_creator
 from functions import cloud_selection
 from functions import mesh_selection
+from functions import normals_selection
 
 
 
-class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection, mesh_selection.MeshSelection):
+class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection, mesh_selection.MeshSelection, normals_selection.NormalsSelection):
 
     def __init__(self):
         self.settings = Settings()
@@ -81,6 +82,11 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.edit_meshBtn.clicked.connect(self._edit_mesh)
         # edit_meshBtn
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
+
+        self.change_normals_button.clicked.connect(self.display_cloud_normals)
+
+
+
 
 def main():
     app = QApplication([])
