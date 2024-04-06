@@ -20,3 +20,7 @@ class ApplySettings:
 
         pv.global_theme.font.color = self.settings.font_color_plotter
         self.plotter.set_background(self.settings.background_plotter)
+        self.plotter.set_color_cycler([self.settings.object_color])
+        self.colorTextActually.setStyleSheet(f'background: {self.settings.object_color}')
+        self.colorText.setStyleSheet(f'background: {self.settings.colorTextPlot}')
+

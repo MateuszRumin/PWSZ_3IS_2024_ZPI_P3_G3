@@ -25,6 +25,33 @@ class GuiFunctions:
         self._apply_settings()
         self._transform_object()
 
+
+    def _change_model_color(self):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            # pv.global_theme.font.color = color.name()
+            self.colorTextActually.setStyleSheet(f'background: {color.name()}')
+            self.plotter.set_color_cycler([color.name()])
+            self.settings.object_color = color.name()
+
+            if self.create_mesh is not None:
+                self.plotter.clear()
+                self.plotter.add_mesh(self.create_mesh, show_edges=True)
+
+
+
+    def _change_text_color(self):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            pv.global_theme.font.color = color.name()
+            self.colorText.setStyleSheet(f'background: {color.name()}')
+
+
+
+
+
+
+
     def _change_scale(self, key):
         if self.cloud is not None:
             if key == "+":
@@ -72,6 +99,9 @@ class GuiFunctions:
         if color.isValid():
             self.backgroundActually.setStyleSheet(f'background: {color.name()}')
             self.plotter.set_background(color.name())
+            self.settings.background_plotter = color.name()
+
+
 
 
 

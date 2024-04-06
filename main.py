@@ -81,6 +81,8 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.checkDistance.clicked.connect(self._distance_select)
         self.showAllBoundsCheck.clicked.connect(self._show_All_Bounds)
         self.changeBackground.clicked.connect(self._change_background)
+        self.modelColor.clicked.connect(self._change_model_color)
+        self.textColorbtn.clicked.connect(self._change_text_color)
 
         self.edit_meshBtn.clicked.connect(self._edit_mesh)
         # edit_meshBtn

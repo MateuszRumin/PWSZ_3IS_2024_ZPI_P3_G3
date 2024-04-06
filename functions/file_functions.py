@@ -69,7 +69,7 @@ class FileFunctions:
             self._apply_settings()
         elif mesh is not None:
             self.create_mesh = mesh
-            self.plotter.add_mesh(mesh, color='white', show_edges=True)
+            self.plotter.add_mesh(mesh, show_edges=True)
             self.settings.enable_buttons_cloud = True
             self._apply_settings()
 
