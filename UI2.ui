@@ -183,14 +183,14 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QPushButton" name="pushButton">
+               <widget class="QPushButton" name="changeBackground">
                 <property name="text">
                  <string>Background Color</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QFrame" name="frame_8">
+               <widget class="QFrame" name="backgroundActually">
                 <property name="maximumSize">
                  <size>
                   <width>30</width>
@@ -567,7 +567,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_2">
+               <widget class="QCheckBox" name="showAllBoundsCheck">
                 <property name="minimumSize">
                  <size>
                   <width>20</width>

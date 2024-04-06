@@ -10,10 +10,11 @@ import open3d as o3d
 import laspy
 import pyvista as pv
 from pyntcloud import PyntCloud
-
+from PyQt5.QtWidgets import QColorDialog
 
 class GuiFunctions:
-
+    use_distance = False
+    distance = None
 
     def on_voxel_size_change(self):
         value = self.voxel_size_slider.value()
@@ -35,6 +36,46 @@ class GuiFunctions:
             print(self.settings.scale_value)
             self._apply_settings()
             self._transform_object()
+
+
+    def _distance_select(self):
+
+
+        if self.checkDistance.isChecked():
+            print('Checkbox is checked')
+
+            def callback(a, b, distance):
+                self.label = self.plotter.add_text(f'Distance: {distance*100:.2f}', name='dist')
+                self.use_distance = True
+            if self.distance is None:
+                self.distance = self.plotter.add_measurement_widget(callback)
+
+            self.plotter.update()
+        else:
+            if self.use_distance:
+                self.distance.Off()
+                self.distance = None
+                self.plotter.remove_actor(self.label)
+                self.plotter.update()
+
+    def _show_All_Bounds(self):
+        if self.showAllBoundsCheck.isChecked():
+            self.test3 = self.plotter.show_bounds(axes_ranges=[0, 100, 0, 100, 0, 100])
+            self.plotter.update()
+
+
+        else:
+            print('Checkbox is not checked')
+            self.plotter.remove_actor(self.test3)
+
+
+    def _change_background(self):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            # Here you can use the selected color as needed
+            print(color.name())
+            self.backgroundActually.setStyleSheet(f'background: {color.name()}')
+            self.plotter.set_background(color.name())
 
 
 
@@ -108,9 +149,9 @@ class GuiFunctions:
                 translation_vector = np.array([move_x, move_y, move_z])
                 self.cloud.points += translation_vector
 
-                self.cloud = self.cloud.rotate_x(rotation_x)
-                self.cloud = self.cloud.rotate_y(rotation_y)
-                self.cloud = self.cloud.rotate_z(rotation_z)
+                self.cloud = self.cloud.rotate_x(rotation_x, inplace=True, point=self.cloud.center)
+                self.cloud = self.cloud.rotate_y(rotation_y, inplace=True, point=self.cloud.center)
+                self.cloud = self.cloud.rotate_z(rotation_z, inplace=True, point=self.cloud.center)
 
                 self.cloud.points *= scale_value
 

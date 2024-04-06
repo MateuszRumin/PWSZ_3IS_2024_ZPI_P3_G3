@@ -17,19 +17,7 @@ class FileFunctions:
     cloud_backup = None
     fileName = None
 
-    def _distance_select(self):
-        if self.checkDistance.isChecked():
-            print('Checkbox is checked')
 
-            def callback(a, b, distance):
-                self.label = self.plotter.add_text(f'Distance: {distance:.2f}', name='dist')
-
-            self.distance = self.plotter.add_measurement_widget(callback)
-            self.plotter.update()
-        else:
-            self.distance.Off()
-            self.plotter.remove_actor(self.label)
-            self.plotter.update()
 
     def open_file(self):
         options = QFileDialog.Options()
