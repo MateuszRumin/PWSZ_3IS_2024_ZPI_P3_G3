@@ -24,6 +24,6 @@ class Settings:
         self.enable_buttons_mesh = False
 
 
-        self.font_color_plotter = 'white'
-        self.background_plotter = 'white'
+        self.font_color_plotter = 'red'
+        self.background_plotter = 'gray'
 

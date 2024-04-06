@@ -13,6 +13,8 @@ from pyntcloud import PyntCloud
 
 
 class GuiFunctions:
+
+
     def on_voxel_size_change(self):
         value = self.voxel_size_slider.value()
         self.settings.voxel_size_slider_value = value
@@ -33,6 +35,7 @@ class GuiFunctions:
             print(self.settings.scale_value)
             self._apply_settings()
             self._transform_object()
+
 
 
     def move_in_x_axis(self, key):
