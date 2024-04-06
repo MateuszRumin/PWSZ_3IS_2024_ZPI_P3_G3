@@ -42,8 +42,6 @@ class GuiFunctions:
 
 
         if self.checkDistance.isChecked():
-            print('Checkbox is checked')
-
             def callback(a, b, distance):
                 self.label = self.plotter.add_text(f'Distance: {distance*100:.2f}', name='dist')
                 self.use_distance = True
@@ -72,8 +70,6 @@ class GuiFunctions:
     def _change_background(self):
         color = QColorDialog.getColor()
         if color.isValid():
-            # Here you can use the selected color as needed
-            print(color.name())
             self.backgroundActually.setStyleSheet(f'background: {color.name()}')
             self.plotter.set_background(color.name())
 
