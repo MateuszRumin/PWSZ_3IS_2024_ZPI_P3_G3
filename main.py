@@ -5,6 +5,12 @@ from PyQt5 import uic, QtCore, QtGui, QtWidgets
 import sys
 import os
 
+import psutil
+import time
+import signal
+
+
+
 from pyvistaqt import QtInteractor
 import numpy as np
 import pyvista as pv
@@ -13,6 +19,9 @@ from pyvista import examples
 
 import open3d as o3d
 import laspy
+
+import threading
+
 
 from settings import  Settings
 from functions import file_functions
@@ -98,7 +107,23 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.display_triangles_checkbox.clicked.connect(self._show_triangles_checked)
 
 
+        #Ram monitoring thread
+        monitor_thread = threading.Thread(target=self.monitor_memory_usage)
+        monitor_thread.daemon = True
+        monitor_thread.start()
 
+    def monitor_memory_usage(self):
+        while True:
+            process = psutil.Process()
+            mem_info = process.memory_info()
+            virtual_memory = psutil.virtual_memory()
+            print(f"Total free RAM memory: {virtual_memory.available / (1024 * 1024)} MB")
+
+            if round((virtual_memory.available / (1024 * 1024)), 0) < 500:
+                print("Insufficient free RAM")
+                os.kill(os.getpid(), signal.SIGTERM)
+
+            time.sleep(1)
 
 def main():
     app = QApplication([])
