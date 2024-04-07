@@ -40,6 +40,7 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.plotter_frame.setLayout(self.vlayout)
         self.plotter.camera.SetFocalPoint(0, 0, 0)
         self.plotter.camera.SetViewUp(0, 0, 0)
+        self.plotter.renderer.SetUseShadows(True)
         self.plotter.show_axes_all()
 
 
@@ -88,7 +89,13 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         # edit_meshBtn
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
 
-        self.change_normals_button.clicked.connect(self.display_cloud_normals)
+        self.change_normals_button.clicked.connect(self.select_points_for_normals)
+        self.save_normals_button.clicked.connect(self.save_normals)
+
+        self.display_cloud_checkbox.clicked.connect(self._show_cloud_checked)
+        self.display_normals_checkbox.clicked.connect(self._show_normals_checked)
+        self.display_mesh_checkbox.clicked.connect(self._show_mesh_checked)
+        self.display_triangles_checkbox.clicked.connect(self._show_triangles_checked)
 
 
 

@@ -22,6 +22,8 @@ class Settings:
         self.rotate_slider_z_value = 0
         self.enable_buttons_cloud = False
         self.enable_buttons_mesh = False
+        self.normals_computed_for_origin = False
+        self.changed_normals_computed = False
 
 
         self.font_color_plotter = 'lightblue'

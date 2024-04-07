@@ -24,3 +24,8 @@ class ApplySettings:
         self.colorTextActually.setStyleSheet(f'background: {self.settings.object_color}')
         self.colorText.setStyleSheet(f'background: {self.settings.colorTextPlot}')
 
+        self.display_cloud_checkbox.setEnabled(self.settings.enable_buttons_cloud)
+        self.display_normals_checkbox.setEnabled(self.settings.enable_buttons_cloud)
+        self.display_mesh_checkbox.setEnabled(self.settings.enable_buttons_mesh)
+        self.display_triangles_checkbox.setEnabled(self.settings.enable_buttons_mesh)
+

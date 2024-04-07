@@ -60,14 +60,14 @@
        <item>
         <widget class="QToolBox" name="toolBox">
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="page_complements">
           <property name="geometry">
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>350</height>
            </rect>
           </property>
@@ -746,7 +746,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>250</height>
            </rect>
           </property>
@@ -1019,8 +1019,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
-            <height>150</height>
+            <width>224</width>
+            <height>200</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -1032,7 +1032,7 @@
           <property name="maximumSize">
            <size>
             <width>300</width>
-            <height>150</height>
+            <height>200</height>
            </size>
           </property>
           <attribute name="label">
@@ -1095,7 +1095,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_3">
+            <widget class="QFrame" name="frame_change_normals">
              <property name="maximumSize">
               <size>
                <width>206</width>
@@ -1119,6 +1119,31 @@
              </layout>
             </widget>
            </item>
+           <item>
+            <widget class="QFrame" name="frame_save_normals">
+             <property name="maximumSize">
+              <size>
+               <width>206</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_12">
+              <item>
+               <widget class="QPushButton" name="save_normals_button">
+                <property name="text">
+                 <string>Save normals</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
           </layout>
          </widget>
          <widget class="QWidget" name="page_scene_geometries">
@@ -1126,8 +1151,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
-            <height>417</height>
+            <width>224</width>
+            <height>432</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -1147,19 +1172,103 @@
           </attribute>
           <layout class="QHBoxLayout" name="horizontalLayout_11">
            <item>
-            <widget class="QListWidget" name="geometries_list">
-             <property name="minimumSize">
-              <size>
-               <width>206</width>
-               <height>100</height>
-              </size>
+            <widget class="QFrame" name="frame_3">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
              </property>
-             <property name="maximumSize">
-              <size>
-               <width>300</width>
-               <height>500</height>
-              </size>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
              </property>
+             <layout class="QVBoxLayout" name="verticalLayout_13">
+              <item>
+               <widget class="QFrame" name="frame_cloud_checkbox">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_14">
+                 <item>
+                  <widget class="QCheckBox" name="display_cloud_checkbox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>Cloud</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_normals_checkbox">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_15">
+                 <item>
+                  <widget class="QCheckBox" name="display_normals_checkbox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>Normals</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_mesh_checkbox">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_17">
+                 <item>
+                  <widget class="QCheckBox" name="display_mesh_checkbox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>Mesh</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_triangles_checkbox">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_16">
+                 <item>
+                  <widget class="QCheckBox" name="display_triangles_checkbox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>Triangles</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
@@ -1169,7 +1278,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>300</height>
            </rect>
           </property>
@@ -1599,7 +1708,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>140</height>
            </rect>
           </property>

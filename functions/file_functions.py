@@ -16,6 +16,7 @@ class FileFunctions:
     cloud = None
     cloud_backup = None
     fileName = None
+    cloud_geometry_container = None
 
 
 
@@ -60,7 +61,10 @@ class FileFunctions:
             self._calc_prefer_indicate(point)
 
             #Add points to plotter
-            self.plotter.add_points(self.cloud)
+            self.cloud_geometry_container = self.plotter.add_points(self.cloud)
+
+            #Check geometries checkbox
+            self.display_cloud_checkbox.setChecked(True)
 
             # Update the plotter to display the new mesh
             self.plotter.update()

@@ -17,6 +17,9 @@ import pymeshfix
 class MeshCreator():
     create_mesh = None
     create_mesh_backup = None
+    mesh_geometry_container = None
+    mesh_with_triangles_container = None
+
 
     def _make_mesh(self):
 
@@ -37,16 +40,20 @@ class MeshCreator():
             #-----------------------------------------------------------
 
             # Obliczanie normalnych
-            cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
+            if self.origin_vectors_normalized is None:
+                cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
+            else:
+                cloud.normals = o3d.utility.Vector3dVector(self.origin_vectors_normalized)
+
 
             radii = [0.005, 0.01, 0.02, 0.04]
-            rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(
-                cloud, o3d.utility.DoubleVector(radii))
+            rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud, o3d.utility.DoubleVector(radii))
 
-            pcd = rec_mesh.sample_points_poisson_disk(5000)
+            if self.origin_vectors_normalized is None:
+                pcd = rec_mesh.sample_points_poisson_disk(5000)
 
-            pcd.normals = o3d.utility.Vector3dVector(np.zeros(
-                (1, 3)))  # invalidate existing normals
+                pcd.normals = o3d.utility.Vector3dVector(np.zeros(
+                    (1, 3)))  # invalidate existing normals
 
             # ProgressBar -----------------------------------------------
             self.progressBar.setValue(34)
@@ -89,9 +96,9 @@ class MeshCreator():
         # -----------------------------------------------------------
 
 
-        self.plotter.clear()
 
-        self.plotter.add_mesh(meshfix.mesh, color='white', show_edges=True)
+        self.mesh_geometry_container = self.plotter.add_mesh(meshfix.mesh)
+        self.display_mesh_checkbox.setChecked(True)
 
         self.create_mesh = meshfix.mesh
 
