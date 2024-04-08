@@ -56,7 +56,7 @@ class FileFunctions:
 
         if geometry is not None:
 
-            downSampling = self.settings.voxel_size_slider_value / 1000
+            downSampling = self.settings.downSampling_size_slider_value / 1000
 
             # -------
 

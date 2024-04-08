@@ -60,7 +60,7 @@
        <item>
         <widget class="QToolBox" name="toolBox">
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="page_complements">
           <property name="geometry">
@@ -1004,8 +1004,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>206</width>
-            <height>200</height>
+            <width>220</width>
+            <height>350</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -1017,7 +1017,7 @@
           <property name="maximumSize">
            <size>
             <width>300</width>
-            <height>200</height>
+            <height>350</height>
            </size>
           </property>
           <attribute name="label">
@@ -1125,6 +1125,59 @@
                  <string>Save normals</string>
                 </property>
                </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_fix_mesh">
+             <property name="maximumSize">
+              <size>
+               <width>206</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_19">
+              <item>
+               <widget class="QPushButton" name="fix_mesh_button">
+                <property name="text">
+                 <string>Fix mesh</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_triangles_amount">
+             <property name="maximumSize">
+              <size>
+               <width>206</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_20">
+              <item>
+               <widget class="QLabel" name="triangles_amount_label">
+                <property name="text">
+                 <string>Traingles amount:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="triangles_amount_input_field"/>
               </item>
              </layout>
             </widget>
@@ -1263,7 +1316,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>206</width>
+            <width>220</width>
             <height>300</height>
            </rect>
           </property>
@@ -1693,7 +1746,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>206</width>
+            <width>220</width>
             <height>140</height>
            </rect>
           </property>

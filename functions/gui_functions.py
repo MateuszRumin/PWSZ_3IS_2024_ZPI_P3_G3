@@ -18,8 +18,8 @@ class GuiFunctions:
 
     def on_voxel_size_change(self):
         value = self.voxel_size_slider.value()
-        self.settings.voxel_size_slider_value = value
-        print("voxel size: " + str(self.settings.voxel_size_slider_value))
+        self.settings.downSampling_size_slider_value = value
+        print("voxel size: " + str(self.settings.downSampling_size_slider_value))
 
 
         self._apply_settings()
@@ -168,7 +168,7 @@ class GuiFunctions:
 
                 scale_value = self.settings.scale_value
 
-                downSampling = self.settings.voxel_size_slider_value / 1000
+                downSampling = self.settings.downSampling_size_slider_value / 1000
 
                 #-------
 
@@ -261,3 +261,8 @@ class GuiFunctions:
         else:
             print('Checkbox is not checked')
             self.plotter.remove_actor(self.mesh_with_triangles_container)
+
+
+    def _triangles_amount_changed(self, value):
+        print(f"triangles amount", value)
+        self.settings.triangles_amount = value

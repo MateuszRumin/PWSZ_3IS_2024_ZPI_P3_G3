@@ -1,6 +1,8 @@
 import PyQt5.QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QIntValidator
+
 
 import sys
 import os
@@ -106,6 +108,10 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.display_mesh_checkbox.clicked.connect(self._show_mesh_checked)
         self.display_triangles_checkbox.clicked.connect(self._show_triangles_checked)
 
+        self.fix_mesh_button.clicked.connect(self.repair_mesh)
+
+        self.triangles_amount_input_field.setValidator(QIntValidator(1, 2147483647, self))
+        self.triangles_amount_input_field.textChanged.connect(self._triangles_amount_changed)
 
         #Ram monitoring thread
         monitor_thread = threading.Thread(target=self.monitor_memory_usage)

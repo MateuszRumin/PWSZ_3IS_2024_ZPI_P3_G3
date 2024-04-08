@@ -12,7 +12,10 @@ from pyntcloud import PyntCloud
 class ApplySettings:
     def _apply_settings(self):
         self.scale_value_label.setText(str(self.settings.scale_value))
+
         self.create_mesh_button.setEnabled(self.settings.enable_buttons_cloud)
+
+        #Enable export buttons
         self.export_to_ply.setEnabled(self.settings.enable_buttons_cloud)
         self.export_to_pcd.setEnabled(self.settings.enable_buttons_cloud)
         self.export_to_obj.setEnabled(self.settings.enable_buttons_mesh)
@@ -28,4 +31,7 @@ class ApplySettings:
         self.display_normals_checkbox.setEnabled(self.settings.enable_buttons_cloud)
         self.display_mesh_checkbox.setEnabled(self.settings.enable_buttons_mesh)
         self.display_triangles_checkbox.setEnabled(self.settings.enable_buttons_mesh)
+
+
+        self.triangles_amount_input_field.setText(str(self.settings.triangles_amount))
 
