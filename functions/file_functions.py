@@ -17,6 +17,8 @@ class FileFunctions:
     cloud_backup = None
     fileName = None
     cloud_geometry_container = None
+    create_mesh = None
+    create_mesh_backup = None
 
 
 
@@ -30,6 +32,11 @@ class FileFunctions:
             self.load(self.fileName)
 
     def load(self, path):
+        self.cloud = None
+        self.cloud_backup = None
+        self.create_mesh = None
+        self.create_mesh_backup = None
+
         extension = path[-3:]
 
         self.plotter.clear()
@@ -88,8 +95,10 @@ class FileFunctions:
 
             self.settings.enable_buttons_cloud = True
             self._apply_settings()
+
         elif mesh is not None:
             self.create_mesh = mesh
+            self.create_mesh_backup = self.create_mesh
             self.plotter.add_mesh(mesh, show_edges=True)
             self.settings.enable_buttons_cloud = True
             self._apply_settings()

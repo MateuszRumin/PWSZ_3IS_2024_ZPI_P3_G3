@@ -133,19 +133,19 @@ class GuiFunctions:
 
 
     def _rotation_slider_x_change(self):
-        if self.cloud is not None:
+        if self.cloud is not None or self.create_mesh is not None:
             value = self.rotation_x_slider.value()
             self.settings.rotate_slider_x_value = int(value)
             self._transform_object()
 
     def _rotation_slider_y_change(self):
-        if self.cloud is not None:
+        if self.cloud is not None or self.create_mesh is not None:
             value = self.rotation_y_slider.value()
             self.settings.rotate_slider_y_value = int(value)
             self._transform_object()
 
     def _rotation_slider_z_change(self):
-        if self.cloud is not None:
+        if self.cloud is not None or self.create_mesh is not None:
             value = self.rotation_z_slider.value()
             self.settings.rotate_slider_z_value = int(value)
             self._transform_object()
@@ -194,11 +194,45 @@ class GuiFunctions:
 
                 self.cloud.points *= scale_value
 
-
-
                 self.plotter.add_points(self.cloud)
+
             except Exception as e:
                 print("[WARNING] Failed to transform cloud", e)
+
+        if self.create_mesh is not None:
+            try:
+                self.create_mesh = self.create_mesh_backup
+
+                self.plotter.clear()
+
+                # read value from gui
+                move_x = self.settings.object_move_in_x_direction
+                move_y = self.settings.object_move_in_y_direction
+                move_z = self.settings.object_move_in_z_direction
+
+                rotation_x = self.settings.rotate_slider_x_value
+                rotation_y = self.settings.rotate_slider_y_value
+                rotation_z = self.settings.rotate_slider_z_value
+
+                scale_value = self.settings.scale_value
+
+                voxel_size = self.settings.downSampling_size_slider_value / 1000
+
+                # -------
+
+                translation_vector = np.array([move_x, move_y, move_z])
+                self.create_mesh.points += translation_vector
+
+                self.create_mesh = self.create_mesh.rotate_x(rotation_x, point=self.create_mesh.center)
+                self.create_mesh = self.create_mesh.rotate_y(rotation_y, point=self.create_mesh.center)
+                self.create_mesh = self.create_mesh.rotate_z(rotation_z, point=self.create_mesh.center)
+
+                self.create_mesh.points *= scale_value
+
+                self.plotter.add_mesh(self.create_mesh, show_edges=True)
+
+            except Exception as e:
+                print("[WARNING] Failed to transform mesh", e)
 
 
     def _show_cloud_checked(self):
