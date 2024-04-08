@@ -23,7 +23,29 @@ class MeshCreator():
 
     def _make_mesh(self):
 
-        if self.create_mesh is None:
+        if self.create_mesh is not None:
+            cpos = [(-0.2, -0.13, 0.12), (-0.015, 0.10, -0.0), (0.28, 0.26, 0.9)]
+
+            # Generate a meshfix mesh ready for fixing and extract the holes
+            meshfix = pymeshfix.MeshFix(self.create_mesh)
+            holes = meshfix.extract_holes()
+
+            # Repair the mesh
+            meshfix.repair(verbose=True)
+
+            # ProgressBar -----------------------------------------------
+            self.progressBar.setValue(50)
+            # -----------------------------------------------------------
+
+            self.mesh_geometry_container = self.plotter.add_mesh(meshfix.mesh)
+            self.display_mesh_checkbox.setChecked(True)
+
+            self.create_mesh = meshfix.mesh
+
+            # ProgressBar -----------------------------------------------
+            self.progressBar.setValue(100)
+            # -----------------------------------------------------------
+        else:
             # ProgressBar -----------------------------------------------
             self.progressBar.setValue(0)
             # -----------------------------------------------------------
@@ -82,29 +104,29 @@ class MeshCreator():
             self.progressBar.setValue(68)
             # -----------------------------------------------------------
 
-        cpos = [(-0.2, -0.13, 0.12), (-0.015, 0.10, -0.0), (0.28, 0.26, 0.9)]
+            cpos = [(-0.2, -0.13, 0.12), (-0.015, 0.10, -0.0), (0.28, 0.26, 0.9)]
 
-        # Generate a meshfix mesh ready for fixing and extract the holes
-        meshfix = pymeshfix.MeshFix(self.create_mesh)
-        holes = meshfix.extract_holes()
+            # Generate a meshfix mesh ready for fixing and extract the holes
+            meshfix = pymeshfix.MeshFix(self.create_mesh)
+            holes = meshfix.extract_holes()
 
-        # Repair the mesh
-        meshfix.repair(verbose=True)
+            # Repair the mesh
+            meshfix.repair(verbose=True)
 
-        # ProgressBar -----------------------------------------------
-        self.progressBar.setValue(85)
-        # -----------------------------------------------------------
+            # ProgressBar -----------------------------------------------
+            self.progressBar.setValue(85)
+            # -----------------------------------------------------------
 
 
 
-        self.mesh_geometry_container = self.plotter.add_mesh(meshfix.mesh)
-        self.display_mesh_checkbox.setChecked(True)
+            self.mesh_geometry_container = self.plotter.add_mesh(meshfix.mesh)
+            self.display_mesh_checkbox.setChecked(True)
 
-        self.create_mesh = meshfix.mesh
+            self.create_mesh = meshfix.mesh
 
-        # ProgressBar -----------------------------------------------
-        self.progressBar.setValue(100)
-        # -----------------------------------------------------------
+            # ProgressBar -----------------------------------------------
+            self.progressBar.setValue(100)
+            # -----------------------------------------------------------
 
         if self.create_mesh is not None:
             self.settings.enable_buttons_mesh = True

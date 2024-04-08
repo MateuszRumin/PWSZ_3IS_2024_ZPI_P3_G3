@@ -56,6 +56,23 @@ class FileFunctions:
 
         if geometry is not None:
 
+            downSampling = self.settings.voxel_size_slider_value / 1000
+
+            # -------
+
+            downSamplingCloud = self.cloud.clean(
+                point_merging=True,
+                merge_tol=downSampling,
+                lines_to_points=False,
+                polys_to_lines=False,
+                strips_to_polys=False,
+                inplace=False,
+                absolute=False,
+                progress_bar=True,
+            )
+
+            self.cloud = downSamplingCloud
+
             #Soft start for point matching function
             point = self.cloud.points[1]
             self._calc_prefer_indicate(point)

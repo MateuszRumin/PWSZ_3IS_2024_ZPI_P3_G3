@@ -168,9 +168,22 @@ class GuiFunctions:
 
                 scale_value = self.settings.scale_value
 
-                voxel_size = self.settings.voxel_size_slider_value / 10000
+                downSampling = self.settings.voxel_size_slider_value / 1000
 
                 #-------
+
+                downSamplingCloud = self.cloud.clean(
+                    point_merging=True,
+                    merge_tol=downSampling,
+                    lines_to_points=False,
+                    polys_to_lines=False,
+                    strips_to_polys=False,
+                    inplace=False,
+                    absolute=False,
+                    progress_bar=True,
+                )
+
+                self.cloud = downSamplingCloud
 
                 translation_vector = np.array([move_x, move_y, move_z])
                 self.cloud.points += translation_vector
