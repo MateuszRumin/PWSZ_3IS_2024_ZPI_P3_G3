@@ -58,7 +58,7 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self._apply_settings()
 
 
-        #--------------------------------------------------
+        #-------------------Version 1.20-------------------------------
         #Adding trigers
         self.actionOpen.triggered.connect(self.open_file)
 
