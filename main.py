@@ -15,17 +15,17 @@ def load_mesh(file_path):
     return mesh
 
 def segment_point_cloud(points, num_clusters=100):
-    # Inicjalizacja i dopasowanie modelu KMeans
+   
     kmeans = KMeans(n_clusters=num_clusters)
     kmeans.fit(points)
 
-    # Przypisanie klastrów do punktów
+    
     labels = kmeans.labels_
 
-    # Tworzenie pustej chmury punktów dla każdego klastra
+   
     clusters = [o3d.geometry.PointCloud() for _ in range(num_clusters)]
 
-    # Dodanie punktów do odpowiednich chmur punktów klastrów
+    
     for i, point in enumerate(points):
         cluster_idx = labels[i]
         clusters[cluster_idx].points.append(point)
@@ -37,33 +37,41 @@ def segment_point_cloud(points, num_clusters=100):
 
     return clusters_open3d
 
-def compute_normals(points, k=10):
+def compute_normals(points, k=30):
 
     nbrs = NearestNeighbors(n_neighbors=k, algorithm='kd_tree').fit(points)
 
     distances, indices = nbrs.kneighbors(points)
-
+    center = np.mean(points,axis=0)
     normals = []
     for i in range(len(points)):
-
         neighbor_points = points[indices[i]]
         cov_matrix = np.cov(neighbor_points, rowvar=False)
 
-        # Oblicz wartości i wektory własne macierzy kowariancji
+        
         eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
 
-        # Wybierz wektor własny odpowiadający najmniejszej wartości własnej
+        
         normal = eigenvectors[:, np.argmin(eigenvalues)]
 
-        # Ustaw kierunek wektora normalnego do zawsze wskazywał na zewnątrz powierzchni
+        
+        point_diff = neighbor_points[1] - neighbor_points[0]
+        other_point_diff = neighbor_points[2] - neighbor_points[0]
+        plane_normal = np.cross(point_diff, other_point_diff)
+
+        
+        if np.dot(normal, plane_normal) < 0:
+            normal = -normal
+
+            i
         if normal.dot(points[i]) < 0:
             normal *= -1
-        elif normal.dot(points[i]) == 0:
-            normal *= -1
+
 
 
 
         normals.append(normal)
+
 
     return np.array(normals)
 
@@ -89,9 +97,9 @@ for i in segment:
 # normals = compute_normals(points)
 # cloud.normals = o3d.utility.Vector3dVector(normals)
 
-o3d.visualization.draw_geometries([merged_cloud])
+o3d.visualization.draw_geometries([segment[0]])
 
-# rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(cloud,depth=6,width=0,linear_fit=False,n_threads=4)
+# rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(merged_cloud,depth=6,width=0,linear_fit=False,n_threads=4)
 # avg_distance = np.mean(cloud.compute_nearest_neighbor_distance())
 # max_distance = np.max(cloud.compute_nearest_neighbor_distance())
 # min_distance = np.min(cloud.compute_nearest_neighbor_distance())
@@ -111,7 +119,7 @@ o3d.visualization.draw_geometries([merged_cloud])
 #          1.28 * par, 1.29 * par,
 #          1.3 * par, 1.4 * par, 1.5 * par, 1.6 * par, 1.75 * par]
 # radii_double_vector = o3d.utility.DoubleVector(radii)
-# rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud, radii_double_vector)
+# rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(merged_cloud, radii_double_vector)
 # rec_mesh.compute_vertex_normals()
 # o3d.io.write_triangle_mesh("./data/abc.stl", rec_mesh)
 # o3d.visualization.draw_geometries([rec_mesh])
@@ -145,9 +153,8 @@ o3d.visualization.draw_geometries([merged_cloud])
 # meshfix.mesh.plot(cpos=cpos)
 #
 # meshfix.mesh.save('finishMesh.stl')
+# #
 #
-
-
 
 
 
