@@ -95,6 +95,7 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.changeBackground.clicked.connect(self._change_background)
         self.modelColor.clicked.connect(self._change_model_color)
         self.textColorbtn.clicked.connect(self._change_text_color)
+        self.cropMeshButton.clicked.connect(self.crop_mesh_box)
 
         self.edit_meshBtn.clicked.connect(self._edit_mesh)
         # edit_meshBtn

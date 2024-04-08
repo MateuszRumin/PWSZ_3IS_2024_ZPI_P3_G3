@@ -68,19 +68,19 @@
             <x>0</x>
             <y>0</y>
             <width>220</width>
-            <height>400</height>
+            <height>350</height>
            </rect>
           </property>
           <property name="minimumSize">
            <size>
             <width>206</width>
-            <height>250</height>
+            <height>300</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>300</width>
-            <height>400</height>
+            <height>350</height>
            </size>
           </property>
           <attribute name="label">
@@ -93,68 +93,6 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item>
-            <widget class="QFrame" name="frame_6">
-             <property name="minimumSize">
-              <size>
-               <width>206</width>
-               <height>40</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>206</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_20">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_10">
-                <property name="text">
-                 <string>Type:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="comboBox">
-                <item>
-                 <property name="text">
-                  <string>Basic</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Structure</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>New Item</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
            <item>
             <widget class="QFrame" name="frame_7">
              <property name="maximumSize">
@@ -184,6 +122,9 @@
               </property>
               <item>
                <widget class="QPushButton" name="changeBackground">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>Background Color</string>
                 </property>
@@ -198,7 +139,7 @@
                  </size>
                 </property>
                 <property name="cursor">
-                 <cursorShape>PointingHandCursor</cursorShape>
+                 <cursorShape>ForbiddenCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
                  <string notr="true">background: white</string>
@@ -243,6 +184,9 @@
               </property>
               <item>
                <widget class="QPushButton" name="modelColor">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>Model color</string>
                 </property>
@@ -257,7 +201,7 @@
                  </size>
                 </property>
                 <property name="cursor">
-                 <cursorShape>PointingHandCursor</cursorShape>
+                 <cursorShape>ForbiddenCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
                  <string notr="true">background: lightblue;</string>
@@ -321,6 +265,9 @@
                   <height>30</height>
                  </size>
                 </property>
+                <property name="cursor">
+                 <cursorShape>ForbiddenCursor</cursorShape>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">background: white;</string>
                 </property>
@@ -365,6 +312,9 @@
               </item>
               <item>
                <widget class="QSlider" name="voxel_size_slider">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="minimum">
                  <number>1</number>
                 </property>
@@ -446,6 +396,9 @@
                   <height>16777215</height>
                  </size>
                 </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>+</string>
                 </property>
@@ -458,6 +411,9 @@
                   <width>25</width>
                   <height>16777215</height>
                  </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="text">
                  <string>-</string>
@@ -545,6 +501,9 @@
                   <height>50</height>
                  </size>
                 </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <item>
                  <property name="text">
                   <string>areas</string>
@@ -570,6 +529,9 @@
                   <width>16777215</width>
                   <height>50</height>
                  </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="text">
                  <string>Apply</string>
@@ -848,6 +810,9 @@
               </property>
               <item>
                <widget class="QPushButton" name="select_points_button">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>Select points</string>
                 </property>
@@ -894,6 +859,9 @@
               </property>
               <item>
                <widget class="QPushButton" name="delete_points_button">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>Select single point</string>
                 </property>
@@ -904,6 +872,12 @@
            </item>
            <item>
             <widget class="QFrame" name="frame">
+             <property name="minimumSize">
+              <size>
+               <width>206</width>
+               <height>30</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
                <width>206</width>
@@ -943,6 +917,9 @@
                   <height>0</height>
                  </size>
                 </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>Delete Selected Points</string>
                 </property>
@@ -953,6 +930,18 @@
            </item>
            <item>
             <widget class="QFrame" name="frame_2">
+             <property name="minimumSize">
+              <size>
+               <width>206</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>206</width>
+               <height>40</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -989,6 +978,9 @@
                   <height>30</height>
                  </size>
                 </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>Edit mesh</string>
                 </property>
@@ -1005,7 +997,7 @@
             <x>0</x>
             <y>0</y>
             <width>220</width>
-            <height>350</height>
+            <height>300</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -1017,8 +1009,11 @@
           <property name="maximumSize">
            <size>
             <width>300</width>
-            <height>350</height>
+            <height>300</height>
            </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>ArrowCursor</cursorShape>
           </property>
           <attribute name="label">
            <string>Convert to mesh</string>
@@ -1041,7 +1036,7 @@
              <property name="maximumSize">
               <size>
                <width>206</width>
-               <height>50</height>
+               <height>40</height>
               </size>
              </property>
              <property name="frameShape">
@@ -1071,6 +1066,15 @@
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>Create mesh</string>
                 </property>
@@ -1080,7 +1084,13 @@
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_change_normals">
+            <widget class="QFrame" name="frame_10">
+             <property name="minimumSize">
+              <size>
+               <width>206</width>
+               <height>40</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
                <width>206</width>
@@ -1093,9 +1103,94 @@
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
+             <layout class="QVBoxLayout" name="verticalLayout_21">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="cropMeshButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="text">
+                 <string>Crop mesh</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_change_normals">
+             <property name="minimumSize">
+              <size>
+               <width>206</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>206</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
              <layout class="QVBoxLayout" name="verticalLayout_11">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QPushButton" name="change_normals_button">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>Change normals</string>
                 </property>
@@ -1106,10 +1201,16 @@
            </item>
            <item>
             <widget class="QFrame" name="frame_save_normals">
+             <property name="minimumSize">
+              <size>
+               <width>206</width>
+               <height>30</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
                <width>206</width>
-               <height>50</height>
+               <height>40</height>
               </size>
              </property>
              <property name="frameShape">
@@ -1119,8 +1220,29 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QPushButton" name="save_normals_button">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>Save normals</string>
                 </property>
@@ -1131,10 +1253,16 @@
            </item>
            <item>
             <widget class="QFrame" name="frame_fix_mesh">
+             <property name="minimumSize">
+              <size>
+               <width>206</width>
+               <height>30</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
                <width>206</width>
-               <height>50</height>
+               <height>40</height>
               </size>
              </property>
              <property name="frameShape">
@@ -1144,8 +1272,29 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_19">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QPushButton" name="fix_mesh_button">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>Fix mesh</string>
                 </property>
@@ -1156,6 +1305,12 @@
            </item>
            <item>
             <widget class="QFrame" name="frame_triangles_amount">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>50</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
                <width>206</width>
@@ -1169,15 +1324,119 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_20">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QLabel" name="triangles_amount_label">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>206</width>
+                  <height>20</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>Traingles amount:</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="triangles_amount_input_field"/>
+               <widget class="QFrame" name="frame_6">
+                <property name="minimumSize">
+                 <size>
+                  <width>206</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>206</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLineEdit" name="triangles_amount_input_field">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>IBeamCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true"/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox">
+                   <property name="minimumSize">
+                    <size>
+                     <width>30</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>30</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -1189,8 +1448,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
-            <height>417</height>
+            <width>206</width>
+            <height>120</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -1201,16 +1460,40 @@
           </property>
           <property name="maximumSize">
            <size>
-            <width>300</width>
-            <height>500</height>
+            <width>206</width>
+            <height>120</height>
            </size>
           </property>
           <attribute name="label">
            <string>Scene geometries</string>
           </attribute>
           <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QFrame" name="frame_3">
+             <property name="minimumSize">
+              <size>
+               <width>206</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>206</width>
+               <height>150</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -1218,8 +1501,32 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_13">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QFrame" name="frame_cloud_checkbox">
+                <property name="minimumSize">
+                 <size>
+                  <width>206</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>206</width>
+                  <height>30</height>
+                 </size>
+                </property>
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
                 </property>
@@ -1227,10 +1534,25 @@
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_14">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
                  <item>
                   <widget class="QCheckBox" name="display_cloud_checkbox">
                    <property name="enabled">
                     <bool>false</bool>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
                    </property>
                    <property name="text">
                     <string>Cloud</string>
@@ -1242,6 +1564,18 @@
               </item>
               <item>
                <widget class="QFrame" name="frame_normals_checkbox">
+                <property name="minimumSize">
+                 <size>
+                  <width>206</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>206</width>
+                  <height>30</height>
+                 </size>
+                </property>
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
                 </property>
@@ -1249,10 +1583,25 @@
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_15">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
                  <item>
                   <widget class="QCheckBox" name="display_normals_checkbox">
                    <property name="enabled">
                     <bool>false</bool>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
                    </property>
                    <property name="text">
                     <string>Normals</string>
@@ -1264,6 +1613,18 @@
               </item>
               <item>
                <widget class="QFrame" name="frame_mesh_checkbox">
+                <property name="minimumSize">
+                 <size>
+                  <width>206</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>206</width>
+                  <height>30</height>
+                 </size>
+                </property>
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
                 </property>
@@ -1271,10 +1632,25 @@
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_17">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
                  <item>
                   <widget class="QCheckBox" name="display_mesh_checkbox">
                    <property name="enabled">
                     <bool>false</bool>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
                    </property>
                    <property name="text">
                     <string>Mesh</string>
@@ -1286,6 +1662,18 @@
               </item>
               <item>
                <widget class="QFrame" name="frame_triangles_checkbox">
+                <property name="minimumSize">
+                 <size>
+                  <width>206</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>206</width>
+                  <height>30</height>
+                 </size>
+                </property>
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
                 </property>
@@ -1293,10 +1681,25 @@
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_16">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
                  <item>
                   <widget class="QCheckBox" name="display_triangles_checkbox">
                    <property name="enabled">
                     <bool>false</bool>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
                    </property>
                    <property name="text">
                     <string>Triangles</string>
@@ -1387,6 +1790,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="move_x_up_button">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>+</string>
                 </property>
@@ -1394,6 +1800,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="move_x_down_button">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>-</string>
                 </property>
@@ -1447,6 +1856,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="move_y_up_button">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>+</string>
                 </property>
@@ -1454,6 +1866,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="move_y_down_button">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>-</string>
                 </property>
@@ -1507,6 +1922,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="move_z_up_button">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>+</string>
                 </property>
@@ -1514,6 +1932,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="move_z_down_button">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>-</string>
                 </property>
@@ -1616,6 +2037,9 @@
               </item>
               <item>
                <widget class="QSlider" name="rotation_x_slider">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="maximum">
                  <number>360</number>
                 </property>
@@ -1672,6 +2096,9 @@
               </item>
               <item>
                <widget class="QSlider" name="rotation_y_slider">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="maximum">
                  <number>360</number>
                 </property>
@@ -1728,6 +2155,9 @@
               </item>
               <item>
                <widget class="QSlider" name="rotation_z_slider">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="maximum">
                  <number>360</number>
                 </property>
@@ -1813,6 +2243,9 @@
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>OBJ/file</string>
                 </property>
@@ -1861,6 +2294,9 @@
                <widget class="QPushButton" name="export_to_stl">
                 <property name="enabled">
                  <bool>false</bool>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="text">
                  <string>STL/file</string>
@@ -1911,6 +2347,9 @@
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>PLY</string>
                 </property>
@@ -1960,6 +2399,9 @@
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>PCD</string>
                 </property>
@@ -1973,14 +2415,134 @@
         </widget>
        </item>
        <item>
+        <widget class="QFrame" name="frame_13">
+         <property name="minimumSize">
+          <size>
+           <width>206</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_22">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_10">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>MS Shell Dlg 2</family>
+              <pointsize>8</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 8pt &quot;MS Shell Dlg 2&quot;;</string>
+            </property>
+            <property name="text">
+             <string>Memory:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QProgressBar" name="memoryBar">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>5</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>5</height>
+             </size>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+            <property name="textVisible">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_12">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>10</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 8pt &quot;MS Shell Dlg 2&quot;;</string>
+            </property>
+            <property name="text">
+             <string>Processing:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <widget class="QProgressBar" name="progressBar">
          <property name="enabled">
           <bool>false</bool>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>5</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>15</height>
+           <height>5</height>
           </size>
          </property>
          <property name="styleSheet">

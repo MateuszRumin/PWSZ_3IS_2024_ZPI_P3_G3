@@ -47,7 +47,25 @@ class GuiFunctions:
             self.colorText.setStyleSheet(f'background: {color.name()}')
 
 
-
+    def crop_mesh_box(self):
+        if self.create_mesh is not None:
+            try:
+                clipped_plotter = pv.Plotter()
+                _ = clipped_plotter.add_mesh_clip_box(self.create_mesh, color='white')
+                clipped_plotter.show()
+                self.create_mesh = clipped_plotter.box_clipped_meshes[0]
+                # Adding mesh to plotter with clearing
+                try:
+                    self.plotter.remove_actor(self.mesh_geometry_container)
+                    self.plotter.remove_actor(self.mesh_with_triangles_container)
+                    if self.display_triangles_checkbox.isChecked():
+                        self.display_triangles_checkbox.setChecked(False)
+                except:
+                    print("No existing mesh to remove")
+                self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh)
+                self.display_mesh_checkbox.setChecked(True)
+            except Exception as e:
+                print("[WARNING] Failed: ", e)
 
 
 
