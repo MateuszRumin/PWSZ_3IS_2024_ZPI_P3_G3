@@ -1,26 +1,28 @@
+"""
+################################################################################################
+||                                                                                            ||
+||                                        Mesh Creator                                        ||
+||                                                                                            ||
+||             This file contains functions for generating and repairing the mesh             ||
+||                                                                                            ||
+################################################################################################
+"""
 import math
 import os
 import copy
 import threading
 import numpy as np
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
+import pymeshfix
 import open3d as o3d
 import laspy
 import pyvista as pv
 from pyntcloud import PyntCloud
-import pymeshfix
-
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
 
 class MeshCreator():
-    create_mesh = None
-    create_mesh_backup = None
-    mesh_geometry_container = None
-    mesh_with_triangles_container = None
-
-
     def _make_mesh(self):
         #Converting pyvista cloud to open3d cloud
         pyvista_points = self.cloud.points
@@ -42,9 +44,9 @@ class MeshCreator():
         radii = [0.005, 0.01, 0.02, 0.04]
         rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud, o3d.utility.DoubleVector(radii))
 
-        simplified_mesh = rec_mesh.simplify_quadric_decimation(target_number_of_triangles=int(self.settings.triangles_amount)) #Changing triangles amount
-
-        rec_mesh = simplified_mesh
+        if self.settings.enable_triangles_amount_input_field:
+            simplified_mesh = rec_mesh.simplify_quadric_decimation(target_number_of_triangles=int(self.settings.triangles_amount)) #Changing triangles amount
+            rec_mesh = simplified_mesh
 
         if self.origin_vectors_normalized is None:
             pcd = rec_mesh.sample_points_poisson_disk(5000)

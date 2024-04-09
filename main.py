@@ -1,3 +1,12 @@
+"""
+################################################################################################
+||                                                                                            ||
+||                                            Main                                            ||
+||                                                                                            ||
+||                     Main application file. Contains the gui connection                     ||
+||                                                                                            ||
+################################################################################################
+"""
 import PyQt5.QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
@@ -54,65 +63,94 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.plotter.renderer.SetUseShadows(True)
         self.plotter.show_axes_all()
 
-
+        #Loading parameters from the settings
         self._apply_settings()
 
 
         #-------------------Version 1.20-------------------------------
-        #Adding trigers
+        #-------------------Adding trigers-----------------------------
+
+        #-------------------Action Bar--------------------------------#
         self.actionOpen.triggered.connect(self.open_file)
 
-        self.voxel_size_slider.valueChanged.connect(self.on_voxel_size_change)
-
+        #-------------------Complements-------------------------------#
+        #Background Color
+        self.changeBackground.clicked.connect(self._change_background)
+        #Model Color
+        self.modelColor.clicked.connect(self._change_model_color)
+        #Text Color
+        self.textColorbtn.clicked.connect(self._change_text_color)
+        #Downsampling
+        self.voxel_size_slider.valueChanged.connect(self.on_downSampling_size_change)
+        #Scale
         self.scale_up_button.clicked.connect(lambda: self._change_scale("+"))
         self.scale_down_button.clicked.connect(lambda: self._change_scale("-"))
+        #Calculate
 
-        self.move_x_up_button.clicked.connect(lambda: self.move_in_x_axis("+"))
-        self.move_x_down_button.clicked.connect(lambda: self.move_in_x_axis("-"))
-
-        self.move_y_up_button.clicked.connect(lambda: self.move_in_y_axis("+"))
-        self.move_y_down_button.clicked.connect(lambda: self.move_in_y_axis("-"))
-
-        self.move_z_up_button.clicked.connect(lambda: self.move_in_z_axis("+"))
-        self.move_z_down_button.clicked.connect(lambda: self.move_in_z_axis("-"))
-
-        self.rotation_x_slider.valueChanged.connect(self._rotation_slider_x_change)
-        self.rotation_y_slider.valueChanged.connect(self._rotation_slider_y_change)
-        self.rotation_z_slider.valueChanged.connect(self._rotation_slider_z_change)
-
-        self.create_mesh_button.clicked.connect(self._make_mesh)
-
-        self.export_to_obj.clicked.connect(lambda: self._on_export_to_obj(self.create_mesh))
-        self.export_to_stl.clicked.connect(lambda: self._on_export_to_stl(self.create_mesh))
-        self.export_to_ply.clicked.connect(self._on_export_to_ply)
-        self.export_to_pcd.clicked.connect(self._on_export_to_pcd)
-
-        self.select_points_button.clicked.connect(self._select_points)
-        self.delete_points_button.clicked.connect(self._delete_points)
-
-        self.checkDistance.clicked.connect(self._distance_select)
+        #Show All Bounds
         self.showAllBoundsCheck.clicked.connect(self._show_All_Bounds)
-        self.changeBackground.clicked.connect(self._change_background)
-        self.modelColor.clicked.connect(self._change_model_color)
-        self.textColorbtn.clicked.connect(self._change_text_color)
-        self.cropMeshButton.clicked.connect(self.crop_mesh_box)
+        #Distance
+        self.checkDistance.clicked.connect(self._distance_select)
 
-        self.edit_meshBtn.clicked.connect(self._edit_mesh)
-        # edit_meshBtn
+        #-------------------Selections--------------------------------#
+        #Select Points
+        self.select_points_button.clicked.connect(self._select_points)
+        #Select Single point
+        self.delete_points_button.clicked.connect(self._select_single_point)
+        #Delete Selected Points
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
+        #Edit mesh
+        self.edit_meshBtn.clicked.connect(self._edit_mesh)
 
+
+        #-------------------Convert to mesh---------------------------#
+        #Create mesh
+        self.create_mesh_button.clicked.connect(self._make_mesh)
+        #Crop mesh
+        self.cropMeshButton.clicked.connect(self.crop_mesh_box)
+        #Change normals
         self.change_normals_button.clicked.connect(self.select_points_for_normals)
+        #Save normals
         self.save_normals_button.clicked.connect(self.save_normals)
+        #Fix mesh
+        self.fix_mesh_button.clicked.connect(self.repair_mesh)
+        #Triangles amount
+        self.triangles_amount_input_field.setValidator(QIntValidator(1, 2147483647, self))
+        self.triangles_amount_input_field.textChanged.connect(self._triangles_amount_changed)
+        self.triangles_amount_checkbox.clicked.connect(self._enable_triangles_amount_input_field)
 
+        #-------------------Scene geometries--------------------------#
         self.display_cloud_checkbox.clicked.connect(self._show_cloud_checked)
         self.display_normals_checkbox.clicked.connect(self._show_normals_checked)
         self.display_mesh_checkbox.clicked.connect(self._show_mesh_checked)
         self.display_triangles_checkbox.clicked.connect(self._show_triangles_checked)
 
-        self.fix_mesh_button.clicked.connect(self.repair_mesh)
+        #-------------------Move object-------------------------------#
+        #Move x
+        self.move_x_up_button.clicked.connect(lambda: self.move_in_x_axis("+"))
+        self.move_x_down_button.clicked.connect(lambda: self.move_in_x_axis("-"))
+        #Move y
+        self.move_y_up_button.clicked.connect(lambda: self.move_in_y_axis("+"))
+        self.move_y_down_button.clicked.connect(lambda: self.move_in_y_axis("-"))
+        #Move z
+        self.move_z_up_button.clicked.connect(lambda: self.move_in_z_axis("+"))
+        self.move_z_down_button.clicked.connect(lambda: self.move_in_z_axis("-"))
+        #Rotate x
+        self.rotation_x_slider.valueChanged.connect(self._rotation_slider_x_change)
+        #Rotate y
+        self.rotation_y_slider.valueChanged.connect(self._rotation_slider_y_change)
+        #Rotate z
+        self.rotation_z_slider.valueChanged.connect(self._rotation_slider_z_change)
 
-        self.triangles_amount_input_field.setValidator(QIntValidator(1, 2147483647, self))
-        self.triangles_amount_input_field.textChanged.connect(self._triangles_amount_changed)
+        #-------------------Exports-----------------------------------#
+        #OBJ
+        self.export_to_obj.clicked.connect(lambda: self._on_export_to_obj(self.create_mesh))
+        #STL
+        self.export_to_stl.clicked.connect(lambda: self._on_export_to_stl(self.create_mesh))
+        #PLY
+        self.export_to_ply.clicked.connect(self._on_export_to_ply)
+
+        #-------------------------------------------------------------#
 
         #Ram monitoring thread
         monitor_thread = threading.Thread(target=self.monitor_memory_usage)
@@ -120,12 +158,15 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         monitor_thread.start()
 
     def monitor_memory_usage(self):
+        process = psutil.Process()
+        mem_info = process.memory_info()
+        virtual_memory = psutil.virtual_memory()
+        total_memory = virtual_memory.total / (1024 * 1024 * 1024)
         while True:
-            process = psutil.Process()
-            mem_info = process.memory_info()
             virtual_memory = psutil.virtual_memory()
-            print(f"Total free RAM memory: {virtual_memory.available / (1024 * 1024)} MB")
-
+            used_ram = round((virtual_memory.used / (1024 * 1024 * 1024)), 2)
+            ram_usage = round(((used_ram * 100) / (total_memory - 0.5)), 0)
+            self.memoryBar.setValue(int(ram_usage))
             if round((virtual_memory.available / (1024 * 1024)), 0) < 500:
                 print("Insufficient free RAM")
                 os.kill(os.getpid(), signal.SIGTERM)

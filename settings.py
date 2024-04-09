@@ -32,6 +32,9 @@ class Settings:
         self.normals_computed_for_origin = False
         self.changed_normals_computed = False
 
+        #Triangles amount input field
+        self.enable_triangles_amount_input_field = False
+
         #Colors
         self.font_color_plotter = 'lightblue'
         self.background_plotter = 'gray'

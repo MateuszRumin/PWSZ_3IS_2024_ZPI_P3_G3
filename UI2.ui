@@ -67,8 +67,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
-            <height>350</height>
+            <width>206</width>
+            <height>300</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -693,7 +693,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>250</height>
            </rect>
           </property>
@@ -996,7 +996,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>300</height>
            </rect>
           </property>
@@ -1414,7 +1414,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox">
+                  <widget class="QCheckBox" name="triangles_amount_checkbox">
                    <property name="minimumSize">
                     <size>
                      <width>30</width>
@@ -1719,7 +1719,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>300</height>
            </rect>
           </property>
@@ -2176,7 +2176,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>140</height>
            </rect>
           </property>
@@ -2352,58 +2352,6 @@
                 </property>
                 <property name="text">
                  <string>PLY</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QFrame" name="frame_17">
-             <property name="minimumSize">
-              <size>
-               <width>206</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>300</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_9">
-              <property name="spacing">
-               <number>0</number>
-              </property>
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QPushButton" name="export_to_pcd">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="cursor">
-                 <cursorShape>PointingHandCursor</cursorShape>
-                </property>
-                <property name="text">
-                 <string>PCD</string>
                 </property>
                </widget>
               </item>
