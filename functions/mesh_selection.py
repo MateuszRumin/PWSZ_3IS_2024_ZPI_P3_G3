@@ -32,23 +32,23 @@ class MeshSelection():
 
         if self.idx_table is not None:
             self.idx_table = []
-            print(f"POINTTT   ", point)
-            print(f"MESH POINTSSS    ", self.mesh.points[i])
 
             self._calc_prefer_indicate(point)
-            print(f"idx_table[0]     ", self.idx_table[0])
+
+            # print(f"idx_table[0]     ", self.idx_table[0])
+
             id = self.idx_table[0]
 
-            print(f"IDD     ", id)
+            # print(f"IDD     ", id)
             # print(self.cloud.points)
-            print(f"cloud.points[id]     ", self.mesh.points[id])
+            # print(f"cloud.points[id]     ", self.mesh.points[id])
 
             # iii = self.mesh.points[self.idx_table[0]] - 1
             # self.mesh.points[iii] = point
-            self.mesh.points[self.idx_table[0]] = point
+            self.create_mesh.points[self.idx_table[0]] = point
 
         else:
-            self.mesh.points[self.idx_table[0]] = point
+            self.create_mesh.points[self.idx_table[0]] = point
 
     #Function responsible for generating spheres for mesh editing
     def select_area(self, picked):
@@ -86,13 +86,13 @@ class MeshSelection():
         self.plotter.enable_cell_picking(callback=self.select_area, style='surface',
                                          show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'))
 
-    def _calc_prefer_indicate(self, point):
+    def _calc_prefer_indicate_mesh(self, point):
         # In the absence of an existing cloud in open3d, it is calculated.
         # This fragment is called once by the soft start located in the file functions
         # In each subsequent case, only else is called.
         if self.cloud_for_indicates is None:
             # Conversion of pyvist cloud to open3d
-            pyvista_points = self.cloud.points
+            pyvista_points = self.create_mesh.points
             points_open3d = o3d.utility.Vector3dVector(pyvista_points)
             cloud_o3d = o3d.geometry.PointCloud()
             cloud_o3d.points = points_open3d
