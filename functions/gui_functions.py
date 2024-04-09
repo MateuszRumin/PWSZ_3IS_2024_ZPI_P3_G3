@@ -9,6 +9,7 @@
 """
 import math
 import copy
+import vtk
 import threading
 import numpy as np
 import sys
@@ -20,6 +21,8 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 from pyntcloud import PyntCloud
 from PyQt5.QtWidgets import QColorDialog
+import meshio
+
 
 class GuiFunctions:
     #Declaration of global variables for GUI functions. They are probably not used outside this file
@@ -85,6 +88,41 @@ class GuiFunctions:
 
                 #Replacement of old mesh with cropped mesh
                 self.create_mesh = clipped_plotter.box_clipped_meshes[0]
+                self.create_mesh.save('./siat333ka.vtk')
+                print(self.create_mesh)
+                reader = vtk.vtkUnstructuredGridReader()
+                reader.SetFileName("./siat333ka.vtk")  # Zastąp "input.vtk" ścieżką do twojego pliku
+
+                surface_filter = vtk.vtkDataSetSurfaceFilter()
+                surface_filter.SetInputConnection(reader.GetOutputPort())
+
+                triangle_filter = vtk.vtkTriangleFilter()
+                triangle_filter.SetInputConnection(surface_filter.GetOutputPort())
+
+                writer = vtk.vtkSTLWriter()
+                writer.SetFileName("output.stl")  # Zastąp "output.stl" ścieżką do wyjściowego pliku
+                writer.SetInputConnection(triangle_filter.GetOutputPort())
+                writer.Write()
+
+                print(f'writer ----------------------', writer)
+                print(f'filter ----------------------', triangle_filter)
+
+                def load_mesh(file_path):
+                    if file_path.lower().endswith('.stl'):
+                        mesh = pv.read(file_path)
+                    return mesh
+
+                mesh_update = load_mesh('./output.stl')
+
+                self.create_mesh = mesh_update
+                self.plotter.update()
+
+
+
+
+
+
+
                 #-----------------------------------------
 
                 # Adding mesh to plotter with clearing
