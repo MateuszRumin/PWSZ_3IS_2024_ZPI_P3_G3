@@ -68,6 +68,7 @@ class MeshCreator():
 
         #Reading temp file and deleting it
         self.create_mesh = pv.read(filename)
+        self.create_mesh_backup = self.create_mesh
         os.remove(filename)
         #---------------------------------
 

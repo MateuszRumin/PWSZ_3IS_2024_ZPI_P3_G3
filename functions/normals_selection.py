@@ -158,8 +158,8 @@ class NormalsSelection():
             self.idx_table = []
             self.display_cloud_checkbox.setChecked(False)
             self.display_normals_checkbox.setChecked(False)
-            self.display_mesh_checkbox.clicked.setChecked(False)
-            self.display_triangles_checkbox.clicked.setChecked(False)
+            self.display_mesh_checkbox.setChecked(False)
+            self.display_triangles_checkbox.setChecked(False)
             #---------------------
 
             #Calling a function that marks points
