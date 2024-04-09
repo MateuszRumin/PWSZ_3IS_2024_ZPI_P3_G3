@@ -11,14 +11,18 @@ import copy
 import open3d as o3d
 import pyvista as pv
 import numpy as np
+
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
 from pyvistaqt import QtInteractor
+
 
 class MeshSelection():
     #Declaration of global variables for mesh and cloud available throughout the program
     idx_table = []              #Table of indices
     cloud_for_indicates = None  #Cloud in open3d
+    _point = None               #...
+    selected_mesh = []          #Selected mesh
     #-----------------------------------------------------------------------------------
 
     #Function responsible for moving parts of the grid
@@ -26,7 +30,7 @@ class MeshSelection():
         # Assuming the mesh is a PolyData object
         # self.mesh.points[i] = point
 
-        if self.idx_table is None:
+        if self.idx_table is not None:
             self.idx_table = []
             print(f"POINTTT   ", point)
             print(f"MESH POINTSSS    ", self.mesh.points[i])
@@ -39,8 +43,9 @@ class MeshSelection():
             # print(self.cloud.points)
             print(f"cloud.points[id]     ", self.mesh.points[id])
 
-            iii = self.mesh.points[self.idx_table[0]] - 1
-            self.mesh.points[iii] = point
+            # iii = self.mesh.points[self.idx_table[0]] - 1
+            # self.mesh.points[iii] = point
+            self.mesh.points[self.idx_table[0]] = point
 
         else:
             self.mesh.points[self.idx_table[0]] = point
@@ -65,10 +70,12 @@ class MeshSelection():
                 self._calc_prefer_indicate_mesh(point)
             #----------------------------------
 
+            self.selected_mesh = points
+
             # print(f"fdfffffffffff",  self.idx_table)
+            # self._calc_prefer_indicate_mesh(point)   # po jednym punkcie
 
             #Adding editing spheres to the plotter
-            # self._calc_prefer_indicate_mesh(point)   # po jednym punkcie
             self.plotter.add_sphere_widget(callback=self.move_sphere, center=self.picked_points, radius=0.0010)
             #-------------------------------------
 
