@@ -16,6 +16,7 @@ import sys
 import open3d as o3d
 import laspy
 import pyvista as pv
+from pyntcloud import PyntCloud
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
@@ -202,7 +203,7 @@ class GuiFunctions:
 
     #Function that stores the value of an object's x-axis displacement in the setting. Calls up object transformations
     def move_in_x_axis(self, key):
-        if self.cloud is not None:
+        if self.cloud is not None or self.create_mesh is not None:
             #Increase or decrease the value of the object displacement depending on the detected sign
             if key == "+":
                 self.settings.object_move_in_x_direction += 0.005
@@ -216,7 +217,7 @@ class GuiFunctions:
 
     #Function that stores the value of an object's y-axis displacement in the setting. Calls up object transformations
     def move_in_y_axis(self, key):
-        if self.cloud is not None:
+        if self.cloud is not None or self.create_mesh is not None:
             # Increase or decrease the value of the object displacement depending on the detected sign
             if key == "+":
                 self.settings.object_move_in_y_direction += 0.005
@@ -230,7 +231,7 @@ class GuiFunctions:
 
     #Function that stores the value of an object's z-axis displacement in the setting. Calls up object transformations
     def move_in_z_axis(self, key):
-        if self.cloud is not None:
+        if self.cloud is not None or self.create_mesh is not None:
             # Increase or decrease the value of the object displacement depending on the detected sign
             if key == "+":
                 self.settings.object_move_in_z_direction += 0.005
@@ -325,7 +326,7 @@ class GuiFunctions:
 
         if self.create_mesh is not None:
             try:
-                self.create_mesh = self.create_mesh_backup  #Copy mesh form backup
+                self.create_mesh = copy.deepcopy(self.create_mesh_backup)  #Copy mesh form backup
 
                 # -----------Read values from settings-----------#
                 # Displacement
@@ -473,3 +474,34 @@ class GuiFunctions:
     #Function called after changing the value in the field with the number of triangles
     def _triangles_amount_changed(self, value):
         self.settings.triangles_amount = value  #Entering values into the settings
+
+    #Function called after changing models iteration slider
+    def _model_iterations_slider_change(self):
+        if self.cloud is not None or self.create_mesh is not None:
+            value = self.model_iterations_slider.value()    #Retrieving values from the slider
+            self.settings.model_iterations_value = value    #Saving value to settings
+
+    # Function called after changing models iteration slider
+    def _prop_iteration_slider_changed(self):
+        if self.cloud is not None or self.create_mesh is not None:
+            value = self.prop_iterations_slider.value()     # Retrieving values from the slider
+            self.settings.prop_iterations_value = value     #Saving value to settings
+
+    # Function called after changing models iteration slider
+    def _number_of_parts_slider_changed(self):
+        if self.cloud is not None or self.create_mesh is not None:
+            value = self.number_of_parts_slider.value()     # Retrieving values from the slider
+            self.settings.number_of_parts_value = value     #Saving value to settings
+
+    # Function called after changing models iteration slider
+    def _min_points_on_path_slider_changed(self):
+        if self.cloud is not None or self.create_mesh is not None:
+            value = self.min_points_on_path_slider.value()  # Retrieving values from the slider
+            self.settings.min_points_on_path_value = value  #Saving value to settings
+
+    # Function called after changing models iteration slider
+    def curvature_threshold_slider_changed(self):
+        if self.cloud is not None or self.create_mesh is not None:
+            value = self.curvature_treshold_slider.value()  # Retrieving values from the slider
+            self.settings.curvature_threshold_value = value #Saving value to settings
+

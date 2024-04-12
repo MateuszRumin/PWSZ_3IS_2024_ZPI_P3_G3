@@ -35,7 +35,8 @@ class CloudSelection():
 
         #-------------------------------Point selection-------------------------------------#
         if isinstance(picked, pv.UnstructuredGrid):
-            self.idx_table = []     #Resetting the index table
+            self.idx_table = []             #Resetting the index
+            self.cloud_for_indicates = None #Resetting open3d cloud
 
             #Preparation and rounding to four decimal places of the marked points
             points_array = picked.GetPoints().GetData()
@@ -74,16 +75,19 @@ class CloudSelection():
             print("Something other than a cloud was marked.")
         print("points selected")
         self.plotter.update()
+        self.delete_selected_points_button.setEnabled(True)
         #-----------------------------------------------------------------------------------#
 
 
     #Function displaying a single marked point
     def showSelectedPoints(self, picked):
-        self.idx_table = []
+        self.idx_table = []              # Resetting indicates table
+        self.cloud_for_indicates = None  # Resetting open3d cloud
         rounded_point = tuple(round(coord, 4) for coord in picked)
         self._calc_prefer_indicate(rounded_point)
         self.selected_points_value.setText("1")
         print(self.idx_table[0])
+        self.delete_selected_points_button.setEnabled(True)     #Activating delete points button
 
     #Marking function
     def _select_points(self):
@@ -115,6 +119,7 @@ class CloudSelection():
             #Conversion of filtered open3d cloud to pyvista
             points_open3d_to_pyvista = np.asarray(cloud_o3d.points)
             self.cloud = pv.PolyData(points_open3d_to_pyvista)
+            self.cloud_backup = copy.deepcopy(self.cloud)
             #----------------------------------------------
 
             #Re-loading the cloud to the plotter
@@ -122,6 +127,8 @@ class CloudSelection():
             self.cloud_geometry_container = self.plotter.add_points(self.cloud)
             self.selected_points_value.setText("0")
             #-----------------------------------
+
+            self.delete_selected_points_button.setEnabled(False)    #Deactivating delete points button
 
 
     #Point-to-vertex matching function (super inefficient)

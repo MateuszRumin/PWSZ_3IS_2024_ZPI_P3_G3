@@ -107,6 +107,11 @@ class FileFunctions:
             self.display_cloud_checkbox.setChecked(True)                            #Check geometries checkbox
             self.plotter.update()                                                   #Update the plotter to display the new mesh
 
+            #Focus camera on object center
+            center = self.cloud.center
+            self.plotter.camera.SetFocalPoint(center[0], center[1], center[2])
+            #-----------------------------
+
             #Enable cloud export buttons
             self.settings.enable_buttons_cloud = True
             self._apply_settings()
@@ -120,8 +125,8 @@ class FileFunctions:
             self.display_mesh_checkbox.setChecked(True)
             #----------------------
 
-            #Enable cloud export buttons
-            self.settings.enable_buttons_cloud = True
+            #Enable mesh export buttons
+            self.settings.enable_buttons_mesh = True
             self._apply_settings()
             #---------------------------
         self.plotter.show()

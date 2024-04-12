@@ -35,6 +35,18 @@ class ApplySettings:
         #Create mesh button
         self.create_mesh_button.setEnabled(self.settings.enable_buttons_cloud)
         #------------------
+        #Crop mesh button
+        self.cropMeshButton.setEnabled(self.settings.enable_buttons_mesh)
+        #----------------
+        #Change normals button
+        self.change_normals_button.setEnabled(self.settings.enable_buttons_cloud)
+        #---------------------
+        #Save normals button
+        self.save_normals_button.setEnabled(self.settings.enable_buttons_cloud)
+        #-------------------
+        #Fix mesh button
+        self.fix_mesh_button.setEnabled(self.settings.enable_buttons_mesh)
+        #---------------
         #Enable display checkboxs
         self.display_cloud_checkbox.setEnabled(self.settings.enable_buttons_cloud)
         self.display_normals_checkbox.setEnabled(self.settings.enable_buttons_cloud)

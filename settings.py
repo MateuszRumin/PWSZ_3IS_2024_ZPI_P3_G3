@@ -41,3 +41,10 @@ class Settings:
         self.object_color = 'white'
         self.colorTextPlot = 'white'
 
+        #Normalization sliders:
+        self.model_iterations_value = 1
+        self.prop_iterations_value = 1
+        self.number_of_parts_value = 1
+        self.min_points_on_path_value = 1
+        self.curvature_threshold_value = 1
+
