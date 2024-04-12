@@ -77,6 +77,67 @@ class GuiFunctions:
             #-----------------
 
 
+
+    def crop_mesh_selected(self):
+        picked = self.plotter.picked_cells
+
+        # crop mesh
+        removed_mesh = self.create_mesh.remove_cells(picked["orig_extract_id"], inplace=False)
+        self.create_mesh = removed_mesh
+
+        try:
+            self.plotter.remove_actor(self.mesh_geometry_container)
+            self.plotter.remove_actor(self.mesh_with_triangles_container)
+
+        except:
+            print("No existing mesh to remove")
+        self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh, color='w', style='wireframe')
+        self.plotter.remove_scalar_bar()
+        self.display_mesh_checkbox.setChecked(True)
+
+
+    def extract_mesh(self):
+
+        picked = self.plotter.picked_cells
+
+        picked.save('./my2_selection.vtk')
+
+        reader = vtk.vtkUnstructuredGridReader()
+        reader.SetFileName("./my2_selection.vtk")  # Zastąp "input.vtk" ścieżką do twojego pliku
+
+        surface_filter = vtk.vtkDataSetSurfaceFilter()
+        surface_filter.SetInputConnection(reader.GetOutputPort())
+
+        triangle_filter = vtk.vtkTriangleFilter()
+        triangle_filter.SetInputConnection(surface_filter.GetOutputPort())
+
+        writer = vtk.vtkSTLWriter()
+        writer.SetFileName("./my2_selection.stl")  # Zastąp "output.stl" ścieżką do wyjściowego pliku
+        writer.SetInputConnection(triangle_filter.GetOutputPort())
+        writer.Write()
+
+        def load_mesh(file_path):
+            if file_path.lower().endswith('.stl'):
+                mesh = pv.read(file_path)
+            return mesh
+
+        mesh_update = load_mesh('./my2_selection.stl')
+        self.create_mesh = mesh_update
+
+        try:
+            self.plotter.remove_actor(self.mesh_geometry_container)
+            self.plotter.remove_actor(self.mesh_with_triangles_container)
+
+        except:
+            print("No existing mesh to remove")
+        self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh, color='w', style='wireframe')
+        self.plotter.remove_scalar_bar()
+        self.display_mesh_checkbox.setChecked(True)
+
+
+
+
+
     #Trimming the mesh
     def crop_mesh_box(self):
         if self.create_mesh is not None:

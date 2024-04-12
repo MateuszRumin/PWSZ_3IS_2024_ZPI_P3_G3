@@ -117,6 +117,9 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
         #Edit mesh
         self.edit_meshBtn.clicked.connect(self._edit_mesh)
+        #Crop selection mesh
+        self.cropMeshSelected.clicked.connect(self.crop_mesh_selected)
+        self.extractMesh.clicked.connect(self.extract_mesh)
 
         #-------------------Convert to mesh---------------------------#
         #Create mesh
