@@ -36,7 +36,7 @@ class FileFunctions:
     def open_file(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        filters = "LAS Files (*.las);;STL Files (*.stl);;LAZ Files (*.laz);;OBJ Files (*.obj);;All Files (*)"
+        filters = "All Files (*);;LAS Files (*.las);;STL Files (*.stl);;LAZ Files (*.laz);;OBJ Files (*.obj);;PLY Files (*.ply)"
         self.filePath, _ = QFileDialog.getOpenFileName(self, "Choose file", "", filters, options=options)
         if self.filePath:
             self.settings.file_path = self.filePath     #Storing the file path in the application settings

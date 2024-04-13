@@ -117,9 +117,6 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
         #Edit mesh
         self.edit_meshBtn.clicked.connect(self._edit_mesh)
-        #Crop selection mesh
-        self.cropMeshSelected.clicked.connect(self.crop_mesh_selected)
-        self.extractMesh.clicked.connect(self.extract_mesh)
 
         #-------------------Convert to mesh---------------------------#
         #Create mesh
@@ -132,6 +129,10 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.save_normals_button.clicked.connect(self.save_normals)
         #Fix mesh
         self.fix_mesh_button.clicked.connect(self.repair_mesh)
+        #Crop selection mesh
+        self.cropMeshSelected.clicked.connect(self.crop_mesh_selected)
+        #Extract mesh
+        self.extractMesh.clicked.connect(self.extract_mesh)
         #Triangles amount
         self.triangles_amount_input_field.setValidator(QIntValidator(1, 2147483647, self))
         self.triangles_amount_input_field.textChanged.connect(self._triangles_amount_changed)
