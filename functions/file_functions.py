@@ -126,6 +126,7 @@ class FileFunctions:
             #----------------------
 
             #Enable mesh export buttons
+            self.settings.enable_buttons_cloud = True
             self.settings.enable_buttons_mesh = True
             self._apply_settings()
             #---------------------------
