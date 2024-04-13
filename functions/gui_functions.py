@@ -9,6 +9,8 @@
 """
 import math
 import copy
+import os
+
 import vtk
 import threading
 import numpy as np
@@ -119,6 +121,7 @@ class GuiFunctions:
         def load_mesh(file_path):
             if file_path.lower().endswith('.stl'):
                 mesh = pv.read(file_path)
+                os.remove(file_path)
             return mesh
 
         mesh_update = load_mesh('./my2_selection.stl')
@@ -178,12 +181,6 @@ class GuiFunctions:
 
                 self.create_mesh = mesh_update
                 self.plotter.update()
-
-
-
-
-
-
 
                 #-----------------------------------------
 

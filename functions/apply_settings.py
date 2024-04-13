@@ -33,7 +33,10 @@ class ApplySettings:
         self.export_to_stl.setEnabled(self.settings.enable_buttons_mesh)
         #------------------
         #Create mesh button
-        self.create_mesh_button.setEnabled(self.settings.enable_buttons_cloud)
+        if self.settings.enable_buttons_cloud or self.settings.enable_create_mesh_button:
+            self.create_mesh_button.setEnabled(True)
+        else:
+            self.create_mesh_button.setEnabled(False)
         #------------------
         #Crop mesh button
         self.cropMeshButton.setEnabled(self.settings.enable_buttons_mesh)

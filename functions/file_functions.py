@@ -97,13 +97,8 @@ class FileFunctions:
             self.cloud = downSamplingCloud
             #-----------------------------
 
-            #Soft start for point matching function
-            point = self.cloud.points[1]
-            self._calc_prefer_indicate(point)
-            #--------------------------------------
-
             self.cloud_backup = self.cloud                                          #Creating cloud backup
-            self.cloud_geometry_container = self.plotter.add_points(self.cloud)     #Add points to plotter
+            self.cloud_geometry_container = self.plotter.add_points(self.cloud, show_scalar_bar=False)     #Add points to plotter
             self.display_cloud_checkbox.setChecked(True)                            #Check geometries checkbox
             self.plotter.update()                                                   #Update the plotter to display the new mesh
 
@@ -116,7 +111,6 @@ class FileFunctions:
             self.settings.enable_buttons_cloud = True
             self._apply_settings()
             #--------------------------
-
         elif self.create_mesh is not None:
             self.create_mesh_backup = self.create_mesh                              #Creating mesh backup
 
@@ -126,7 +120,7 @@ class FileFunctions:
             #----------------------
 
             #Enable mesh export buttons
-            self.settings.enable_buttons_cloud = True
+            self.settings.enable_create_mesh_button = True
             self.settings.enable_buttons_mesh = True
             self._apply_settings()
             #---------------------------

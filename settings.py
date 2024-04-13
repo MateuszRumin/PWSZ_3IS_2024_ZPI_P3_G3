@@ -35,6 +35,9 @@ class Settings:
         #Triangles amount input field
         self.enable_triangles_amount_input_field = False
 
+        #Enable create mesh button
+        self.enable_create_mesh_button = False
+
         #Colors
         self.font_color_plotter = 'lightblue'
         self.background_plotter = 'gray'
