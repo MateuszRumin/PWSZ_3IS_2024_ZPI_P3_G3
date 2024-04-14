@@ -26,6 +26,11 @@ class NormalizationClass():
         curvature_threshold = self.settings.curvature_threshold_value
         n = 30
         #----------------------------
+        model_iterations = 4
+        prop_iterations = 3
+        number_of_parts = 30
+        min_points_on_path = 100
+        curvature_threshold = 0.01
 
         if self.cloud.points.any():
             points = self.cloud.points

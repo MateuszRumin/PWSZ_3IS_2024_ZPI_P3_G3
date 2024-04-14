@@ -6,7 +6,7 @@ import laspy
 
 def point_tensor(points):
 
-    pts = [torch.tensor([x, y, z], dtype=torch.float) for x, y, z in points[:3]]
+    pts = [torch.tensor(x, dtype=torch.float) for x in points]
 
     rtn = torch.stack(pts, dim=0)
     return rtn

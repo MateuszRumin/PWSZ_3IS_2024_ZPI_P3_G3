@@ -29,3 +29,30 @@ def load_model_from_file(file: Path, device):
     model.load_state_dict(torch.load(file))
     model.eval()
     return model
+
+
+def voting_policy(probs):
+    probs = torch.stack(probs, dim=0).mean(dim=0)
+    return probs < 0.5, probs
+
+
+def fix_n_filter(input_pc, patch_indices, threshold):
+    def criterion(patch):
+        x = input_pc[patch]
+        temp = x[:, :3] - x.mean(dim=0)[None, :3]
+        cov = (temp.transpose(0, 1) @ temp) / x.shape[0]
+        e, v = torch.linalg.eigh(cov, UPLO='L')
+        n = v[:, 0]
+        return (e[0] / ((e[1] + e[2] / 2))).item() > threshold, n
+
+    new_patches = []
+    for i, patch in enumerate(patch_indices):
+        flag, n = criterion(patch)
+        if flag:
+            new_patches.append((i, patch))
+        else:
+            sign = (input_pc[patch, 3:] * n[None, :]).sum(dim=-1) > 0
+            sign = sign.float() * 2 - 1
+            input_pc[patch, 3:] = input_pc[patch, 3:] * sign[:, None]
+
+    return new_patches
