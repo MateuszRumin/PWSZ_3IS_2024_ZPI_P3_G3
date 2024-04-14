@@ -17,7 +17,7 @@ import pyvista as pv
 
 class MeshCreator():
     def _make_mesh(self):
-        #Converting pyvista cloud to open3d cloud
+        # Converting pyvista cloud to open3d cloud
         # pyvista_points = self.cloud.points
         print(self.cloud)
         # points_open3d = o3d.utility.Vector3dVector(pyvista_points)
@@ -25,69 +25,71 @@ class MeshCreator():
 
         # cloud = o3d.geometry.PointCloud()
         # cloud.points = points_open3d
-        #----------------------------------------
+        # ----------------------------------------
 
-        #Normals calculation (not finished)
+        # Normals calculation (not finished)
         # if self.origin_vectors_normalized is None:
         #     cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
         # else:
         #     cloud.normals = o3d.utility.Vector3dVector(self.origin_vectors_normalized)
-        #----------------------------------
+        # ----------------------------------
 
-            points_open3d = o3d.utility.Vector3dVector(pyvista_points)
+        # Creating open3d mesh
+        radii = [0.005, 0.01, 0.02, 0.04]
+        rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud,
+                                                                                   o3d.utility.DoubleVector(radii))
 
         # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(cloud, depth=6, linear_fit=False, n_threads=4 )
         #
         # rec_mesh = o3d.geometry.TriangleMesh(rec_mesh[0])
 
-
         if self.settings.enable_triangles_amount_input_field:
-            simplified_mesh = rec_mesh.simplify_quadric_decimation(target_number_of_triangles=int(self.settings.triangles_amount)) #Changing triangles amount
+            simplified_mesh = rec_mesh.simplify_quadric_decimation(
+                target_number_of_triangles=int(self.settings.triangles_amount))  # Changing triangles amount
             rec_mesh = simplified_mesh
 
-            #Normals calculation (not finished)
-            if self.origin_vectors_normalized is None:
-                cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
-            else:
-                cloud.normals = o3d.utility.Vector3dVector(self.origin_vectors_normalized)
-            #----------------------------------
+        if self.origin_vectors_normalized is None:
+            pcd = rec_mesh.sample_points_poisson_disk(5000)
 
-            #Creating open3d mesh
-            radii = [0.005, 0.01, 0.02, 0.04]
-            rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud, o3d.utility.DoubleVector(radii))
+            pcd.normals = o3d.utility.Vector3dVector(np.zeros(
+                (1, 3)))  # invalidate existing normals
+        # ----------------------
 
-            if self.settings.enable_triangles_amount_input_field:
-                simplified_mesh = rec_mesh.simplify_quadric_decimation(target_number_of_triangles=int(self.settings.triangles_amount)) #Changing triangles amount
-                rec_mesh = simplified_mesh
+        # Saving cloud to temporary stl file (deleted after operation)
+        filename = self.settings.file_path
+        filename = filename[:-4] + "_temp.stl"
 
-            if self.origin_vectors_normalized is None:
-                pcd = rec_mesh.sample_points_poisson_disk(5000)
+        try:
+            o3d.io.write_triangle_mesh(filename, rec_mesh)
+            print("[Info] Successfully exported to", filename)
+        except Exception as e:
+            print("[Error] An error occurred during the export:", str(e))
+        # -------------------------------------------------------------
 
-                pcd.normals = o3d.utility.Vector3dVector(np.zeros(
-                    (1, 3)))  # invalidate existing normals
-            #----------------------
+        # Reading temp file and deleting it
+        self.create_mesh = pv.read(filename)
+        self.create_mesh_backup = self.create_mesh
+        os.remove(filename)
+        # ---------------------------------
 
-            #Saving cloud to temporary stl file (deleted after operation)
-            filename = self.settings.file_path
-            filename = filename[:-4] + "_temp.stl"
+        # Adding mesh to plotter with clearing
+        try:
+            self.plotter.remove_actor(self.mesh_geometry_container)
+            self.plotter.remove_actor(self.mesh_with_triangles_container)
+            if self.display_triangles_checkbox.isChecked():
+                self.display_triangles_checkbox.setChecked(False)
+        except:
+            print("No existing mesh to remove")
 
-            try:
-                o3d.io.write_triangle_mesh(filename, rec_mesh)
-                print("[Info] Successfully exported to", filename)
-            except Exception as e:
-                print("[Error] An error occurred during the export:", str(e))
-            #-------------------------------------------------------------
+        self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh)
+        self.display_mesh_checkbox.setChecked(True)
+        # ----------------------
 
-            #Reading temp file and deleting it
-            self.create_mesh = pv.read(filename)
-            self.create_mesh_backup = self.create_mesh
-            os.remove(filename)
-            #---------------------------------
-
-            #Reloading mesh
-            self.remove_mesh()
-            self.add_mesh_to_plotter(self.create_mesh)
-            #------------------------------
+        # Activating export mesh buttons
+        if self.create_mesh is not None:
+            self.settings.enable_buttons_mesh = True
+            self._apply_settings()
+        # ------------------------------
 
     def repair_mesh(self):
         cpos = [(-0.2, -0.13, 0.12), (-0.015, 0.10, -0.0), (0.28, 0.26, 0.9)]
