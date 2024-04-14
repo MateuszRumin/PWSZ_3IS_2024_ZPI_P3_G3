@@ -7,16 +7,10 @@
 ||                                                                                            ||
 ################################################################################################
 """
-import copy
-import open3d as o3d
 import pyvista as pv
 import numpy as np
 import pandas as pd
 
-
-from PyQt5.QtWidgets import *
-from PyQt5 import uic, QtWidgets
-from pyvistaqt import QtInteractor
 
 
 class MeshSelection():

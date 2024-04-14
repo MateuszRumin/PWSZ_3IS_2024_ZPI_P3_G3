@@ -7,20 +7,13 @@
 ||                                                                                            ||
 ################################################################################################
 """
-import math
 import os
 import copy
-import threading
 import numpy as np
-import sys
 import pymeshfix
 import open3d as o3d
-import laspy
 import pyvista as pv
-from pyntcloud import PyntCloud
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
+
 
 class MeshCreator():
     def _make_mesh(self):
@@ -75,23 +68,9 @@ class MeshCreator():
             os.remove(filename)
             #---------------------------------
 
-            #Adding mesh to plotter with clearing
-            try:
-                self.plotter.remove_actor(self.mesh_geometry_container)
-                self.plotter.remove_actor(self.mesh_with_triangles_container)
-                if self.display_triangles_checkbox.isChecked():
-                    self.display_triangles_checkbox.setChecked(False)
-            except:
-                print("No existing mesh to remove")
-
-            self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh)
-            self.display_mesh_checkbox.setChecked(True)
-            #----------------------
-
-            #Activating export mesh buttons
-            if self.create_mesh is not None:
-                self.settings.enable_buttons_mesh = True
-                self._apply_settings()
+            #Reloading mesh
+            self.remove_mesh()
+            self.add_mesh_to_plotter(self.create_mesh)
             #------------------------------
 
     def repair_mesh(self):
@@ -103,26 +82,12 @@ class MeshCreator():
 
         # Repair the mesh
         meshfix.repair(verbose=True)
-
-        #Adding meshfix to plotter
-        try:
-            self.plotter.remove_actor(self.mesh_geometry_container)
-            self.plotter.remove_actor(self.mesh_with_triangles_container)
-            if self.display_triangles_checkbox.isChecked():
-                self.display_triangles_checkbox.setChecked(False)
-        except:
-            print("No existing mesh to remove")
-
-        self.mesh_geometry_container = self.plotter.add_mesh(meshfix.mesh)
-        self.display_mesh_checkbox.setChecked(True)
-
         self.create_mesh = meshfix.mesh
-        #-------------------------
+        self.create_mesh_backup = self.create_mesh
 
-        #Activating export mesh buttons
-        if self.create_mesh is not None:
-            self.settings.enable_buttons_mesh = True
-            self._apply_settings()
+        # Reloading mesh
+        self.remove_mesh()
+        self.add_mesh_to_plotter(self.create_mesh)
         #------------------------------
 
     def transform_existing_mesh(self):
@@ -140,20 +105,7 @@ class MeshCreator():
                 self.create_mesh = self.create_mesh.decimate(0.001) #Reduction coefficient
         print(f"Number of triangles in mesh after reduction: {self.create_mesh.n_points}")
 
-
-        # Adding mesh to plotter with clearing
-        try:
-            self.plotter.remove_actor(self.mesh_geometry_container)
-            self.plotter.remove_actor(self.mesh_with_triangles_container)
-            if self.display_triangles_checkbox.isChecked():
-                self.display_triangles_checkbox.setChecked(False)
-        except:
-            print("No existing mesh to remove")
-        self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh)
-        # ----------------------
-
-        # Activating export mesh buttons
-        if self.create_mesh is not None:
-            self.settings.enable_buttons_mesh = True
-            self._apply_settings()
+        # Reloading mesh
+        self.remove_mesh()
+        self.add_mesh_to_plotter(self.create_mesh)
         # ------------------------------

@@ -7,24 +7,12 @@
 ||                                                                                                           ||
 ###############################################################################################################
 """
-import math
 import copy
 import os
-
 import vtk
-import threading
 import numpy as np
-import sys
-import open3d as o3d
-import laspy
 import pyvista as pv
-from pyntcloud import PyntCloud
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
-from pyntcloud import PyntCloud
 from PyQt5.QtWidgets import QColorDialog
-import meshio
 
 
 class GuiFunctions:
@@ -54,19 +42,9 @@ class GuiFunctions:
             self.settings.object_color = color.name()
             #-----------------
 
-            if self.create_mesh is not None:
-                # Adding mesh to plotter with clearing
-                try:
-                    self.plotter.remove_actor(self.mesh_geometry_container)
-                    self.plotter.remove_actor(self.mesh_with_triangles_container)
-                    if self.display_triangles_checkbox.isChecked():
-                        self.display_triangles_checkbox.setChecked(False)
-                except:
-                    print("No existing mesh to remove")
-
-                self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh)
-                self.display_mesh_checkbox.setChecked(True)
-                # ------------------------------------
+            #Reloading mesh on plotter
+            self.remove_mesh()
+            self.add_mesh_to_plotter(self.create_mesh)
 
 
     #Changing the colour of the text
@@ -87,14 +65,9 @@ class GuiFunctions:
         removed_mesh = self.create_mesh.remove_cells(picked["orig_extract_id"], inplace=False)
         self.create_mesh = removed_mesh
 
-        try:
-            self.plotter.remove_actor(self.mesh_geometry_container)
-            self.plotter.remove_actor(self.mesh_with_triangles_container)
-
-        except:
-            print("No existing mesh to remove")
+        self.remove_mesh()
         self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh, color='w', style='wireframe')
-        self.plotter.remove_scalar_bar()
+        #self.plotter.remove_scalar_bar()
         self.display_mesh_checkbox.setChecked(True)
 
 
@@ -127,18 +100,10 @@ class GuiFunctions:
         mesh_update = load_mesh('./my2_selection.stl')
         self.create_mesh = mesh_update
 
-        try:
-            self.plotter.remove_actor(self.mesh_geometry_container)
-            self.plotter.remove_actor(self.mesh_with_triangles_container)
 
-        except:
-            print("No existing mesh to remove")
+        self.remove_mesh()
         self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh, color='w', style='wireframe')
-        self.plotter.remove_scalar_bar()
         self.display_mesh_checkbox.setChecked(True)
-
-
-
 
 
     #Trimming the mesh
@@ -184,16 +149,9 @@ class GuiFunctions:
 
                 #-----------------------------------------
 
-                # Adding mesh to plotter with clearing
-                try:
-                    self.plotter.remove_actor(self.mesh_geometry_container)
-                    self.plotter.remove_actor(self.mesh_with_triangles_container)
-                    if self.display_triangles_checkbox.isChecked():
-                        self.display_triangles_checkbox.setChecked(False)
-                except:
-                    print("No existing mesh to remove")
-                self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh)
-                self.display_mesh_checkbox.setChecked(True)
+
+                self.remove_mesh()
+                self.add_mesh_to_plotter(self.create_mesh)
                 #-------------------------------------
             except Exception as e:
                 print("[WARNING] Failed: ", e)
@@ -376,8 +334,8 @@ class GuiFunctions:
                 #-----------------------------------------------#
 
                 #Removing old cloud and adding new to plotter
-                self.plotter.remove_actor(self.cloud_geometry_container)
-                self.cloud_geometry_container = self.plotter.add_points(self.cloud)
+                self.remove_cloud()
+                self.add_cloud_to_plotter(self.cloud)
 
             except Exception as e:
                 print("[WARNING] Failed to transform cloud", e)
@@ -415,17 +373,8 @@ class GuiFunctions:
                 self.create_mesh.points *= scale_value
                 #------------------------------------------------#
 
-                #Removing old mesh and adding new to plotter
-                try:
-                    self.plotter.remove_actor(self.mesh_geometry_container)
-                    self.plotter.remove_actor(self.mesh_with_triangles_container)
-                    if self.display_triangles_checkbox.isChecked():
-                        self.display_triangles_checkbox.setChecked(False)
-                except:
-                    print("No existing mesh to remove")
-
-                self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh)
-                self.display_mesh_checkbox.setChecked(True)
+                self.remove_mesh()
+                self.add_mesh_to_plotter(self.create_mesh)
                 #-------------------------------------------
             except Exception as e:
                 print("[WARNING] Failed to transform mesh", e)
@@ -433,11 +382,10 @@ class GuiFunctions:
     #Checkbox showing point cloud
     def _show_cloud_checked(self):
         if self.display_cloud_checkbox.isChecked():
-            self.cloud_geometry_container = self.plotter.add_points(self.cloud)
-            self.plotter.update()
+            self.add_cloud_to_plotter(self.cloud)
         else:
             print('Checkbox is not checked')
-            self.plotter.remove_actor(self.cloud_geometry_container)
+            self.remove_cloud()
 
     # Checkbox showing normals
     def _show_normals_checked(self):
@@ -456,8 +404,8 @@ class GuiFunctions:
                 )
                 #----------------------
 
-                #Assigning arrows to a vector
-                self.cloud_normals_container = self.plotter.add_mesh(normals_arrows, color='lightblue')
+                #Adding arrows to the plotter
+                self.add_normals_to_plotter(normals_arrows)
                 #----------------------------
                 #Vector calculation for mesh open3d
                 self.origin_vectors_normalized = self._origin_vectors / np.linalg.norm(self._origin_vectors, axis=1)[:,np.newaxis]
@@ -471,52 +419,26 @@ class GuiFunctions:
                 )
                 #------------------------------
                 #Adding arrows to the plotter
-                self.cloud_normals_container = self.plotter.add_mesh(arrows, color='lightblue')
+                self.add_normals_to_plotter(arrows)
                 #----------------------------
         else:
             print('Checkbox is not checked')
-            self.plotter.remove_actor(self.cloud_normals_container)
+            self.remove_normals()
 
     # Checkbox showing mesh
     def _show_mesh_checked(self):
         if self.display_mesh_checkbox.isChecked():
-            if self.display_triangles_checkbox.isChecked():
-                # If the mesh with the triangles is displayed, it is removed from the plotter.
-                self.plotter.remove_actor(self.mesh_with_triangles_container)
-                self.display_triangles_checkbox.setChecked(False)
-                #----------------------------------------------------------------------------
-
-                #Adding mesh to the plotter
-                self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh)
-                self.plotter.update()
-            #----------------------------------------------------------------------------
-            else:
-                # Adding mesh to the plotter
-                self.mesh_geometry_container = self.plotter.add_mesh(self.create_mesh)
-                self.plotter.update()
+            self.add_mesh_to_plotter(self.create_mesh)
         else:
             print('Checkbox is not checked')
-            self.plotter.remove_actor(self.mesh_geometry_container)
+            self.remove_mesh()
 
     def _show_triangles_checked(self):
         if self.display_triangles_checkbox.isChecked():
-            if self.display_mesh_checkbox.isChecked():
-                # If the mesh is displayed, it is removed from the plotter.
-                self.plotter.remove_actor(self.mesh_geometry_container)
-                self.display_mesh_checkbox.setChecked(False)
-                #----------------------------------------------------------
-
-                #Adding mesh with triangles to the plotter
-                self.mesh_with_triangles_container = self.plotter.add_mesh(self.create_mesh, show_edges=True)
-                self.plotter.update()
-                #-----------------------------------------
-            else:
-                #Adding mesh with triangles to the plotter
-                self.mesh_with_triangles_container = self.plotter.add_mesh(self.create_mesh, show_edges=True)
-                self.plotter.update()
+            self.add_mesh_with_triangles_to_plotter(self.create_mesh)
         else:
             print('Checkbox is not checked')
-            self.plotter.remove_actor(self.mesh_with_triangles_container)
+            self.remove_mesh_with_triangles()
 
     #Function activating the input field for the number of triangles
     def _enable_triangles_amount_input_field(self):
