@@ -8,19 +8,10 @@
 #################################################################################################
 """
 import copy
-import pyvista as pv
-import math
-import copy
 import threading
 import numpy as np
-import sys
 import open3d as o3d
-import laspy
 import pyvista as pv
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
-from pyntcloud import PyntCloud
 from tqdm import tqdm
 
 class NormalsSelection():

@@ -1,14 +1,3 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
-import open3d as o3d
-import laspy
-import numpy as np
-import pyvista as pv
-from pyntcloud import PyntCloud
-
-
 class Settings:
     def __init__(self):
         self.file_path = None                       #Path to file
@@ -34,6 +23,9 @@ class Settings:
 
         #Triangles amount input field
         self.enable_triangles_amount_input_field = False
+
+        #Enable create mesh button
+        self.enable_create_mesh_button = False
 
         #Colors
         self.font_color_plotter = 'lightblue'

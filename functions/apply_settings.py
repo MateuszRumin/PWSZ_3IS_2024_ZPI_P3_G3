@@ -8,15 +8,7 @@
 ||                                                                                                                                   ||
 #######################################################################################################################################
 """
-import sys
-import open3d as o3d
-import laspy
-import numpy as np
 import pyvista as pv
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
-from pyntcloud import PyntCloud
 
 
 class ApplySettings:
@@ -33,7 +25,10 @@ class ApplySettings:
         self.export_to_stl.setEnabled(self.settings.enable_buttons_mesh)
         #------------------
         #Create mesh button
-        self.create_mesh_button.setEnabled(self.settings.enable_buttons_cloud)
+        if self.settings.enable_buttons_cloud or self.settings.enable_create_mesh_button:
+            self.create_mesh_button.setEnabled(True)
+        else:
+            self.create_mesh_button.setEnabled(False)
         #------------------
         #Crop mesh button
         self.cropMeshButton.setEnabled(self.settings.enable_buttons_mesh)
@@ -54,7 +49,7 @@ class ApplySettings:
         self.display_triangles_checkbox.setEnabled(self.settings.enable_buttons_mesh)
         #------------------
         #Enable all bounds checkbox
-        if self.settings.enable_buttons_cloud == True or self.settings.enable_buttons_mesh == True:
+        if (self.settings.enable_buttons_cloud == True) or (self.settings.enable_buttons_mesh == True):
             self.showAllBoundsCheck.setEnabled(True)
         #--------------------------
         #Enable triangles input field

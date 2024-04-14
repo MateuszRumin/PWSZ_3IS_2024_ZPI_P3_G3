@@ -1,28 +1,25 @@
-"""
-################################################################################################
-||                                                                                            ||
-||                                            Main                                            ||
-||                                                                                            ||
-||                     Main application file. Contains the gui connection                     ||
-||                                                                                            ||
-################################################################################################
-"""
+import sys
+
+# Setting the Qt bindings for QtPy
+import os
+os.environ["QT_API"] = "pyqt5"
+
+from qtpy import QtWidgets
+
+import numpy as np
+
+import pyvista as pv
+from pyvistaqt import QtInteractor, MainWindow
+
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
 from PyQt5.QtGui import QIntValidator
-
-import os
 
 import psutil
 import time
 import signal
 
-
-
-from pyvistaqt import QtInteractor
-
 import threading
-
 
 from settings import  Settings
 from functions import file_functions
@@ -35,35 +32,30 @@ from functions import normals_selection
 from normalization import normalization
 
 
-class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection, mesh_selection.MeshSelection, normals_selection.NormalsSelection, normalization.NormalizationClass):
+class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection, mesh_selection.MeshSelection, normals_selection.NormalsSelection, normalization.NormalizationClass):
 
-    def __init__(self):
-        self.settings = Settings()
-        super(MyGUI, self).__init__()
+    def __init__(self, parent=None, show=True):
+        QtWidgets.QMainWindow.__init__(self, parent)
         uic.loadUi("UI2.ui", self)
-        self.show()
+        self.settings = Settings()
 
-        #plotter plain
+
+        # plotter plain
         self.plotter_frame = QtWidgets.QFrame()
         self.plotter = QtInteractor(self.plotter_frame)
         self.vlayout.addWidget(self.plotter.interactor)
         self.plotter_frame.setLayout(self.vlayout)
-        self.plotter.camera.SetFocalPoint(0, 0, 0)
-        self.plotter.camera.SetViewUp(0, 0, 0)
-        self.plotter.renderer.SetUseShadows(True)
-        self.plotter.show_axes_all()
 
-        #Setting toolbox to scene geometries
+        # Setting toolbox to scene geometries
         self.toolBox.setCurrentIndex(0)
 
-        #Loading parameters from the settings
+        # Loading parameters from the settings
         self._apply_settings()
 
+        # -------------------Version 1.20-------------------------------
+        # -------------------Adding trigers-----------------------------
 
-        #-------------------Version 1.20-------------------------------
-        #-------------------Adding trigers-----------------------------
-
-        #-------------------Action Bar--------------------------------#
+        # -------------------Action Bar--------------------------------#
         self.actionOpen.triggered.connect(self.open_file)
 
         # -------------------Scene geometries--------------------------#
@@ -72,23 +64,23 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         self.display_mesh_checkbox.clicked.connect(self._show_mesh_checked)
         self.display_triangles_checkbox.clicked.connect(self._show_triangles_checked)
 
-        #-------------------Complements-------------------------------#
-        #Background Color
+        # -------------------Complements-------------------------------#
+        # Background Color
         self.changeBackground.clicked.connect(self._change_background)
-        #Model Color
+        # Model Color
         self.modelColor.clicked.connect(self._change_model_color)
-        #Text Color
+        # Text Color
         self.textColorbtn.clicked.connect(self._change_text_color)
-        #Downsampling
+        # Downsampling
         self.voxel_size_slider.valueChanged.connect(self.on_downSampling_size_change)
-        #Scale
+        # Scale
         self.scale_up_button.clicked.connect(lambda: self._change_scale("+"))
         self.scale_down_button.clicked.connect(lambda: self._change_scale("-"))
-        #Calculate
+        # Calculate
 
-        #Show All Bounds
+        # Show All Bounds
         self.showAllBoundsCheck.clicked.connect(self._show_All_Bounds)
-        #Distance
+        # Distance
         self.checkDistance.clicked.connect(self._distance_select)
 
         # -------------------Move object-------------------------------#
@@ -108,31 +100,32 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         # Rotate z
         self.rotation_z_slider.valueChanged.connect(self._rotation_slider_z_change)
 
-        #-------------------Selections--------------------------------#
-        #Select Points
+        # -------------------Selections--------------------------------#
+        # Select Points
         self.select_points_button.clicked.connect(self._select_points)
-        #Select Single point
+        # Select Single point
         self.delete_points_button.clicked.connect(self._select_single_point)
-        #Delete Selected Points
+        # Delete Selected Points
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
-        #Edit mesh
+        # Edit mesh
         self.edit_meshBtn.clicked.connect(self._edit_mesh)
-        #Crop selection mesh
-        self.cropMeshSelected.clicked.connect(self.crop_mesh_selected)
-        self.extractMesh.clicked.connect(self.extract_mesh)
 
-        #-------------------Convert to mesh---------------------------#
-        #Create mesh
+        # -------------------Convert to mesh---------------------------#
+        # Create mesh
         self.create_mesh_button.clicked.connect(self._make_mesh)
-        #Crop mesh
+        # Crop mesh
         self.cropMeshButton.clicked.connect(self.crop_mesh_box)
-        #Change normals
+        # Change normals
         self.change_normals_button.clicked.connect(self.select_points_for_normals)
-        #Save normals
+        # Save normals
         self.save_normals_button.clicked.connect(self.save_normals)
-        #Fix mesh
+        # Fix mesh
         self.fix_mesh_button.clicked.connect(self.repair_mesh)
-        #Triangles amount
+        # Crop selection mesh
+        self.cropMeshSelected.clicked.connect(self.crop_mesh_selected)
+        # Extract mesh
+        self.extractMesh.clicked.connect(self.extract_mesh)
+        # Triangles amount
         self.triangles_amount_input_field.setValidator(QIntValidator(1, 2147483647, self))
         self.triangles_amount_input_field.textChanged.connect(self._triangles_amount_changed)
         self.triangles_amount_checkbox.clicked.connect(self._enable_triangles_amount_input_field)
@@ -140,31 +133,35 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
         # -------------------Normalization----------------------------#
         # Normalize button
         self.normalize_btn.clicked.connect(self.normalizeCloud)
-        #Model iterations
+        # Model iterations
         self.model_iterations_slider.valueChanged.connect(self._model_iterations_slider_change)
-        #Prop iterations
+        # Prop iterations
         self.prop_iterations_slider.valueChanged.connect(self._prop_iteration_slider_changed)
-        #Number of parts
+        # Number of parts
         self.number_of_parts_slider.valueChanged.connect(self._number_of_parts_slider_changed)
-        #Minimum points on path
+        # Minimum points on path
         self.min_points_on_path_slider.valueChanged.connect(self._min_points_on_path_slider_changed)
-        #Curvature treshold
+        # Curvature treshold
         self.curvature_treshold_slider.valueChanged.connect(self.curvature_threshold_slider_changed)
 
-        #-------------------Exports-----------------------------------#
-        #OBJ
+        # -------------------Exports-----------------------------------#
+        # OBJ
         self.export_to_obj.clicked.connect(lambda: self._on_export_to_obj(self.create_mesh))
-        #STL
+        # STL
         self.export_to_stl.clicked.connect(lambda: self._on_export_to_stl(self.create_mesh))
-        #PLY
+        # PLY
         self.export_to_ply.clicked.connect(self._on_export_to_ply)
 
-        #-------------------------------------------------------------#
+        # -------------------------------------------------------------#
 
-        #Ram monitoring thread
+        # Ram monitoring thread
         monitor_thread = threading.Thread(target=self.monitor_memory_usage)
         monitor_thread.daemon = True
         monitor_thread.start()
+
+        if show:
+            self.show()
+
 
     def monitor_memory_usage(self):
         process = psutil.Process()
@@ -181,12 +178,7 @@ class MyGUI(QMainWindow, file_functions.FileFunctions, apply_settings.ApplySetti
                 os.kill(os.getpid(), signal.SIGTERM)
             time.sleep(1)
 
-def main():
-    app = QApplication([])
-    window = MyGUI()
-
-    app.exec_()
-
-
 if __name__ == '__main__':
-    main()
+    app = QtWidgets.QApplication(sys.argv)
+    window = MyMainWindow()
+    sys.exit(app.exec_())
