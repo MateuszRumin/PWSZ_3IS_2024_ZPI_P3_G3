@@ -143,6 +143,8 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.min_points_on_path_slider.valueChanged.connect(self._min_points_on_path_slider_changed)
         # Curvature treshold
         self.curvature_treshold_slider.valueChanged.connect(self.curvature_threshold_slider_changed)
+        #Neighbours
+        self.neighbours_slider.valueChanged.connect(self.neighbours_slider_changed)
 
         # -------------------Exports-----------------------------------#
         # OBJ

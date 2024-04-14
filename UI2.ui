@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1008</width>
-    <height>825</height>
+    <height>933</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,7 +60,7 @@
        <item>
         <widget class="QToolBox" name="toolBox">
          <property name="currentIndex">
-          <number>4</number>
+          <number>5</number>
          </property>
          <widget class="QWidget" name="page_scene_geometries">
           <property name="geometry">
@@ -338,7 +338,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>350</height>
            </rect>
           </property>
@@ -964,7 +964,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>300</height>
            </rect>
           </property>
@@ -1421,7 +1421,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>250</height>
            </rect>
           </property>
@@ -1724,7 +1724,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>400</height>
            </rect>
           </property>
@@ -2298,8 +2298,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
-            <height>417</height>
+            <width>224</width>
+            <height>545</height>
            </rect>
           </property>
           <attribute name="label">
@@ -2311,7 +2311,7 @@
              <property name="maximumSize">
               <size>
                <width>206</width>
-               <height>400</height>
+               <height>500</height>
               </size>
              </property>
              <property name="widgetResizable">
@@ -2325,8 +2325,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>196</width>
-                <height>393</height>
+                <width>204</width>
+                <height>498</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_23">
@@ -2433,6 +2433,12 @@
                       <height>20</height>
                      </size>
                     </property>
+                    <property name="minimum">
+                     <number>3</number>
+                    </property>
+                    <property name="maximum">
+                     <number>150</number>
+                    </property>
                     <property name="tracking">
                      <bool>true</bool>
                     </property>
@@ -2503,6 +2509,12 @@
                       <width>16777215</width>
                       <height>20</height>
                      </size>
+                    </property>
+                    <property name="minimum">
+                     <number>3</number>
+                    </property>
+                    <property name="maximum">
+                     <number>20</number>
                     </property>
                     <property name="tracking">
                      <bool>true</bool>
@@ -2575,6 +2587,12 @@
                       <height>20</height>
                      </size>
                     </property>
+                    <property name="minimum">
+                     <number>10</number>
+                    </property>
+                    <property name="maximum">
+                     <number>50</number>
+                    </property>
                     <property name="tracking">
                      <bool>true</bool>
                     </property>
@@ -2645,6 +2663,12 @@
                       <width>16777215</width>
                       <height>20</height>
                      </size>
+                    </property>
+                    <property name="minimum">
+                     <number>20</number>
+                    </property>
+                    <property name="maximum">
+                     <number>200</number>
                     </property>
                     <property name="tracking">
                      <bool>true</bool>
@@ -2717,6 +2741,12 @@
                       <height>20</height>
                      </size>
                     </property>
+                    <property name="maximum">
+                     <number>100</number>
+                    </property>
+                    <property name="singleStep">
+                     <number>1</number>
+                    </property>
                     <property name="tracking">
                      <bool>true</bool>
                     </property>
@@ -2734,6 +2764,44 @@
                  </layout>
                 </widget>
                </item>
+               <item>
+                <widget class="QFrame" name="frame_17">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>60</height>
+                  </size>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_32">
+                  <item>
+                   <widget class="QLabel" name="label_13">
+                    <property name="text">
+                     <string>Neighbours</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSlider" name="neighbours_slider">
+                    <property name="minimum">
+                     <number>30</number>
+                    </property>
+                    <property name="maximum">
+                     <number>200</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
               </layout>
              </widget>
             </widget>
@@ -2745,7 +2813,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>224</width>
             <height>140</height>
            </rect>
           </property>

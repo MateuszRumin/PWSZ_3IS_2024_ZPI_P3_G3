@@ -392,7 +392,7 @@ class GuiFunctions:
         if self.display_normals_checkbox.isChecked():
             #Calculates normal if they are not calculated
             if self.settings.normals_computed_for_origin == False:
-                self._origin_vectors = self.compute_vectors(self.cloud) #Function to calculate vectors from a normals_selection file
+                #self._origin_vectors = self.compute_vectors(self.cloud) #Function to calculate vectors from a normals_selection file
                 self.cloud['vectors'] = self._origin_vectors            #Assigning vectors to the cloud
                 self.settings.normals_computed_for_origin = True        #Checking in the settings that normal has been calculated
 
@@ -404,6 +404,7 @@ class GuiFunctions:
                 )
                 #----------------------
 
+                print(f"vector", self.cloud['vectors'])
                 #Adding arrows to the plotter
                 self.add_normals_to_plotter(normals_arrows)
                 #----------------------------
@@ -417,6 +418,8 @@ class GuiFunctions:
                     scale=False,
                     factor=0.009,
                 )
+
+                print(f"vector" ,self.cloud['vectors'])
                 #------------------------------
                 #Adding arrows to the plotter
                 self.add_normals_to_plotter(arrows)
@@ -457,31 +460,29 @@ class GuiFunctions:
 
     #Function called after changing models iteration slider
     def _model_iterations_slider_change(self):
-        if self.cloud is not None or self.create_mesh is not None:
-            value = self.model_iterations_slider.value()    #Retrieving values from the slider
-            self.settings.model_iterations_value = value    #Saving value to settings
+        value = self.model_iterations_slider.value()    #Retrieving values from the slider
+        self.settings.model_iterations_value = value    #Saving value to settings
 
     # Function called after changing models iteration slider
     def _prop_iteration_slider_changed(self):
-        if self.cloud is not None or self.create_mesh is not None:
-            value = self.prop_iterations_slider.value()     # Retrieving values from the slider
-            self.settings.prop_iterations_value = value     #Saving value to settings
+        value = self.prop_iterations_slider.value()     # Retrieving values from the slider
+        self.settings.prop_iterations_value = value     #Saving value to settings
 
     # Function called after changing models iteration slider
     def _number_of_parts_slider_changed(self):
-        if self.cloud is not None or self.create_mesh is not None:
-            value = self.number_of_parts_slider.value()     # Retrieving values from the slider
-            self.settings.number_of_parts_value = value     #Saving value to settings
+        value = self.number_of_parts_slider.value()     # Retrieving values from the slider
+        self.settings.number_of_parts_value = value     #Saving value to settings
 
     # Function called after changing models iteration slider
     def _min_points_on_path_slider_changed(self):
-        if self.cloud is not None or self.create_mesh is not None:
-            value = self.min_points_on_path_slider.value()  # Retrieving values from the slider
-            self.settings.min_points_on_path_value = value  #Saving value to settings
+        value = self.min_points_on_path_slider.value()  # Retrieving values from the slider
+        self.settings.min_points_on_path_value = value  #Saving value to settings
 
     # Function called after changing models iteration slider
     def curvature_threshold_slider_changed(self):
-        if self.cloud is not None or self.create_mesh is not None:
-            value = self.curvature_treshold_slider.value()  # Retrieving values from the slider
-            self.settings.curvature_threshold_value = value #Saving value to settings
+        value = self.curvature_treshold_slider.value()  # Retrieving values from the slider
+        self.settings.curvature_threshold_value = value #Saving value to settings
 
+    def neighbours_slider_changed(self):
+        value = self.neighbours_slider.value()  # Retrieving values from the slider
+        self.settings.neighbours_value = value  # Saving value to settings

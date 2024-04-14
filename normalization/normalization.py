@@ -24,6 +24,16 @@ class NormalizationClass():
         number_of_parts = self.settings.number_of_parts_value
         min_points_on_path = self.settings.min_points_on_path_value
         curvature_threshold = self.settings.curvature_threshold_value
+        neighbours = self.settings.neighbours_value
+
+        print("Normalization")
+        print(f"Model iterations: ", model_iterations)
+        print(f"Prop iterations: ", prop_iterations)
+        print(f"Number of parts: ", number_of_parts)
+        print(f"Minimum points on path: ", min_points_on_path)
+        print(f"Curvature threshold: ", curvature_threshold)
+        print(f"neighbours: ", neighbours)
+
         n = 50
         #----------------------------
         model_iterations = 5
@@ -39,14 +49,18 @@ class NormalizationClass():
             #    orient_normal(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,n=30)
             # else:
             ptc = orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,n)
-            o3d.visualization.draw_geometries([ptc])
+            #o3d.visualization.draw_geometries([ptc])
+            print(f"ptc points", np.asarray(ptc.points))
+            print(f"ptc normals", np.asarray(ptc.normals))
+
+
+            self._origin_vectors = np.asarray(ptc.normals)
+            self.cloud['vectors'] = self._origin_vectors
+            self.settings.normals_computed_for_origin == True
+
+
             self.cloud = ptc
 
 
 
-        # print("Normalization")
-        # print(f"Model iterations: ", model_iterations)
-        # print(f"Prop iterations: ", prop_iterations)
-        # print(f"Number of parts: ", number_of_parts)
-        # print(f"Minimum points on path: ", min_points_on_path)
-        # print(f"Curvature threshold: ", curvature_threshold)
+
