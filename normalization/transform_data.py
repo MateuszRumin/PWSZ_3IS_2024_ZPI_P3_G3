@@ -3,12 +3,24 @@ import numpy as np
 from typing import List
 import time
 import laspy
+import open3d as o3d
 
 def point_tensor(points):
 
     pts = [torch.tensor(x, dtype=torch.float) for x in points]
 
     rtn = torch.stack(pts, dim=0)
+    return rtn
+
+
+def tensor_to_pc(tens):
+    tens = torch.clone(tens).to("cpu")
+    rtn = o3d.geometry.PointCloud()
+    points = np.asarray(tens[:,:3])
+    rtn.points = o3d.utility.Vector3dVector(points)
+    normals = np.asarray(tens[:,3:])
+    rtn.normals = o3d.utility.Vector3dVector(normals)
+
     return rtn
 
 

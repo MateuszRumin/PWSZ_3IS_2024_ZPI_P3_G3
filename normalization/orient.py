@@ -1,28 +1,24 @@
 import torch
 from pathlib import Path
-from normalization.transform_data import point_tensor, Transform
+from normalization.transform_data import point_tensor, Transform,tensor_to_pc
 from normalization.util import estimate_normals, divide_pc,orient_center
 from normalization.interface_utils import load_model_from_file,fix_n_filter,voting_policy
-from normalization.field_utils import strongest_field_propagation_reps
+from normalization.field_utils import strongest_field_propagation_reps,measure_mean_potential
 modelsPath = ["./normalization/pre_trained/hands2.pt", "./normalization/pre_trained/hands.pt", "./normalization/pre_trained/manmade.pt" ]
-
+torch.manual_seed(1)
 
 def orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,n):
     max_patch_size = 500
     device = torch.device(torch.cuda.current_device() if torch.cuda.is_available() else torch.device('cpu'))
     print("Transfer do tensor")
     # przerobienie na tens
-    print(points)
     input_pc = point_tensor(points).to(device)
     input_pc, transform = Transform.trans(input_pc)
     print("Transfer do tensor- koniec")
     print("Est_norm")
-    print(input_pc)
     input_pc = estimate_normals(input_pc, max_nn=n)
     softmax = torch.nn.Softmax(dim=-1)
     models = [load_model_from_file(Path(i), device) for i in modelsPath]
-
-    print(input_pc)
     print("Est_norm_end")
     print("devide patches")
     patch_indices = divide_pc(input_pc[:,:3],number_of_parts,min_patch=min_points_on_path)
@@ -66,8 +62,17 @@ def orient_large(points,model_iterations,prop_iterations,number_of_parts,min_poi
     print("end net orientation")
     [model.to('cpu') for model in models]
     print("propagating field")
-    # strongest_field_propagation_reps(input_pc, represent, diffuse=True)
+    strongest_field_propagation_reps(input_pc, represent, diffuse=True)
     print("end propagating field")
+    print("fix global orientation")
+    if measure_mean_potential(input_pc) < 0:
+        # if average global potential is negative, flip all normals
+        input_pc[:, 3:] *= -1
+    print("end fix global orientation")
+    print("end transform back to point cloud")
+    rtn = tensor_to_pc(input_pc)
+    print("end transform back to point cloud")
+    return rtn
 
 
 def orient_normal(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,n):

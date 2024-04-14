@@ -24,9 +24,9 @@ class NormalizationClass():
         number_of_parts = self.settings.number_of_parts_value
         min_points_on_path = self.settings.min_points_on_path_value
         curvature_threshold = self.settings.curvature_threshold_value
-        n = 30
+        n = 50
         #----------------------------
-        model_iterations = 4
+        model_iterations = 5
         prop_iterations = 3
         number_of_parts = 30
         min_points_on_path = 100
@@ -38,8 +38,9 @@ class NormalizationClass():
             # if num_points < 100000:
             #    orient_normal(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,n=30)
             # else:
-            orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,n)
-
+            ptc = orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,n)
+            o3d.visualization.draw_geometries([ptc])
+            self.cloud = ptc
 
 
 

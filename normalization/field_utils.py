@@ -1,6 +1,48 @@
 import torch
 import numpy as np
-import normalization.util
+from normalization.util import gen_grid, pca_eigen_values
+
+
+def measure_mean_potential(pc: torch.Tensor):
+    grid = gen_grid().to(pc.device)
+    return potential(pc, grid).mean()
+
+
+def potential(sources, means, eps=1e-5, recursive=True, max_pts=15000):
+
+    if recursive:
+        def break_by_means():
+            mid = int(means.shape[0] / 2)
+            return torch.cat([potential(sources, means[:mid], eps, recursive, max_pts),
+                              potential(sources, means[mid:], eps, recursive, max_pts)], dim=0)
+
+        def break_by_sources():
+            mid = int(sources.shape[0] / 2)
+            return potential(sources[:mid], means, eps, recursive, max_pts) \
+                   + potential(sources[mid:], means, eps, recursive, max_pts)
+
+        if sources.shape[0] > max_pts and means.shape[0] > max_pts:
+            if sources.shape[0] > means.shape[0]:
+                return break_by_sources()
+            else:
+                return break_by_means()
+
+        if sources.shape[0] > max_pts:
+            return break_by_sources()
+
+        if means.shape[0] > max_pts:
+            return break_by_means()
+
+    p = sources[:, 3:]
+    R = sources[:, None, :3] - means[None, :, :3]
+
+    phi = (p[:, None, :] * R).sum(dim=-1)
+    phi = phi / (R.norm(dim=-1) ** 3)[:, :]
+    phi_total = phi.sum(dim=0)
+
+    phi_total[phi_total.isinf()] = 0
+    phi_total[phi_total.isnan()] = 0
+    return phi_total
 
 
 def field_grad(sources, means, eps=1e-5, recursive=True, max_pts=15000):
@@ -40,7 +82,6 @@ def field_grad(sources, means, eps=1e-5, recursive=True, max_pts=15000):
 
 def strongest_field_propagation_reps(input_pc, reps, diffuse=False, weights=None):
     input_pc = input_pc.detach()
-    print("Jestem")
     with torch.no_grad():
         pts = input_pc
 
@@ -63,7 +104,7 @@ def strongest_field_propagation_reps(input_pc, reps, diffuse=False, weights=None
 
         # find the flattest patch to start with
 
-        curv = [normalization.util.pca_eigen_values(pts[patch]) for patch in patches]
+        curv = [pca_eigen_values(pts[patch]) for patch in patches]
         min_index = np.array([torch.as_tensor(curv[i][0], device="cpu" ) for i in range(len(patches))])
         min_index = np.abs(min_index)
         min_index = np.argmin(min_index)

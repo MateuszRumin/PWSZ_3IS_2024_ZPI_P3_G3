@@ -5,7 +5,7 @@ import torch.nn as nn
 from torch_geometric.nn import fps, global_mean_pool, knn, knn_graph, knn_interpolate
 from normalization.models.XConv import XConv
 from torch_geometric.data.data import Data
-import normalization.util as utils
+from normalization.util import rotate_to_principle_components
 
 
 class PointCNN(torch.nn.Module):
@@ -35,7 +35,7 @@ class PointCNN(torch.nn.Module):
 
         for i in range(batch_index.max() + 1):
             data.x[batch_index == i, :3] -= data.x[batch_index == i, :3].mean(dim=0)
-            data.x[batch_index == i] = utils.rotate_to_principle_components(data.x[batch_index == i])
+            data.x[batch_index == i] = rotate_to_principle_components(data.x[batch_index == i])
 
 
         if not hasattr(data, 'x'):

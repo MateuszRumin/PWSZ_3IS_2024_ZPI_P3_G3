@@ -25,24 +25,30 @@ from PyQt5.QtCore import Qt
 class MeshCreator():
     def _make_mesh(self):
         #Converting pyvista cloud to open3d cloud
-        pyvista_points = self.cloud.points
+        # pyvista_points = self.cloud.points
+        print(self.cloud)
+        # points_open3d = o3d.utility.Vector3dVector(pyvista_points)
+        cloud = self.cloud
 
-        points_open3d = o3d.utility.Vector3dVector(pyvista_points)
-
-        cloud = o3d.geometry.PointCloud()
-        cloud.points = points_open3d
+        # cloud = o3d.geometry.PointCloud()
+        # cloud.points = points_open3d
         #----------------------------------------
 
         #Normals calculation (not finished)
-        if self.origin_vectors_normalized is None:
-            cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
-        else:
-            cloud.normals = o3d.utility.Vector3dVector(self.origin_vectors_normalized)
+        # if self.origin_vectors_normalized is None:
+        #     cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
+        # else:
+        #     cloud.normals = o3d.utility.Vector3dVector(self.origin_vectors_normalized)
         #----------------------------------
 
         #Creating open3d mesh
         radii = [0.005, 0.01, 0.02, 0.04]
         rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud, o3d.utility.DoubleVector(radii))
+
+        # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(cloud, depth=6, linear_fit=False, n_threads=4 )
+        #
+        # rec_mesh = o3d.geometry.TriangleMesh(rec_mesh[0])
+
 
         if self.settings.enable_triangles_amount_input_field:
             simplified_mesh = rec_mesh.simplify_quadric_decimation(target_number_of_triangles=int(self.settings.triangles_amount)) #Changing triangles amount

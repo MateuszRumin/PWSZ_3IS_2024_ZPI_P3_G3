@@ -3,6 +3,21 @@ import numpy as np
 from typing import List
 
 
+def gen_grid(n=10):
+    index = torch.arange(0, n ** 3)
+    z = index % n
+    # xy = index // n
+    xy = torch.div(index, n, rounding_mode='trunc')
+    y = xy % n
+    # x = xy // n
+    x = torch.div(xy, n, rounding_mode='trunc')
+    pts = torch.stack([x, y, z], dim=1).float()
+    pts = pts / n
+    pts -= 0.5
+    pts *= 2
+    return pts
+
+
 def orient_center(pred):
     cent = pred[:, :3].mean(dim=0)
     ref = pred[:, :3] - cent
@@ -88,6 +103,23 @@ def merge_nodes(pts, indices, ijk, min_patch):
             new_ijk.append(ijk[i])
 
     return new_indices, new_ijk
+
+
+def rotate_to_principle_components(x: torch.Tensor, scale=True):
+    temp = x[:, :3] - x.mean(dim=0)[None, :3]
+    cov = temp.transpose(0, 1) @ temp / x.shape[0]
+    e, v = torch.linalg.eigh(cov, UPLO='L')
+
+    # rotate xyz
+    rotated = x[:, :3]@v
+    if scale:
+        # scale to unit var on for the larger eigen value
+        rotated = rotated / torch.sqrt(e[2])
+
+    # if x contains normals rotate the normals as well
+    if x.shape[1] == 6:
+        rotated = torch.cat([rotated, x[:, 3:]@v], dim=-1)
+    return rotated
 
 
 def estimate_normals_torch(inputpc, max_nn):
