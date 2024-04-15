@@ -391,8 +391,7 @@ class GuiFunctions:
     def _show_normals_checked(self):
         if self.display_normals_checkbox.isChecked():
             #Calculates normal if they are not calculated
-            if self.settings.normals_computed_for_origin == False:
-                #self._origin_vectors = self.compute_vectors(self.cloud) #Function to calculate vectors from a normals_selection file
+            if self.settings.normals_computed_for_origin == False and self.normalize_checkbox.isChecked():
                 self.cloud['vectors'] = self._origin_vectors            #Assigning vectors to the cloud
                 self.settings.normals_computed_for_origin = True        #Checking in the settings that normal has been calculated
 
@@ -411,6 +410,36 @@ class GuiFunctions:
                 #Vector calculation for mesh open3d
                 self.origin_vectors_normalized = self._origin_vectors / np.linalg.norm(self._origin_vectors, axis=1)[:,np.newaxis]
                 #----------------------------------
+            elif self.settings.normals_computed_for_origin == False:
+                if self.cloud is None:
+                    origin = self.create_mesh.center
+                    vectors = self.create_mesh.points - origin
+                    vectors = vectors / np.linalg.norm(vectors, axis=1)[:, None]
+                    self._origin_vectors = vectors
+                else:
+                    origin = self.cloud.center
+                    vectors = self.cloud.points - origin
+                    vectors = vectors / np.linalg.norm(vectors, axis=1)[:, None]
+                    self._origin_vectors = vectors
+                self.cloud['vectors'] = self._origin_vectors  # Assigning vectors to the cloud
+                self.settings.normals_computed_for_origin = True  # Checking in the settings that normal has been calculated
+
+                # Creating normal arrows
+                normals_arrows = self.cloud.glyph(
+                    orient='vectors',
+                    scale=False,
+                    factor=0.009,
+                )
+                # ----------------------
+
+                print(f"vector", self.cloud['vectors'])
+                # Adding arrows to the plotter
+                self.add_normals_to_plotter(normals_arrows)
+                # ----------------------------
+                # Vector calculation for mesh open3d
+                self.origin_vectors_normalized = self._origin_vectors / np.linalg.norm(self._origin_vectors, axis=1)[:,
+                                                                        np.newaxis]
+                # ----------------------------------
             else:
                 #If normals exist create arrows
                 arrows = self.cloud.glyph(
@@ -462,27 +491,41 @@ class GuiFunctions:
     def _model_iterations_slider_change(self):
         value = self.model_iterations_slider.value()    #Retrieving values from the slider
         self.settings.model_iterations_value = value    #Saving value to settings
+        self._apply_settings()                          #Updating gui
 
     # Function called after changing models iteration slider
     def _prop_iteration_slider_changed(self):
         value = self.prop_iterations_slider.value()     # Retrieving values from the slider
         self.settings.prop_iterations_value = value     #Saving value to settings
+        self._apply_settings()                          # Updating gui
 
     # Function called after changing models iteration slider
     def _number_of_parts_slider_changed(self):
         value = self.number_of_parts_slider.value()     # Retrieving values from the slider
         self.settings.number_of_parts_value = value     #Saving value to settings
+        self._apply_settings()                          # Updating gui
 
     # Function called after changing models iteration slider
     def _min_points_on_path_slider_changed(self):
         value = self.min_points_on_path_slider.value()  # Retrieving values from the slider
         self.settings.min_points_on_path_value = value  #Saving value to settings
+        self._apply_settings()                          # Updating gui
 
     # Function called after changing models iteration slider
     def curvature_threshold_slider_changed(self):
         value = self.curvature_treshold_slider.value()  # Retrieving values from the slider
         self.settings.curvature_threshold_value = value #Saving value to settings
+        self._apply_settings()                          # Updating gui
 
     def neighbours_slider_changed(self):
         value = self.neighbours_slider.value()  # Retrieving values from the slider
         self.settings.neighbours_value = value  # Saving value to settings
+        self._apply_settings()                  # Updating gui
+
+
+    def normalize_checkbox_changed(self):
+        if self.normalize_checkbox.isChecked():
+            self.settings.normalize_checkbox_value = True
+        else:
+            print('Checkbox is not checked')
+            self.settings.normalize_checkbox_value = False

@@ -3,7 +3,7 @@ class Settings:
         self.file_path = None                       #Path to file
         self.downSampling_size_slider_value = 1     #DownSampling value
         self.scale_value = 1                        #Scale factor
-        self.triangles_amount = 1000                #Triangles amount
+        self.triangles_amount = 100                 #Triangles amount
 
         #Cloud move values
         self.object_move_in_x_direction = 0
@@ -23,6 +23,9 @@ class Settings:
 
         #Triangles amount input field
         self.enable_triangles_amount_input_field = False
+
+        #Normalize cloud
+        self.normalize_checkbox_value = True
 
         #Enable create mesh button
         self.enable_create_mesh_button = False

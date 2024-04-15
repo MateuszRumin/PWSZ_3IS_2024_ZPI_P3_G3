@@ -59,7 +59,7 @@ class NormalizationClass():
             self.settings.normals_computed_for_origin == True
 
 
-            self.cloud = ptc
+            self.open3d_normalized_cloud = ptc
 
 
 

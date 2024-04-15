@@ -57,6 +57,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
 
         # -------------------Action Bar--------------------------------#
         self.actionOpen.triggered.connect(self.open_file)
+        self.actionRead_cloud_from_mesh.triggered.connect(self.read_cloud_from_mesh)
 
         # -------------------Scene geometries--------------------------#
         self.display_cloud_checkbox.clicked.connect(self._show_cloud_checked)
@@ -126,13 +127,13 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         # Extract mesh
         self.extractMesh.clicked.connect(self.extract_mesh)
         # Triangles amount
-        self.triangles_amount_input_field.setValidator(QIntValidator(1, 2147483647, self))
+        self.triangles_amount_input_field.setValidator(QIntValidator(1, 100, self))
         self.triangles_amount_input_field.textChanged.connect(self._triangles_amount_changed)
         self.triangles_amount_checkbox.clicked.connect(self._enable_triangles_amount_input_field)
 
         # -------------------Normalization----------------------------#
-        # Normalize button
-        self.normalize_btn.clicked.connect(self.normalizeCloud)
+        # Normalize checkbox
+        self.normalize_checkbox.clicked.connect(self.normalize_checkbox_changed)
         # Model iterations
         self.model_iterations_slider.valueChanged.connect(self._model_iterations_slider_change)
         # Prop iterations

@@ -18,7 +18,6 @@ class NormalsSelection():
     #Declaration of global variables for normals selection
     cloud_for_indicates = None          #Cloud for open3d
     _selected_normals_cloud = None      #Trimmed vector cloud
-    _origin_vectors = None              #Original cloud vectors (overwritten after time)
     idx_table = []                      #Table of indices
     completed = 0                       #Number of indexes calculated
     origin_vectors_normalized = None    #Normal converted to open3d

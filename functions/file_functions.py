@@ -25,6 +25,8 @@ class FileFunctions:
     mesh_with_triangles_container = None    #Mesh with triangles container, we refer to it when adding or removing a mesh with triangles displayed
     create_mesh = None                      #Mesh
     create_mesh_backup = None               #Mesh backup
+    _origin_vectors = None                  #Original cloud vectors (overwritten after time)
+    open3d_normalized_cloud = None          #Cloud in open3d with calculated normals
     #-----------------------------------------------------------------------------------
 
     #Function that takes the path to a file. It is called from the gui navigation bar
@@ -94,6 +96,29 @@ class FileFunctions:
             self.add_mesh_to_plotter(self.create_mesh)  #Adding mesh to plotter
             #-----------------------------------------
         #-------------------------------------------------------
+
+    def read_cloud_from_mesh(self):
+        if self.create_mesh is not None and self.cloud is None:
+            self.cloud = pv.PolyData(self.create_mesh.points)
+
+            # Cloud downsampling
+            downSampling = self.settings.downSampling_size_slider_value / 1000
+            downSamplingCloud = self.cloud.clean(
+                point_merging=True,
+                merge_tol=downSampling,
+                lines_to_points=False,
+                polys_to_lines=False,
+                strips_to_polys=False,
+                inplace=False,
+                absolute=False,
+                progress_bar=True,
+            )
+            self.cloud = downSamplingCloud
+            # -----------------------------
+            self.cloud_backup = self.cloud  # Creating cloud backup
+            # -----------------------------
+            self.add_cloud_to_plotter(self.cloud)  # Adding cloud to plotter
+            # -----------------------------
 
     #Function that exports mesh to obj
     def _on_export_to_obj(self, mesh):

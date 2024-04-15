@@ -10,7 +10,6 @@
 import pyvista as pv
 import numpy as np
 
-
 class CloudSelection():
     #Declaration of global variables for point indicates
     idx_table = []
@@ -59,11 +58,12 @@ class CloudSelection():
             #-------------------------------------
 
             #Re-loading the cloud to the plotter
-            self.plotter.remove_actor(self.cloud_geometry_container)
-            self.cloud_geometry_container = self.plotter.add_points(self.cloud)
+            self.plotter.clear_actors() #Clear all actors to remove ghost points
+            self.add_cloud_to_plotter(self.cloud)
             self.selected_points_value.setText("0")
             #-----------------------------------
 
+            self.plotter.disable_picking()
             self.delete_selected_points_button.setEnabled(False)    #Deactivating delete points button
-
+            self.plotter.update()
 
