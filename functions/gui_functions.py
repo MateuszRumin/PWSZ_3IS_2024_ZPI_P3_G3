@@ -399,7 +399,7 @@ class GuiFunctions:
                 normals_arrows = self.cloud.glyph(
                     orient='vectors',
                     scale=False,
-                    factor=0.009,
+                    factor=0.001,
                 )
                 #----------------------
 

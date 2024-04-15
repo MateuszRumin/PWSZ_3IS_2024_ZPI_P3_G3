@@ -23,8 +23,19 @@ class MeshCreator():
             self.normalizeCloud()
             cloud = self.open3d_normalized_cloud
 
+            par = np.mean(cloud.compute_nearest_neighbor_distance())
+
             # Creating open3d mesh
-            radii = [0.005, 0.01, 0.02, 0.04]
+            radii = [0.005, 0.01, 0.015, 0.02, 0.025]
+            # radii = [0.9 * par, 0.91 * par, 0.92 * par, 0.93 * par, 0.94 * par, 0.95 * par, 0.96 * par, 0.97 * par,
+            #          0.98 * par, 0.99 * par,
+            #          1 * par, 1.01 * par, 1.02 * par, 1.03 * par, 1.04 * par, 1.05 * par, 1.06 * par, 1.07 * par,
+            #          1.08 * par, 1.09 * par,
+            #          1.1 * par, 1.11 * par, 1.12 * par, 1.13 * par, 1.14 * par, 1.15 * par, 1.16 * par, 1.17 * par,
+            #          1.18 * par, 1.19 * par,
+            #          1.2 * par, 1.21 * par, 1.22 * par, 1.23 * par, 1.24 * par, 1.25 * par, 1.26 * par, 1.27 * par,
+            #          1.28 * par, 1.29 * par,
+            #          1.3 * par, 1.4 * par, 1.5 * par, 1.6 * par, 1.75 * par, 0.01, 0.02, 0.04]
             rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud,
                                                                                        o3d.utility.DoubleVector(radii))
 
