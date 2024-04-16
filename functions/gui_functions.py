@@ -13,6 +13,7 @@ import vtk
 import numpy as np
 import pyvista as pv
 from PyQt5.QtWidgets import QColorDialog
+from stl import mesh    #pip install numpy-stl
 
 
 class GuiFunctions:
@@ -529,3 +530,35 @@ class GuiFunctions:
         else:
             print('Checkbox is not checked')
             self.settings.normalize_checkbox_value = False
+
+
+    # Mesh area calculation function
+    def _calculate_surface_area(self):
+        mesh_object = mesh.Mesh.from_file(self.filePath)
+
+        # Oblicz powierzchnię każdego trójkąta
+        areas = []
+        for i in range(len(mesh_object.v0)):
+            v0 = mesh_object.v0[i]
+            v1 = mesh_object.v1[i]
+            v2 = mesh_object.v2[i]
+
+            # Oblicz długości boków trójkąta
+            a = np.linalg.norm(v1 - v0)
+            b = np.linalg.norm(v2 - v1)
+            c = np.linalg.norm(v0 - v2)
+
+            # Oblicz półobwód
+            s = (a + b + c) / 2
+
+            # Oblicz powierzchnię trójkąta
+            area = np.sqrt(s * (s - a) * (s - b) * (s - c))
+            areas.append(area)
+
+        # Suma powierzchni trójkątów
+        total_area = sum(areas)
+
+        self.label = self.plotter.add_text(f'Area of the mesh: {total_area * 100:.2f}', name='area')
+
+        self.plotter.update()  # Update the plotter
+        # return total_area

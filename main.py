@@ -82,7 +82,9 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         # Show All Bounds
         self.showAllBoundsCheck.clicked.connect(self._show_All_Bounds)
         # Distance
-        self.checkDistance.clicked.connect(self._distance_select)
+        # self.checkDistance.clicked.connect(self._distance_select)
+        self.checkDistance.clicked.connect(self._calculate_surface_area)
+
 
         # -------------------Move object-------------------------------#
         # Move x
