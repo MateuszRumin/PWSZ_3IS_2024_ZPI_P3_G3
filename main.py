@@ -82,8 +82,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         # Show All Bounds
         self.showAllBoundsCheck.clicked.connect(self._show_All_Bounds)
         # Distance
-        # self.checkDistance.clicked.connect(self._distance_select)
-        self.checkDistance.clicked.connect(self._calculate_surface_area)
+        self.checkDistance.clicked.connect(self._distance_select)
 
 
         # -------------------Move object-------------------------------#
@@ -112,6 +111,8 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
         # Edit mesh
         self.edit_meshBtn.clicked.connect(self._edit_mesh)
+        # Surface area
+        self.check_area.clicked.connect(self._calculate_surface_area)
 
         # -------------------Convert to mesh---------------------------#
         # Create mesh

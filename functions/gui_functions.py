@@ -13,13 +13,14 @@ import vtk
 import numpy as np
 import pyvista as pv
 from PyQt5.QtWidgets import QColorDialog
-from stl import mesh    #pip install numpy-stl
 
 
 class GuiFunctions:
     #Declaration of global variables for GUI functions. They are probably not used outside this file
     use_distance = False
     distance = None
+    use_area = False
+    total_area = None
     #----------------------------------------------------------------------------------------------#
 
     #Function used to write down sampling values. Calls up object transformations
@@ -198,6 +199,38 @@ class GuiFunctions:
                 self.plotter.remove_actor(self.label)   #Remove the distance label from the plotter
                 self.plotter.update()                   #Update the plotter
             #----------------------------------------------
+
+    # Mesh area calculation function
+    def _calculate_surface_area(self):
+        if self.check_area.isChecked():
+            areas = []
+
+            for i in range(len(self.mesh_to_calculate_area.v0)):
+                v0 = self.mesh_to_calculate_area.v0[i]
+                v1 = self.mesh_to_calculate_area.v1[i]
+                v2 = self.mesh_to_calculate_area.v2[i]
+
+                # Length of the sides of the triangle
+                a = np.linalg.norm(v1 - v0)
+                b = np.linalg.norm(v2 - v1)
+                c = np.linalg.norm(v0 - v2)
+
+                s = (a + b + c) / 2
+
+                # Calculate triangle area
+                area = np.sqrt(s * (s - a) * (s - b) * (s - c))
+                areas.append(area)
+
+            total_area = sum(areas)
+
+            self.label_area = self.plotter.add_text(f'Area of the mesh: {total_area * 100:.2f}', name='area')
+            self.plotter.update()  # Update the plotter
+
+        else:
+            self.total_area = None                          #Reset total area amount to  None
+            self.plotter.remove_actor(self.label_area)      #Remove the area label from the plotter
+            self.plotter.update()                           #Update the plotter
+
 
     #Function displaying object boundaries called by checkbox
     def _show_All_Bounds(self):
@@ -530,35 +563,3 @@ class GuiFunctions:
         else:
             print('Checkbox is not checked')
             self.settings.normalize_checkbox_value = False
-
-
-    # Mesh area calculation function
-    def _calculate_surface_area(self):
-        mesh_object = mesh.Mesh.from_file(self.filePath)
-
-        # Oblicz powierzchnię każdego trójkąta
-        areas = []
-        for i in range(len(mesh_object.v0)):
-            v0 = mesh_object.v0[i]
-            v1 = mesh_object.v1[i]
-            v2 = mesh_object.v2[i]
-
-            # Oblicz długości boków trójkąta
-            a = np.linalg.norm(v1 - v0)
-            b = np.linalg.norm(v2 - v1)
-            c = np.linalg.norm(v0 - v2)
-
-            # Oblicz półobwód
-            s = (a + b + c) / 2
-
-            # Oblicz powierzchnię trójkąta
-            area = np.sqrt(s * (s - a) * (s - b) * (s - c))
-            areas.append(area)
-
-        # Suma powierzchni trójkątów
-        total_area = sum(areas)
-
-        self.label = self.plotter.add_text(f'Area of the mesh: {total_area * 100:.2f}', name='area')
-
-        self.plotter.update()  # Update the plotter
-        # return total_area
