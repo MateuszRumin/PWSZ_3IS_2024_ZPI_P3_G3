@@ -223,8 +223,8 @@ class GuiFunctions:
 
             total_area = sum(areas)
 
-            # self.label_area = self.plotter.add_text(f'Area of the mesh: {total_area * 100:.2f}', name='area', position='lower_left')
-            self.label_area = self.plotter.add_text(f'Area of the mesh: {total_area}', name='area', position='lower_left')
+            self.label_area = self.plotter.add_text(f'Area of the mesh: {total_area * 100:.2f} cm^2', name='area', position='lower_left')
+            # self.label_area = self.plotter.add_text(f'Area of the mesh: {total_area}', name='area', position='lower_left')
             self.plotter.update()  # Update the plotter
 
         else:

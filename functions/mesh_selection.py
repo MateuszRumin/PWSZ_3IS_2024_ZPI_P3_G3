@@ -10,6 +10,8 @@
 import pyvista as pv
 import numpy as np
 import pandas as pd
+from stl import mesh    #pip install numpy-stl
+import os
 
 
 
@@ -23,6 +25,17 @@ class MeshSelection():
     def move_sphere(self, point, i):
         idx = self.indexes[i]
         self.create_mesh.points[idx] = point
+
+        # Zapisz zmodyfikowany mesh jako plik
+        self.create_mesh.save('modified_mesh.stl')  # Załóżmy, że format pliku to STL
+
+        # Otwórz nowo zapisany plik meshu i wczytaj go jako self.mesh_to_calculate_area
+        self.mesh_to_calculate_area = mesh.Mesh.from_file('modified_mesh.stl')
+
+        # Usuń plik tymczasowy
+        os.remove('modified_mesh.stl')
+
+        self._calculate_surface_area()  # Wywołanie funkcji do obliczenia powierzchni po przesunięciu punktu
 
 
     #Function responsible for generating spheres for mesh editing
