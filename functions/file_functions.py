@@ -13,6 +13,7 @@ import numpy as np
 import pyvista as pv
 from PyQt5.QtWidgets import QFileDialog
 from pyntcloud import PyntCloud
+from stl import mesh    #pip install numpy-stl
 
 class FileFunctions:
     #Declaration of global variables for mesh and cloud available throughout the program
@@ -23,6 +24,7 @@ class FileFunctions:
     cloud_normals_container = None          #Cloud normals container, we refer to it when adding or removing a cloud normals
     mesh_geometry_container = None          #Mesh container, we refer to it when adding or removing a mesh
     mesh_with_triangles_container = None    #Mesh with triangles container, we refer to it when adding or removing a mesh with triangles displayed
+    mesh_to_calculate_area = None
     create_mesh = None                      #Mesh
     create_mesh_backup = None               #Mesh backup
     _origin_vectors = None                  #Original cloud vectors (overwritten after time)
@@ -65,6 +67,7 @@ class FileFunctions:
         else:
             try:
                 self.create_mesh = pv.read(path)            #Loading a mesh from the selected location using pyvista's built-in functions
+                self.mesh_to_calculate_area = mesh.Mesh.from_file(self.filePath)
                 print("[Info] Successfully read", path)
             except Exception as e:
                 print("[WARNING] Failed to read mesh", path, e)

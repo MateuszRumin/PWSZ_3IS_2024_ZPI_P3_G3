@@ -84,6 +84,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         # Distance
         self.checkDistance.clicked.connect(self._distance_select)
 
+
         # -------------------Move object-------------------------------#
         # Move x
         self.move_x_up_button.clicked.connect(lambda: self.move_in_x_axis("+"))
@@ -110,6 +111,8 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
         # Edit mesh
         self.edit_meshBtn.clicked.connect(self._edit_mesh)
+        # Surface area
+        self.check_area.clicked.connect(self._calculate_surface_area)
 
         # -------------------Convert to mesh---------------------------#
         # Create mesh

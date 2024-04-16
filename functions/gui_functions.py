@@ -19,6 +19,8 @@ class GuiFunctions:
     #Declaration of global variables for GUI functions. They are probably not used outside this file
     use_distance = False
     distance = None
+    use_area = False
+    total_area = None
     #----------------------------------------------------------------------------------------------#
 
     #Function used to write down sampling values. Calls up object transformations
@@ -197,6 +199,39 @@ class GuiFunctions:
                 self.plotter.remove_actor(self.label)   #Remove the distance label from the plotter
                 self.plotter.update()                   #Update the plotter
             #----------------------------------------------
+
+    # Mesh area calculation function
+    def _calculate_surface_area(self):
+        if self.check_area.isChecked() and self.mesh_to_calculate_area:
+            areas = []
+
+            for i in range(len(self.mesh_to_calculate_area.v0)):
+                v0 = self.mesh_to_calculate_area.v0[i]
+                v1 = self.mesh_to_calculate_area.v1[i]
+                v2 = self.mesh_to_calculate_area.v2[i]
+
+                # Length of the sides of the triangle
+                a = np.linalg.norm(v1 - v0)
+                b = np.linalg.norm(v2 - v1)
+                c = np.linalg.norm(v0 - v2)
+
+                s = (a + b + c) / 2
+
+                # Calculate triangle area
+                area = np.sqrt(s * (s - a) * (s - b) * (s - c))
+                areas.append(area)
+
+            total_area = sum(areas)
+
+            # self.label_area = self.plotter.add_text(f'Area of the mesh: {total_area * 100:.2f}', name='area', position='lower_left')
+            self.label_area = self.plotter.add_text(f'Area of the mesh: {total_area}', name='area', position='lower_left')
+            self.plotter.update()  # Update the plotter
+
+        else:
+            self.total_area = None            #Reset total area amount to None
+            self.plotter.remove_actor(self.label_area)      #Remove the area label from the plotter
+            self.plotter.update()           #Update the plotter
+
 
     #Function displaying object boundaries called by checkbox
     def _show_All_Bounds(self):
@@ -399,7 +434,7 @@ class GuiFunctions:
                 normals_arrows = self.cloud.glyph(
                     orient='vectors',
                     scale=False,
-                    factor=0.009,
+                    factor=0.001,
                 )
                 #----------------------
 

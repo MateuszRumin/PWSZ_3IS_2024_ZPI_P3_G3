@@ -60,7 +60,7 @@
        <item>
         <widget class="QToolBox" name="toolBox">
          <property name="currentIndex">
-          <number>3</number>
+          <number>5</number>
          </property>
          <widget class="QWidget" name="page_scene_geometries">
           <property name="geometry">
@@ -338,7 +338,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
+            <width>220</width>
             <height>350</height>
            </rect>
           </property>
@@ -1022,7 +1022,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
+            <width>220</width>
             <height>300</height>
            </rect>
           </property>
@@ -1605,13 +1605,13 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
+            <width>220</width>
             <height>250</height>
            </rect>
           </property>
           <property name="minimumSize">
            <size>
-            <width>224</width>
+            <width>206</width>
             <height>250</height>
            </size>
           </property>
@@ -1901,26 +1901,6 @@
              </layout>
             </widget>
            </item>
-           <item>
-            <widget class="QFrame" name="horizontalFrame">
-             <layout class="QHBoxLayout" name="horizontalLayout_37">
-              <item>
-               <widget class="QLabel" name="label_14">
-                <property name="text">
-                 <string>Area:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="check_area">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
           </layout>
          </widget>
          <widget class="QWidget" name="page_convert_to_mesh">
@@ -1928,7 +1908,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
+            <width>220</width>
             <height>400</height>
            </rect>
           </property>
@@ -2502,8 +2482,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
-            <height>545</height>
+            <width>220</width>
+            <height>525</height>
            </rect>
           </property>
           <attribute name="label">
@@ -2529,7 +2509,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>204</width>
+                <width>196</width>
                 <height>498</height>
                </rect>
               </property>
@@ -3299,7 +3279,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
+            <width>220</width>
             <height>140</height>
            </rect>
           </property>
