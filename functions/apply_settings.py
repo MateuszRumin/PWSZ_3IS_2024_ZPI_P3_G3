@@ -108,3 +108,10 @@ class ApplySettings:
         self.neighbours_slider.setValue(self.settings.neighbours_value)
         self.neighbours_value_label.setText(str(self.settings.neighbours_value))
         #---------------------------------------------------------------#
+
+        #Calculate area mesh checkbox toggle
+        if self.mesh_to_calculate_area:
+            self.check_area.setEnabled(True)
+        else:
+            self.check_area.setEnabled(False)
+        # ---------------------------------------------------------------#

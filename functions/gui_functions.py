@@ -202,7 +202,7 @@ class GuiFunctions:
 
     # Mesh area calculation function
     def _calculate_surface_area(self):
-        if self.check_area.isChecked():
+        if self.check_area.isChecked() and self.mesh_to_calculate_area:
             areas = []
 
             for i in range(len(self.mesh_to_calculate_area.v0)):
@@ -223,13 +223,14 @@ class GuiFunctions:
 
             total_area = sum(areas)
 
-            self.label_area = self.plotter.add_text(f'Area of the mesh: {total_area * 100:.2f}', name='area')
+            # self.label_area = self.plotter.add_text(f'Area of the mesh: {total_area * 100:.2f}', name='area', position='lower_left')
+            self.label_area = self.plotter.add_text(f'Area of the mesh: {total_area}', name='area', position='lower_left')
             self.plotter.update()  # Update the plotter
 
         else:
-            self.total_area = None                          #Reset total area amount to  None
+            self.total_area = None            #Reset total area amount to None
             self.plotter.remove_actor(self.label_area)      #Remove the area label from the plotter
-            self.plotter.update()                           #Update the plotter
+            self.plotter.update()           #Update the plotter
 
 
     #Function displaying object boundaries called by checkbox

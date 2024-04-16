@@ -30,6 +30,9 @@ class Settings:
         #Enable create mesh button
         self.enable_create_mesh_button = False
 
+        #Area checkbox
+        self.enable_area_checkbox = False
+
         #Colors
         self.font_color_plotter = 'lightblue'
         self.background_plotter = 'gray'
