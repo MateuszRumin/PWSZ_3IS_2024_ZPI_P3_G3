@@ -27,8 +27,12 @@ class MeshSelection():
 
     #Function responsible for generating spheres for mesh editing
     def select_area(self, picked):
+        print(f"table: ", picked.array_names)
         if isinstance(picked, pv.UnstructuredGrid):
-            indexes = picked["orig_extract_id"]
+            indexes = picked["original_cell_ids"]
+
+            self.plotter.clear_actors()
+            self.add_mesh_to_plotter(self.create_mesh)
 
             for selected_cell_index in indexes:
                 selected_cell = self.create_mesh.get_cell(selected_cell_index)  #Selecting a cell by id
@@ -63,6 +67,9 @@ class MeshSelection():
             self.indexes = unique_ids
             #-------------------------------------------------------------
 
+            self.plotter.clear_actors()
+            self.add_mesh_to_plotter(self.create_mesh)
+
             #Adding editing spheres to plotter
             self.plotter.add_sphere_widget(callback=self.move_sphere, center=self.points, radius=0.0010)
             #-------------------------------------
@@ -71,6 +78,6 @@ class MeshSelection():
     #Function called from the gui which is responsible for selecting the editing area
     def _edit_mesh(self):
         self.plotter.disable_picking()
-        self.plotter.enable_cell_picking(callback=self.select_area, style='surface',
+        self.plotter.enable_cell_picking(callback=self.select_area, through=False, style='surface',
                                          show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'))
 

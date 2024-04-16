@@ -313,9 +313,14 @@ class FileFunctions:
             self.remove_mesh_with_triangles()
 
         # Adding mesh to plotter
-        self.mesh_geometry_container = self.plotter.add_mesh(mesh, show_edges=False, show_scalar_bar=False)
+        self.mesh_geometry_container = self.plotter.add_mesh(mesh, show_edges=False, show_scalar_bar=False, color='white')
         self.display_mesh_checkbox.setChecked(True)
         # ----------------------
+
+        # Focus camera on object center
+        center = mesh.center
+        self.plotter.camera.SetFocalPoint(center[0], center[1], center[2])
+        # -----------------------------
 
         # Enable mesh export buttons
         self.settings.enable_create_mesh_button = True
