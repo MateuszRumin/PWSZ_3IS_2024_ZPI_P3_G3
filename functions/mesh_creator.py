@@ -17,9 +17,7 @@ import pyvista as pv
 
 class MeshCreator():
     def _make_mesh(self):
-        if self.create_mesh is not None and self.cloud is None:
-            self.transform_existing_mesh()
-        elif self.normalize_checkbox.isChecked():
+        if self.normalize_checkbox.isChecked() and self.cloud is not None:
             self.normalizeCloud()
             cloud = self.open3d_normalized_cloud
 
@@ -57,23 +55,13 @@ class MeshCreator():
                     (1, 3)))  # invalidate existing normals
             # ----------------------
 
-            # Saving cloud to temporary stl file (deleted after operation)
-            filename = self.settings.file_path
-            filename = filename[:-4] + "_temp.stl"
+            #Transform mesh from open3d to pyvsita
+            v = np.asarray(rec_mesh.vertices)
+            f = np.array(rec_mesh.triangles)
+            f = np.c_[np.full(len(f), 3), f]
+            self.create_mesh = pv.PolyData(v, f)
 
-            try:
-                o3d.io.write_triangle_mesh(filename, rec_mesh)
-                print("[Info] Successfully exported to", filename)
-            except Exception as e:
-                print("[Error] An error occurred during the export:", str(e))
-            # -------------------------------------------------------------
-
-            # Reading temp file and deleting it
-            self.create_mesh = pv.read(filename)
-            self.create_mesh_backup = self.create_mesh
-            os.remove(filename)
-            # ---------------------------------
-
+            #Add to plotter
             self.remove_mesh()
             self.add_mesh_to_plotter(self.create_mesh)
             # ------------------------------
@@ -87,12 +75,7 @@ class MeshCreator():
             cloud.points = points_open3d
             # ----------------------------------------
 
-            # Normals calculation (not finished)
-            if self.origin_vectors_normalized is None:
-                cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
-            else:
-                cloud.normals = o3d.utility.Vector3dVector(self.origin_vectors_normalized)
-            # ----------------------------------
+            cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
 
             # Creating open3d mesh
             radii = [0.005, 0.01, 0.02, 0.04]
@@ -106,29 +89,18 @@ class MeshCreator():
                     target_number_of_triangles=int(triangles_amount_calculated))  # Changing triangles amount
                 rec_mesh = simplified_mesh
 
-            if self.origin_vectors_normalized is None:
-                pcd = rec_mesh.sample_points_poisson_disk(5000)
 
-                pcd.normals = o3d.utility.Vector3dVector(np.zeros(
-                    (1, 3)))  # invalidate existing normals
+            pcd = rec_mesh.sample_points_poisson_disk(5000)
+
+            pcd.normals = o3d.utility.Vector3dVector(np.zeros(
+                (1, 3)))  # invalidate existing normals
             # ----------------------
 
-            # Saving cloud to temporary stl file (deleted after operation)
-            filename = self.settings.file_path
-            filename = filename[:-4] + "_temp.stl"
-
-            try:
-                o3d.io.write_triangle_mesh(filename, rec_mesh)
-                print("[Info] Successfully exported to", filename)
-            except Exception as e:
-                print("[Error] An error occurred during the export:", str(e))
-            # -------------------------------------------------------------
-
-            # Reading temp file and deleting it
-            self.create_mesh = pv.read(filename)
-            self.create_mesh_backup = self.create_mesh
-            os.remove(filename)
-            # ---------------------------------
+            # Transform mesh from open3d to pyvsita
+            v = np.asarray(rec_mesh.vertices)
+            f = np.array(rec_mesh.triangles)
+            f = np.c_[np.full(len(f), 3), f]
+            self.create_mesh = pv.PolyData(v, f)
 
             # Reloading mesh
             self.remove_mesh()
@@ -153,16 +125,50 @@ class MeshCreator():
         #------------------------------
 
     def transform_existing_mesh(self):
-        #Triangles reduction
-        print(f"Number of triangles in mesh: {self.create_mesh.n_points}")
-        if self.settings.enable_triangles_amount_input_field:
-            self.create_mesh = copy.deepcopy(self.create_mesh_backup)
-            reduction_value = ((float(self.settings.triangles_amount) - 100) * (-1)) / 100
-            if reduction_value < 1:
-                self.create_mesh = self.create_mesh.decimate(reduction_value)
-        print(f"Number of triangles in mesh after reduction: {self.create_mesh.n_points}")
+        if self.create_mesh is not None:
+            #Triangles reduction
+            print(f"Number of triangles in mesh: {self.create_mesh.n_points}")
+            if self.settings.enable_triangles_amount_input_field:
+                self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                reduction_value = ((float(self.settings.triangles_amount) - 100) * (-1)) / 100
+                if reduction_value < 1:
+                    self.create_mesh = self.create_mesh.decimate(reduction_value)
+            print(f"Number of triangles in mesh after reduction: {self.create_mesh.n_points}")
 
-        # Reloading mesh
-        self.remove_mesh()
-        self.add_mesh_to_plotter(self.create_mesh)
-        # ------------------------------
+            # Reloading mesh
+            self.remove_mesh()
+            self.add_mesh_to_plotter(self.create_mesh)
+            # ------------------------------
+
+    def _smooth_mesh(self):
+        if self.create_mesh is not None:
+            self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+
+            vertices = self.create_mesh.points
+            faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
+
+            o3d_vertices = o3d.utility.Vector3dVector(vertices)
+            o3d_faces = o3d.utility.Vector3iVector(faces)
+
+            o3d_mesh = o3d.geometry.TriangleMesh()
+            o3d_mesh.vertices = o3d_vertices
+            o3d_mesh.triangles = o3d_faces
+
+            mesh_in = o3d_mesh
+            vertices = np.asarray(mesh_in.vertices)
+
+
+            #print('filter with average with n iteration')
+            n = int(self.settings.number_of_smooth_iterations)
+            mesh_out = mesh_in.filter_smooth_simple(number_of_iterations=n)
+            mesh_out.compute_vertex_normals()
+
+            v = np.asarray(mesh_out.vertices)
+            f = np.array(mesh_out.triangles)
+            f = np.c_[np.full(len(f), 3), f]
+            mesh = pv.PolyData(v, f)
+
+            self.create_mesh = mesh
+
+            self.remove_mesh()
+            self.add_mesh_to_plotter(self.create_mesh)

@@ -16,6 +16,10 @@ class ApplySettings:
         #---------------Settings of element values---------------------#
         self.scale_value_label.setText(str(self.settings.scale_value))                      #Scale value label
         self.triangles_amount_input_field.setText(str(self.settings.triangles_amount))      #Triangles amount input field
+        self.move_x_value_field.setText(str(self.settings.object_move_in_x_direction))      # X displacement input field
+        self.move_y_value_field.setText(str(self.settings.object_move_in_y_direction))      # Y displacement input field
+        self.move_z_value_field.setText(str(self.settings.object_move_in_z_direction))      # Z displacement input field
+        self.smooth_number_of_iterations_field.setText(str(self.settings.number_of_smooth_iterations))
         #--------------------------------------------------------------#
 
         #---------------------Enable objects---------------------------#
@@ -34,10 +38,10 @@ class ApplySettings:
         self.cropMeshButton.setEnabled(self.settings.enable_buttons_mesh)
         #----------------
         #Change normals button
-        self.change_normals_button.setEnabled(self.settings.enable_buttons_cloud)
+        #self.change_normals_button.setEnabled(self.settings.enable_buttons_cloud)
         #---------------------
         #Save normals button
-        self.save_normals_button.setEnabled(self.settings.enable_buttons_cloud)
+        #self.save_normals_button.setEnabled(self.settings.enable_buttons_cloud)
         #-------------------
         #Fix mesh button
         self.fix_mesh_button.setEnabled(self.settings.enable_buttons_mesh)
@@ -100,7 +104,7 @@ class ApplySettings:
         self.min_points_on_path_slider.setValue(self.settings.min_points_on_path_value)
         self.min_points_on_path_value_label.setText(str(self.settings.min_points_on_path_value))
         #----------------------
-        #Curvature treshold
+        #Curvature threshold
         self.curvature_treshold_slider.setValue(self.settings.curvature_threshold_value)
         self.curvature_threshold_value_label.setText(str(float(self.settings.curvature_threshold_value) / 100))
         #------------------
@@ -109,9 +113,36 @@ class ApplySettings:
         self.neighbours_value_label.setText(str(self.settings.neighbours_value))
         #---------------------------------------------------------------#
 
-        #Calculate area mesh checkbox toggle
-        if self.mesh_to_calculate_area:
-            self.check_area.setEnabled(True)
+        #Select normalization preset
+        if self.cloud is not None:
+            if self.normalization_preset_combobox.currentText() == '':
+                for item in self.settings.normalization_presets:
+                    if item["cloud_size"] < self.cloud.n_points:
+                        self.normalization_preset_combobox.addItem(item['name'], item)
+
+
+        #Change normals manually
+        if self.settings.change_normals_settings_manually:
+            self.model_iterations_slider.setEnabled(True)
+            self.prop_iterations_slider.setEnabled(True)
+            self.number_of_parts_slider.setEnabled(True)
+            self.min_points_on_path_slider.setEnabled(True)
+            self.curvature_treshold_slider.setEnabled(True)
+            self.neighbours_slider.setEnabled(True)
+            self.normalization_preset_combobox.setEnabled(False)
         else:
-            self.check_area.setEnabled(False)
+            self.model_iterations_slider.setEnabled(False)
+            self.prop_iterations_slider.setEnabled(False)
+            self.number_of_parts_slider.setEnabled(False)
+            self.min_points_on_path_slider.setEnabled(False)
+            self.curvature_treshold_slider.setEnabled(False)
+            self.neighbours_slider.setEnabled(False)
+            self.normalization_preset_combobox.setEnabled(True)
+
+
+        # #Calculate area mesh checkbox toggle
+        # if self.mesh_to_calculate_area:
+        #     self.check_area.setEnabled(True)
+        # else:
+        #     self.check_area.setEnabled(False)
         # ---------------------------------------------------------------#

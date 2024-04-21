@@ -23,7 +23,7 @@ class NormalizationClass():
         prop_iterations = self.settings.prop_iterations_value
         number_of_parts = self.settings.number_of_parts_value
         min_points_on_path = self.settings.min_points_on_path_value
-        curvature_threshold = self.settings.curvature_threshold_value
+        curvature_threshold = self.settings.curvature_threshold_value / 100
         neighbours = self.settings.neighbours_value
 
         print("Normalization")
@@ -34,13 +34,13 @@ class NormalizationClass():
         print(f"Curvature threshold: ", curvature_threshold)
         print(f"neighbours: ", neighbours)
 
-        n = 50
-        #----------------------------
-        model_iterations = 5
-        prop_iterations = 3
-        number_of_parts = 30
-        min_points_on_path = 100
-        curvature_threshold = 0.01
+        # neighbours = 50
+        # #----------------------------
+        # model_iterations = 5
+        # prop_iterations = 3
+        # number_of_parts = 30
+        # min_points_on_path = 100
+        # curvature_threshold = 0.01
 
         if self.cloud.points.any():
             ptc = o3d.geometry.PointCloud()
@@ -48,9 +48,9 @@ class NormalizationClass():
             ptc.points = o3d.utility.Vector3dVector(points)
             num_points = len(points)
             # if num_points < 100000:
-            #    orient_normal(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,n=30)
+            #    orient_normal(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours=30)
             # else:
-            norm = orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,n)
+            norm = orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours)
             #o3d.visualization.draw_geometries([ptc])
             # print(f"ptc points", np.asarray(ptc.points))
             # print(f"ptc normals", np.asarray(ptc.normals))

@@ -10,6 +10,7 @@
 """
 
 import numpy as np
+import pyntcloud
 import pyvista as pv
 from PyQt5.QtWidgets import QFileDialog
 from pyntcloud import PyntCloud
@@ -43,18 +44,27 @@ class FileFunctions:
 
     def load(self, path):
         self.remove_all_geometries_from_plotter()     #Clearing plotter
+        self.normalization_preset_combobox.clear()    #Clear normalizations presets
 
         #Clearing variables for clouds and meshes in case of reloading
         self.cloud = None
         self.cloud_backup = None
         self.create_mesh = None
         self.create_mesh_backup = None
+        self.settings.normals_computed_for_origin = False
         #-------------------------------------------------------------
 
         extension = path[-3:]   #Reading the extension to distinguish between cloud and mesh
 
+        if extension == "ply":
+            file_type = self.identify_ply_file(path)
+            if file_type == 'point_cloud':
+                extension = 'cloud'
+
+        print(f"extension", extension)
+
         #Section loading a cloud or mesh from a specified path
-        if extension == "ply" or extension == "pcd" or extension == "las" or extension == "laz":
+        if extension == "pcd" or extension == "las" or extension == "laz" or extension == "cloud":
             try:
                 pyVistaCloud = PyntCloud.from_file(path)    #Loading the cloud using the pyntcloud library
                 #----------------------------------------------------------
@@ -64,6 +74,13 @@ class FileFunctions:
                 #-----------------------------------------------------------
             except Exception as e:
                 print("[WARNING] Failed to read points", path, e)
+
+        elif extension == "mesh":
+            try:
+                self.create_mesh = pyntcloud.PyntCloud.from_file(path)
+                print("[Info] Successfully read", path)
+            except Exception as e:
+                print("[WARNING] Failed to read mesh", path, e)
         else:
             try:
                 self.create_mesh = pv.read(path)            #Loading a mesh from the selected location using pyvista's built-in functions
@@ -76,18 +93,19 @@ class FileFunctions:
         #Section adding the loaded cloud/mesh to the plotter
         if self.cloud is not None:
             #Cloud downsampling
-            downSampling = self.settings.downSampling_size_slider_value / 1000
-            downSamplingCloud = self.cloud.clean(
-                point_merging=True,
-                merge_tol=downSampling,
-                lines_to_points=False,
-                polys_to_lines=False,
-                strips_to_polys=False,
-                inplace=False,
-                absolute=False,
-                progress_bar=True,
-            )
-            self.cloud = downSamplingCloud
+            if self.settings.downSampling_size_slider_value > 0:
+                downSampling = self.settings.downSampling_size_slider_value / 1000
+                downSamplingCloud = self.cloud.clean(
+                    point_merging=True,
+                    merge_tol=downSampling,
+                    lines_to_points=False,
+                    polys_to_lines=False,
+                    strips_to_polys=False,
+                    inplace=False,
+                    absolute=False,
+                    progress_bar=True,
+                )
+                self.cloud = pv.PolyData(downSamplingCloud.points)
             #-----------------------------
             self.cloud_backup = self.cloud  #Creating cloud backup
             #-----------------------------
@@ -105,18 +123,19 @@ class FileFunctions:
             self.cloud = pv.PolyData(self.create_mesh.points)
 
             # Cloud downsampling
-            downSampling = self.settings.downSampling_size_slider_value / 1000
-            downSamplingCloud = self.cloud.clean(
-                point_merging=True,
-                merge_tol=downSampling,
-                lines_to_points=False,
-                polys_to_lines=False,
-                strips_to_polys=False,
-                inplace=False,
-                absolute=False,
-                progress_bar=True,
-            )
-            self.cloud = downSamplingCloud
+            if self.settings.downSampling_size_slider_value > 0:
+                downSampling = self.settings.downSampling_size_slider_value / 1000
+                downSamplingCloud = self.cloud.clean(
+                    point_merging=True,
+                    merge_tol=downSampling,
+                    lines_to_points=False,
+                    polys_to_lines=False,
+                    strips_to_polys=False,
+                    inplace=False,
+                    absolute=False,
+                    progress_bar=True,
+                )
+                self.cloud = pv.PolyData(downSamplingCloud.points)
             # -----------------------------
             self.cloud_backup = self.cloud  # Creating cloud backup
             # -----------------------------
@@ -186,6 +205,23 @@ class FileFunctions:
                 print("[WARNING] Failed to save cloud", e)
         #-----------------------------------------
 
+    def _on_export_mesh_to_ply(self):
+        # Selecting a location to save the file
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        filters = "PLY Files (*.ply);;All Files (*)"
+        self.filePath, _ = QFileDialog.getSaveFileName(self, "Save PLY File", "", filters, options=options)
+        # -------------------------------------
+
+        # Saving the cloud to a selected location
+        if self.filePath:
+            try:
+                self.create_mesh.save(self.filePath)
+                print("Mesh was successively saved")
+            except Exception as e:
+                print("[WARNING] Failed to save mesh", e)
+        # -----------------------------------------
+
     #Functions for removing and addings elements to plotter
     def remove_all_geometries_from_plotter(self):
         #Removing all geometries from plotter
@@ -228,8 +264,30 @@ class FileFunctions:
         self.mesh_with_triangles_container = None
         #---------------------------
 
-        #Clearing checkbox for normals calculation
-        self.settings.normals_computed_for_origin = False
+    def _reset_plotter(self):
+        self.plotter.clear_actors()
+        self.plotter.clear_sphere_widgets()
+
+        self.reload_plotter()
+
+        if self.display_cloud_checkbox.isChecked():
+            self.add_cloud_to_plotter(self.cloud)
+            center = self.cloud.center
+            self.plotter.camera.SetFocalPoint(center[0], center[1], center[2])
+
+        if self.display_normals_checkbox.isChecked():
+            self.display_normals_checkbox.setChecked(False)
+            self.cloud_normals_container = None
+
+        if self.display_mesh_checkbox.isChecked():
+            self.add_mesh_to_plotter(self.create_mesh)
+            center = self.create_mesh.center
+            self.plotter.camera.SetFocalPoint(center[0], center[1], center[2])
+
+        if self.display_triangles_checkbox.isChecked():
+            self.add_mesh_with_triangles_to_plotter(self.create_mesh)
+            center = self.create_mesh.center
+            self.plotter.camera.SetFocalPoint(center[0], center[1], center[2])
 
     def remove_cloud(self):
         #Removing cloud from plotter
@@ -289,13 +347,13 @@ class FileFunctions:
 
 
     def add_cloud_to_plotter(self, cloud):
-        self.cloud_geometry_container = self.plotter.add_points(cloud, show_scalar_bar=False)  # Add points to plotter
+        self.cloud_geometry_container = self.plotter.add_points(cloud, show_scalar_bar=False, render_points_as_spheres=True, color='white')  # Add points to plotter
         self.display_cloud_checkbox.setChecked(True)  # Check geometries checkbox
         self.plotter.update()  # Update the plotter to display the new mesh
 
         # Focus camera on object center
-        center = cloud.center
-        self.plotter.camera.SetFocalPoint(center[0], center[1], center[2])
+        #center = cloud.center
+        #self.plotter.camera.SetFocalPoint(center[0], center[1], center[2])
         # -----------------------------
 
         # Enable cloud export buttons
@@ -321,8 +379,8 @@ class FileFunctions:
         # ----------------------
 
         # Focus camera on object center
-        center = mesh.center
-        self.plotter.camera.SetFocalPoint(center[0], center[1], center[2])
+        #center = mesh.center
+        #self.plotter.camera.SetFocalPoint(center[0], center[1], center[2])
         # -----------------------------
 
         # Enable mesh export buttons
@@ -351,3 +409,11 @@ class FileFunctions:
 
         self.plotter.show()
 
+    def identify_ply_file(self, path):
+        try:
+            cloud = pyntcloud.PyntCloud.from_file(path)
+            if not cloud.mesh.empty:
+                return 'mesh'
+        except Exception:
+            return "point_cloud"
+        return "unknown"

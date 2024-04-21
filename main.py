@@ -13,7 +13,9 @@ from pyvistaqt import QtInteractor, MainWindow
 
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
-from PyQt5.QtGui import QIntValidator
+from PyQt5.QtGui import QIntValidator, QDoubleValidator
+from PyQt5.QtCore import QLocale
+
 
 import psutil
 import time
@@ -45,6 +47,10 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.plotter = QtInteractor(self.plotter_frame)
         self.vlayout.addWidget(self.plotter.interactor)
         self.plotter_frame.setLayout(self.vlayout)
+        self.plotter.camera.SetFocalPoint(0, 0, 0)
+        self.plotter.camera.SetViewUp(0, 0, 0)
+
+
 
         # Setting toolbox to scene geometries
         self.toolBox.setCurrentIndex(0)
@@ -53,7 +59,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self._apply_settings()
 
         # -------------------Version 1.20-------------------------------
-        # -------------------Adding trigers-----------------------------
+        # -------------------Adding triggers-----------------------------
 
         # -------------------Action Bar--------------------------------#
         self.actionOpen.triggered.connect(self.open_file)
@@ -64,6 +70,8 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.display_normals_checkbox.clicked.connect(self._show_normals_checked)
         self.display_mesh_checkbox.clicked.connect(self._show_mesh_checked)
         self.display_triangles_checkbox.clicked.connect(self._show_triangles_checked)
+        #Reset layout
+        self.reset_layout_button.clicked.connect(self._reset_plotter)
 
         # -------------------Complements-------------------------------#
         # Background Color
@@ -72,35 +80,41 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.modelColor.clicked.connect(self._change_model_color)
         # Text Color
         self.textColorbtn.clicked.connect(self._change_text_color)
-        # Downsampling
-        self.voxel_size_slider.valueChanged.connect(self.on_downSampling_size_change)
-        # Scale
-        self.scale_up_button.clicked.connect(lambda: self._change_scale("+"))
-        self.scale_down_button.clicked.connect(lambda: self._change_scale("-"))
         # Calculate
-
+        self.calculate_area_button.clicked.connect(self._calculate_area)
         # Show All Bounds
         self.showAllBoundsCheck.clicked.connect(self._show_All_Bounds)
         # Distance
         self.checkDistance.clicked.connect(self._distance_select)
 
 
-        # -------------------Move object-------------------------------#
-        # Move x
-        self.move_x_up_button.clicked.connect(lambda: self.move_in_x_axis("+"))
-        self.move_x_down_button.clicked.connect(lambda: self.move_in_x_axis("-"))
-        # Move y
-        self.move_y_up_button.clicked.connect(lambda: self.move_in_y_axis("+"))
-        self.move_y_down_button.clicked.connect(lambda: self.move_in_y_axis("-"))
-        # Move z
-        self.move_z_up_button.clicked.connect(lambda: self.move_in_z_axis("+"))
-        self.move_z_down_button.clicked.connect(lambda: self.move_in_z_axis("-"))
+        # # -------------------Move object-------------------------------#
+        # Downsampling
+        self.voxel_size_slider.valueChanged.connect(self.on_downSampling_size_change)
+        # Scale
+        self.scale_up_button.clicked.connect(lambda: self._change_scale("+"))
+        self.scale_down_button.clicked.connect(lambda: self._change_scale("-"))
+        #Displacements
+        self.validator = QDoubleValidator()
+        locale = QLocale(QLocale.English, QLocale.UnitedStates)
+        self.validator.setLocale(locale)
+        #--
+        self.move_x_value_field.setValidator(self.validator)
+        self.move_y_value_field.setValidator(self.validator)
+        self.move_z_value_field.setValidator(self.validator)
+        #--
+        self.move_x_value_field.textChanged.connect(self.move_in_x_axis)
+        self.move_y_value_field.textChanged.connect(self.move_in_y_axis)
+        self.move_z_value_field.textChanged.connect(self.move_in_z_axis)
+        #--
         # Rotate x
         self.rotation_x_slider.valueChanged.connect(self._rotation_slider_x_change)
         # Rotate y
         self.rotation_y_slider.valueChanged.connect(self._rotation_slider_y_change)
         # Rotate z
         self.rotation_z_slider.valueChanged.connect(self._rotation_slider_z_change)
+        #Apply values
+        self.apply_transformation_values_button.clicked.connect(self._transform_object)
 
         # -------------------Selections--------------------------------#
         # Select Points
@@ -109,34 +123,43 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.delete_points_button.clicked.connect(self._select_single_point)
         # Delete Selected Points
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
-        # Edit mesh
-        self.edit_meshBtn.clicked.connect(self._edit_mesh)
-        # Surface area
-        self.check_area.clicked.connect(self._calculate_surface_area)
+        # Extract selected points
+        self.extract_selected_points_button.clicked.connect(self._extract_selected_points)
 
         # -------------------Convert to mesh---------------------------#
         # Create mesh
         self.create_mesh_button.clicked.connect(self._make_mesh)
-        # Crop mesh
-        self.cropMeshButton.clicked.connect(self.crop_mesh_box)
-        # Change normals
-        self.change_normals_button.clicked.connect(self.select_points_for_normals)
-        # Save normals
-        self.save_normals_button.clicked.connect(self.save_normals)
         # Fix mesh
         self.fix_mesh_button.clicked.connect(self.repair_mesh)
-        # Crop selection mesh
-        self.cropMeshSelected.clicked.connect(self.crop_mesh_selected)
-        # Extract mesh
-        self.extractMesh.clicked.connect(self.extract_mesh)
+        # Reduce triangles
+        self.reduce_triangles_button.clicked.connect(self.transform_existing_mesh)
         # Triangles amount
         self.triangles_amount_input_field.setValidator(QIntValidator(1, 100, self))
         self.triangles_amount_input_field.textChanged.connect(self._triangles_amount_changed)
         self.triangles_amount_checkbox.clicked.connect(self._enable_triangles_amount_input_field)
+        # Edit mesh
+        self.edit_meshBtn.clicked.connect(self._edit_mesh)
+        # Crop mesh
+        self.cropMeshButton.clicked.connect(self.crop_mesh_box)
+        # Select area
+        self.select_mesh_area_button.clicked.connect(self.select_mesh_area)
+        # Crop selection mesh
+        self.cropMeshSelected.clicked.connect(self.crop_mesh_selected)
+        # Extract mesh
+        self.extractMesh.clicked.connect(self.extract_mesh)
+        # Smooth button
+        self.smooth_button.clicked.connect(self._smooth_mesh)
+        # Number of iterations for smooth field
+        self.smooth_number_of_iterations_field.setValidator(QIntValidator(1, 10000, self))
+        self.smooth_number_of_iterations_field.textChanged.connect(self._on_number_of_smooth_operations_value_changed)
 
         # -------------------Normalization----------------------------#
         # Normalize checkbox
         self.normalize_checkbox.clicked.connect(self.normalize_checkbox_changed)
+        #Normalize preset
+        self.normalization_preset_combobox.currentTextChanged.connect(self._normalize_preset_changed)
+        #Change values manually
+        self.change_values_manually_checkbox.clicked.connect(self._change_values_manually_checkbox_changed)
         # Model iterations
         self.model_iterations_slider.valueChanged.connect(self._model_iterations_slider_change)
         # Prop iterations
@@ -145,7 +168,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.number_of_parts_slider.valueChanged.connect(self._number_of_parts_slider_changed)
         # Minimum points on path
         self.min_points_on_path_slider.valueChanged.connect(self._min_points_on_path_slider_changed)
-        # Curvature treshold
+        # Curvature threshold
         self.curvature_treshold_slider.valueChanged.connect(self.curvature_threshold_slider_changed)
         #Neighbours
         self.neighbours_slider.valueChanged.connect(self.neighbours_slider_changed)
@@ -157,6 +180,8 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.export_to_stl.clicked.connect(lambda: self._on_export_to_stl(self.create_mesh))
         # PLY
         self.export_to_ply.clicked.connect(self._on_export_to_ply)
+        # Mesh to PLY
+        self.export_mesh_to_ply.clicked.connect(self._on_export_mesh_to_ply)
 
         # -------------------------------------------------------------#
 
@@ -183,6 +208,28 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
                 print("Insufficient free RAM")
                 os.kill(os.getpid(), signal.SIGTERM)
             time.sleep(1)
+
+
+    #Key function for resetting plotter called from file functions.
+    # Do not use directly!
+    # You should use the function located in file_functions!
+    # Do not delete!
+    def reload_plotter(self):
+        # Deleting existing plotter
+        if hasattr(self, 'plotter_frame'):
+            self.vlayout.removeWidget(self.plotter_frame)
+            self.plotter_frame.deleteLater()
+
+        # Creating new plotter
+        self.plotter_frame = QtWidgets.QFrame()
+        self.plotter = QtInteractor(self.plotter_frame)
+        self.vlayout.addWidget(self.plotter.interactor)
+        self.plotter_frame.setLayout(self.vlayout)
+        self.plotter.camera.SetFocalPoint(0, 0, 0)
+        self.plotter.camera.SetViewUp(0, 0, 0)
+
+        self._apply_settings()
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

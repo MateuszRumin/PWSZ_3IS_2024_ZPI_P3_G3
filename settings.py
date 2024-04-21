@@ -1,9 +1,10 @@
 class Settings:
     def __init__(self):
         self.file_path = None                       #Path to file
-        self.downSampling_size_slider_value = 1     #DownSampling value
+        self.downSampling_size_slider_value = 0     #DownSampling value
         self.scale_value = 1                        #Scale factor
         self.triangles_amount = 100                 #Triangles amount
+        self.number_of_smooth_iterations = 1        #Smooth iterations
 
         #Cloud move values
         self.object_move_in_x_direction = 0
@@ -27,6 +28,9 @@ class Settings:
         #Normalize cloud
         self.normalize_checkbox_value = True
 
+        #Change normals values manually
+        self.change_normals_settings_manually = False
+
         #Enable create mesh button
         self.enable_create_mesh_button = False
 
@@ -40,10 +44,25 @@ class Settings:
         self.colorTextPlot = 'white'
 
         #Normalization sliders:
-        self.model_iterations_value = 100
-        self.prop_iterations_value = 10
-        self.number_of_parts_value = 15
-        self.min_points_on_path_value = 21
-        self.curvature_threshold_value = 0
-        self.neighbours_value = 30
+        self.model_iterations_value = 5
+        self.prop_iterations_value = 3
+        self.number_of_parts_value = 30
+        self.min_points_on_path_value = 100
+        self.curvature_threshold_value = 1
+        self.neighbours_value = 50
+
+        self.normalization_presets = [
+            {"name": "Default", "cloud_size": 0, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+             "neighbours_value": 50},
+            {"name": "Small cloud", "cloud_size": 0, "model_iterations_value": 10, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+             "neighbours_value": 50},
+            {"name": "Large cloud", "cloud_size": 35000, "model_iterations_value": 15, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+             "neighbours_value": 50},
+        ]
+
+
+
 
