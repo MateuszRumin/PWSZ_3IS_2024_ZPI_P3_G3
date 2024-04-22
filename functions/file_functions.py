@@ -77,14 +77,14 @@ class FileFunctions:
 
         elif extension == "mesh":
             try:
-                self.create_mesh = pyntcloud.PyntCloud.from_file(path)
+                self.create_mesh = pv.read(path)
                 print("[Info] Successfully read", path)
             except Exception as e:
                 print("[WARNING] Failed to read mesh", path, e)
         else:
             try:
                 self.create_mesh = pv.read(path)            #Loading a mesh from the selected location using pyvista's built-in functions
-                self.mesh_to_calculate_area = mesh.Mesh.from_file(self.filePath)
+                #self.mesh_to_calculate_area = mesh.Mesh.from_file(self.filePath)
                 print("[Info] Successfully read", path)
             except Exception as e:
                 print("[WARNING] Failed to read mesh", path, e)

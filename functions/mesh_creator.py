@@ -60,6 +60,7 @@ class MeshCreator():
             f = np.array(rec_mesh.triangles)
             f = np.c_[np.full(len(f), 3), f]
             self.create_mesh = pv.PolyData(v, f)
+            self.create_mesh_backup = copy.deepcopy(self.create_mesh)
 
             #Add to plotter
             self.remove_mesh()
@@ -101,6 +102,7 @@ class MeshCreator():
             f = np.array(rec_mesh.triangles)
             f = np.c_[np.full(len(f), 3), f]
             self.create_mesh = pv.PolyData(v, f)
+            self.create_mesh_backup = copy.deepcopy(self.create_mesh)
 
             # Reloading mesh
             self.remove_mesh()

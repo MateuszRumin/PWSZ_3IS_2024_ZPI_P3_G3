@@ -203,7 +203,7 @@ class GuiFunctions:
     #A function that carries out the transformation of an object.
     # It is called by functions that retrieve the transformation values of an object.
     def _transform_object(self):
-        if self.cloud is not None:
+        if self.cloud is not None and self.display_cloud_checkbox.isChecked():
             try:
                 self.cloud = copy.deepcopy(self.cloud_backup)   #Copy cloud form backup
                 self.cloud = pv.PolyData(self.cloud.points)
@@ -262,7 +262,7 @@ class GuiFunctions:
             except Exception as e:
                 print("[WARNING] Failed to transform cloud", e)
 
-        if self.create_mesh is not None:
+        if self.create_mesh is not None and (self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
             try:
                 self.create_mesh = copy.deepcopy(self.create_mesh_backup)  #Copy mesh form backup
 
@@ -292,6 +292,7 @@ class GuiFunctions:
                 self.create_mesh = self.create_mesh.rotate_z(rotation_z, point=self.create_mesh.center)
                 #--------
                 #Scale
+                print(f"mesh", self.create_mesh)
                 self.create_mesh.points *= scale_value
                 #------------------------------------------------#
 

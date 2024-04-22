@@ -49,6 +49,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.plotter_frame.setLayout(self.vlayout)
         self.plotter.camera.SetFocalPoint(0, 0, 0)
         self.plotter.camera.SetViewUp(0, 0, 0)
+        self.plotter.add_axes()
 
 
 
@@ -227,6 +228,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.plotter_frame.setLayout(self.vlayout)
         self.plotter.camera.SetFocalPoint(0, 0, 0)
         self.plotter.camera.SetViewUp(0, 0, 0)
+        self.plotter.add_axes()
 
         self._apply_settings()
 
