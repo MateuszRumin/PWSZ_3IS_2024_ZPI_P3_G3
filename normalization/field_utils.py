@@ -105,7 +105,7 @@ def strongest_field_propagation_reps(input_pc, reps, diffuse=False, weights=None
         # find the flattest patch to start with
 
         curv = [pca_eigen_values(pts[patch]) for patch in patches]
-        min_index = np.array([torch.as_tensor(curv[i][0], device="cpu" ) for i in range(len(patches))])
+        min_index = np.array([torch.as_tensor(curv[i][0], device="cpu") for i in range(len(patches))], dtype=object)
         min_index = np.abs(min_index)
         min_index = np.argmin(min_index)
 

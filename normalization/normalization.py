@@ -43,21 +43,23 @@ class NormalizationClass():
         # curvature_threshold = 0.01
 
         if self.cloud.points.any():
-            ptc = o3d.geometry.PointCloud()
+            # ptc = o3d.geometry.PointCloud()
             points = self.cloud.points
-            ptc.points = o3d.utility.Vector3dVector(points)
-            num_points = len(points)
+            # ptc.points = o3d.utility.Vector3dVector(points)
+            # num_points = len(points)
             # if num_points < 100000:
             #    orient_normal(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours=30)
             # else:
-            norm = orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours)
+            ptc = orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours)
+            ptc.points = o3d.utility.Vector3dVector(np.asarray(ptc.points)*1.7)
+            ptc.normals = o3d.utility.Vector3dVector(np.asarray(ptc.normals) * 1.7)
             #o3d.visualization.draw_geometries([ptc])
             # print(f"ptc points", np.asarray(ptc.points))
             # print(f"ptc normals", np.asarray(ptc.normals))
-            self._origin_vectors = norm
+            self._origin_vectors = ptc.normals
             self.cloud['vectors'] = self._origin_vectors
             self.settings.normals_computed_for_origin == True
-            ptc.normals = o3d.utility.Vector3dVector(norm)
+            # ptc.normals = o3d.utility.Vector3dVector(norm)
             self.open3d_normalized_cloud = ptc
 
 

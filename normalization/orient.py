@@ -62,7 +62,7 @@ def orient_large(points,model_iterations,prop_iterations,number_of_parts,min_poi
     print("end net orientation")
     [model.to('cpu') for model in models]
     print("propagating field")
-    strongest_field_propagation_reps(input_pc, represent, diffuse=True)
+    # strongest_field_propagation_reps(input_pc, represent, diffuse=True)
     print("end propagating field")
     print("fix global orientation")
     if measure_mean_potential(input_pc) < 0:

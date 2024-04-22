@@ -15,12 +15,12 @@ def point_tensor(points):
 
 def tensor_to_pc(tens):
     tens = torch.clone(tens).to("cpu")
-    # rtn = o3d.geometry.PointCloud()
-    # points = np.asarray(tens[:,:3])
-    # rtn.points = o3d.utility.Vector3dVector(points)
-    rtn = np.asarray(tens[:,3:])
-    # rtn.normals = o3d.utility.Vector3dVector(normals)
-    rtn = o3d.utility.Vector3dVector(rtn)
+    rtn = o3d.geometry.PointCloud()
+    points = np.asarray(tens[:,:3])
+    rtn.points = o3d.utility.Vector3dVector(points)
+    normals = np.asarray(tens[:,3:])
+    rtn.normals = o3d.utility.Vector3dVector(normals)
+    # rtn = o3d.utility.Vector3dVector(rtn)
     return rtn
 
 

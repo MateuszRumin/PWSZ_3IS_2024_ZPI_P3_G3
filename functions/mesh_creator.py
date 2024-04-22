@@ -117,7 +117,7 @@ class MeshCreator():
         holes = meshfix.extract_holes()
 
         # Repair the mesh
-        meshfix.repair(verbose=True)
+        meshfix.repair(verbose=True,joincomp=False,remove_smallest_components=False)
         self.create_mesh = meshfix.mesh
         self.create_mesh_backup = self.create_mesh
 
