@@ -157,3 +157,4 @@ def strongest_field_propagation_reps(input_pc, reps, diffuse=False, weights=None
         if weights is not None:
             # scale the normal back to unit because of previous weighted scaling
             pts[:, 3:] = pts[:, 3:] / weights[:, None]
+    return pts

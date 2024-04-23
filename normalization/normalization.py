@@ -51,8 +51,8 @@ class NormalizationClass():
             #    orient_normal(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours=30)
             # else:
             ptc = orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours)
-            ptc.points = o3d.utility.Vector3dVector(np.asarray(ptc.points)*1.7)
-            ptc.normals = o3d.utility.Vector3dVector(np.asarray(ptc.normals) * 1.7)
+            # ptc.points = o3d.utility.Vector3dVector(np.asarray(ptc.points)*1.7)
+            # ptc.normals = o3d.utility.Vector3dVector(np.asarray(ptc.normals) * 1.7)
             #o3d.visualization.draw_geometries([ptc])
             # print(f"ptc points", np.asarray(ptc.points))
             # print(f"ptc normals", np.asarray(ptc.normals))

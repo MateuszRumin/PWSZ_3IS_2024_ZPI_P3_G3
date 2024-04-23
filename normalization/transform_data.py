@@ -49,7 +49,9 @@ class Transform:
     def inverse(self, pc: torch.Tensor) -> torch.Tensor:
         pc = pc.clone()
         pc[:, :3] = pc[:, :3] * self.scale
+        pc[:, 3:] = pc[:, 3:] * self.scale
         pc[:, :3] += self.center[None, :]
+
         return pc
 
     @staticmethod

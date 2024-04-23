@@ -62,7 +62,7 @@ def orient_large(points,model_iterations,prop_iterations,number_of_parts,min_poi
     print("end net orientation")
     [model.to('cpu') for model in models]
     print("propagating field")
-    # strongest_field_propagation_reps(input_pc, represent, diffuse=True)
+    input_pc = strongest_field_propagation_reps(input_pc, represent, diffuse=True)
     print("end propagating field")
     print("fix global orientation")
     if measure_mean_potential(input_pc) < 0:
@@ -70,7 +70,9 @@ def orient_large(points,model_iterations,prop_iterations,number_of_parts,min_poi
         input_pc[:, 3:] *= -1
     print("end fix global orientation")
     print("end transform back to point cloud")
-    rtn = tensor_to_pc(input_pc)
+    print(input_pc)
+    rtn = tensor_to_pc(transform.inverse(input_pc))
+    print(rtn)
     print("end transform back to point cloud")
     return rtn
 
