@@ -204,103 +204,125 @@ class GuiFunctions:
     # It is called by functions that retrieve the transformation values of an object.
     def _transform_object(self):
         if self.cloud is not None and self.display_cloud_checkbox.isChecked():
-            try:
-                self.cloud = copy.deepcopy(self.cloud_backup)   #Copy cloud form backup
-                self.cloud = pv.PolyData(self.cloud.points)
+            if self.settings.transformation_logic_equalizer != [0, 0, 0]:
+                if self.settings.transformation_logic_equalizer != [1, 0, 0]:
+                    #Overwrite backup and save changes in equalizer
+                    self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                    self.settings.transformation_logic_equalizer = [1, 0, 0]
+                    self.settings.reset_smooth_values()
+                    self.settings.reset_triangles_values()
+                    self._apply_settings()
 
-                #-----------Read values from settings-----------#
-                #Displacement
-                move_x = float(self.settings.object_move_in_x_direction)
-                move_y = float(self.settings.object_move_in_y_direction)
-                move_z = float(self.settings.object_move_in_z_direction)
-                #------------
-                #Rotation
-                rotation_x = self.settings.rotate_slider_x_value
-                rotation_y = self.settings.rotate_slider_y_value
-                rotation_z = self.settings.rotate_slider_z_value
-                #--------
-                #Scale
-                scale_value = self.settings.scale_value
-                #-----
-                #DownSampling
-                downSampling = self.settings.downSampling_size_slider_value / 1000
-                #-----------------------------------------------#
 
-                #-----------Cloud Transformations---------------#
-                #DownSampling
-                if downSampling > 0:
-                    downSamplingCloud = self.cloud.clean(
-                        point_merging=True,
-                        merge_tol=downSampling,
-                        lines_to_points=False,
-                        polys_to_lines=False,
-                        strips_to_polys=False,
-                        inplace=False,
-                        absolute=False,
-                        progress_bar=False,
-                    )
-                    self.cloud = downSamplingCloud
-                #------------
-                #Displacement
-                translation_vector = np.array([move_x, move_y, move_z])
-                self.cloud.points += translation_vector
-                #------------
-                #Rotation
-                self.cloud = self.cloud.rotate_x(rotation_x, inplace=True, point=self.cloud.center)
-                self.cloud = self.cloud.rotate_y(rotation_y, inplace=True, point=self.cloud.center)
-                self.cloud = self.cloud.rotate_z(rotation_z, inplace=True, point=self.cloud.center)
-                #--------
-                #Scale
-                self.cloud.points *= scale_value
-                #-----------------------------------------------#
+            if self.settings.transformation_logic_equalizer == [0, 0, 0] or self.settings.transformation_logic_equalizer == [1, 0, 0]:
+                try:
+                    self.cloud = copy.deepcopy(self.cloud_backup)   #Copy cloud form backup
+                    self.cloud = pv.PolyData(self.cloud.points)
 
-                #Removing old cloud and adding new to plotter
-                self.remove_cloud()
-                self.cloud = pv.PolyData(self.cloud.points)
-                self.add_cloud_to_plotter(self.cloud)
+                    #-----------Read values from settings-----------#
+                    #Displacement
+                    move_x = float(self.settings.object_move_in_x_direction)
+                    move_y = float(self.settings.object_move_in_y_direction)
+                    move_z = float(self.settings.object_move_in_z_direction)
+                    #------------
+                    #Rotation
+                    rotation_x = self.settings.rotate_slider_x_value
+                    rotation_y = self.settings.rotate_slider_y_value
+                    rotation_z = self.settings.rotate_slider_z_value
+                    #--------
+                    #Scale
+                    scale_value = self.settings.scale_value
+                    #-----
+                    #DownSampling
+                    downSampling = self.settings.downSampling_size_slider_value / 1000
+                    #-----------------------------------------------#
 
-            except Exception as e:
-                print("[WARNING] Failed to transform cloud", e)
+                    #-----------Cloud Transformations---------------#
+                    #DownSampling
+                    if downSampling > 0:
+                        downSamplingCloud = self.cloud.clean(
+                            point_merging=True,
+                            merge_tol=downSampling,
+                            lines_to_points=False,
+                            polys_to_lines=False,
+                            strips_to_polys=False,
+                            inplace=False,
+                            absolute=False,
+                            progress_bar=False,
+                        )
+                        self.cloud = downSamplingCloud
+                    #------------
+                    #Displacement
+                    translation_vector = np.array([move_x, move_y, move_z])
+                    self.cloud.points += translation_vector
+                    #------------
+                    #Rotation
+                    self.cloud = self.cloud.rotate_x(rotation_x, inplace=True, point=self.cloud.center)
+                    self.cloud = self.cloud.rotate_y(rotation_y, inplace=True, point=self.cloud.center)
+                    self.cloud = self.cloud.rotate_z(rotation_z, inplace=True, point=self.cloud.center)
+                    #--------
+                    #Scale
+                    self.cloud.points *= scale_value
+                    #-----------------------------------------------#
+
+                    #Removing old cloud and adding new to plotter
+                    self.remove_cloud()
+                    self.cloud = pv.PolyData(self.cloud.points)
+                    self.add_cloud_to_plotter(self.cloud)
+                    self.settings.transformation_logic_equalizer = [1, 0, 0]
+
+                except Exception as e:
+                    print("[WARNING] Failed to transform cloud", e)
 
         if self.create_mesh is not None and (self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
-            try:
-                self.create_mesh = copy.deepcopy(self.create_mesh_backup)  #Copy mesh form backup
+            if self.settings.transformation_logic_equalizer != [0, 0, 0]:
+                if self.settings.transformation_logic_equalizer != [1, 0, 0]:
+                    #Overwrite backup and save changes in equalizer
+                    self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                    self.settings.transformation_logic_equalizer = [1, 0, 0]
+                    self.settings.reset_smooth_values()
+                    self.settings.reset_triangles_values()
+                    self._apply_settings()
 
-                # -----------Read values from settings-----------#
-                # Displacement
-                move_x = float(self.settings.object_move_in_x_direction)
-                move_y = float(self.settings.object_move_in_y_direction)
-                move_z = float(self.settings.object_move_in_z_direction)
-                # ------------
-                # Rotation
-                rotation_x = self.settings.rotate_slider_x_value
-                rotation_y = self.settings.rotate_slider_y_value
-                rotation_z = self.settings.rotate_slider_z_value
-                # --------
-                # Scale
-                scale_value = self.settings.scale_value
-                # -----------------------------------------------#
+            if self.settings.transformation_logic_equalizer == [0, 0, 0] or self.settings.transformation_logic_equalizer == [1, 0, 0]:
+                try:
+                    self.create_mesh = copy.deepcopy(self.create_mesh_backup)  #Copy mesh form backup
 
-                # ------------Mesh Transformations---------------#
-                #Displacement
-                translation_vector = np.array([move_x, move_y, move_z])
-                self.create_mesh.points += translation_vector
-                #------------
-                #Rotation
-                self.create_mesh = self.create_mesh.rotate_x(rotation_x, point=self.create_mesh.center)
-                self.create_mesh = self.create_mesh.rotate_y(rotation_y, point=self.create_mesh.center)
-                self.create_mesh = self.create_mesh.rotate_z(rotation_z, point=self.create_mesh.center)
-                #--------
-                #Scale
-                print(f"mesh", self.create_mesh)
-                self.create_mesh.points *= scale_value
-                #------------------------------------------------#
+                    # -----------Read values from settings-----------#
+                    # Displacement
+                    move_x = float(self.settings.object_move_in_x_direction)
+                    move_y = float(self.settings.object_move_in_y_direction)
+                    move_z = float(self.settings.object_move_in_z_direction)
+                    # ------------
+                    # Rotation
+                    rotation_x = self.settings.rotate_slider_x_value
+                    rotation_y = self.settings.rotate_slider_y_value
+                    rotation_z = self.settings.rotate_slider_z_value
+                    # --------
+                    # Scale
+                    scale_value = self.settings.scale_value
+                    # -----------------------------------------------#
 
-                self.remove_mesh()
-                self.add_mesh_to_plotter(self.create_mesh)
-                #-------------------------------------------
-            except Exception as e:
-                print("[WARNING] Failed to transform mesh", e)
+                    # ------------Mesh Transformations---------------#
+                    #Displacement
+                    translation_vector = np.array([move_x, move_y, move_z])
+                    self.create_mesh.points += translation_vector
+                    #------------
+                    #Rotation
+                    self.create_mesh = self.create_mesh.rotate_x(rotation_x, point=self.create_mesh.center)
+                    self.create_mesh = self.create_mesh.rotate_y(rotation_y, point=self.create_mesh.center)
+                    self.create_mesh = self.create_mesh.rotate_z(rotation_z, point=self.create_mesh.center)
+                    #--------
+                    #Scale
+                    self.create_mesh.points *= scale_value
+                    #------------------------------------------------#
+
+                    self.remove_mesh()
+                    self.add_mesh_to_plotter(self.create_mesh)
+                    self.settings.transformation_logic_equalizer = [1, 0, 0]
+                    #-------------------------------------------
+                except Exception as e:
+                    print("[WARNING] Failed to transform mesh", e)
 
     #Checkbox showing point cloud
     def _show_cloud_checked(self):
@@ -330,9 +352,7 @@ class GuiFunctions:
                 #Adding arrows to the plotter
                 self.add_normals_to_plotter(normals_arrows)
                 #----------------------------
-                #Vector calculation for mesh open3d
-                self.origin_vectors_normalized = self._origin_vectors / np.linalg.norm(self._origin_vectors, axis=1)[:,np.newaxis]
-                #----------------------------------
+
             elif self.settings.normals_computed_for_origin == False:
                 if self.cloud is None:
                     origin = self.create_mesh.center
@@ -359,10 +379,6 @@ class GuiFunctions:
                 # Adding arrows to the plotter
                 self.add_normals_to_plotter(normals_arrows)
                 # ----------------------------
-                # Vector calculation for mesh open3d
-                self.origin_vectors_normalized = self._origin_vectors / np.linalg.norm(self._origin_vectors, axis=1)[:,
-                                                                        np.newaxis]
-                # ----------------------------------
             else:
                 #If normals exist create arrows
                 arrows = self.cloud.glyph(

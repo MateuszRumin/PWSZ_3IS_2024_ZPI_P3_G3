@@ -10,6 +10,7 @@
 import copy
 import pyvista as pv
 import numpy as np
+from memory_profiler import profile
 #import pyautogui
 
 
@@ -20,17 +21,23 @@ class CloudSelection():
 
     def showSelectedArea(self, picked):
         if isinstance(picked, pv.UnstructuredGrid):
-            self.idx_points_table = []                                             #Resetting the index
-            #-------------------------------------------------------
-            self.idx_points_table = picked["orig_extract_id"]                      #Store indicates in idx_table
-            self.selected_points_value.setText(str(len(self.idx_points_table)))    #Display in the gui of the number of marked points
+            try:
+                self.idx_points_table = []                                             #Resetting the index
+                #-------------------------------------------------------
+                self.idx_points_table = picked["orig_extract_id"]                      #Store indicates in idx_table
+                self.selected_points_value.setText(str(len(self.idx_points_table)))    #Display in the gui of the number of marked points
+
+                #plotter update and buttons activation
+                self.plotter.update()
+                self.delete_selected_points_button.setEnabled(True)
+                self.extract_selected_points_button.setEnabled(True)
+
+            except Exception as e:
+                print("[WARNING] Failed to mark points", e)
+            finally:
+                del picked
         else:
             print("Something other than a cloud was marked.")
-        print("points selected")
-        self.plotter.update()
-        self.delete_selected_points_button.setEnabled(True)
-        self.extract_selected_points_button.setEnabled(True)
-
 
     #Function displaying a single marked point
     def showSelectedPoints(self, picked):
@@ -57,32 +64,42 @@ class CloudSelection():
     #Function to delete marked points
     def _delete_selected_points(self):
         if self.idx_points_table is not None:
-            #Filtering the cloud by deleted points
-            indices_to_keep = np.setdiff1d(np.arange(self.cloud.n_points), self.idx_points_table)
-            cloud_filtered = self.cloud.extract_points(indices_to_keep)
-            self.cloud = cloud_filtered
-            self.cloud_backup = copy.deepcopy(self.cloud)
-            #-------------------------------------
+            try:
+                #Filtering the cloud by deleted points
+                indices_to_keep = np.setdiff1d(np.arange(self.cloud.n_points), self.idx_points_table)
+                cloud_filtered = self.cloud.extract_points(indices_to_keep)
+                self.cloud = cloud_filtered
+                self.cloud_backup = copy.deepcopy(self.cloud)
+                #-------------------------------------
 
-            #Re-loading the cloud to the plotter
-            self._reset_plotter()
-            self.selected_points_value.setText("0")
-            #-----------------------------------
+                #Re-loading the cloud to the plotter
+                self._reset_plotter()
+                self.selected_points_value.setText("0")
+                #-----------------------------------
 
-            self.delete_selected_points_button.setEnabled(False)    #Deactivating delete points button
-            self.plotter.update()
+                self.delete_selected_points_button.setEnabled(False)    #Deactivating delete points button
+                self.plotter.update()
+            except Exception as e:
+                print("[WARNING] Failed to delete points", e)
+            finally:
+                self.idx_points_table.clear()
 
     def _extract_selected_points(self):
         if self.idx_points_table is not None:
-            #Filtering the cloud by deleted points
-            indices_to_keep = np.in1d(np.arange(self.cloud.n_points), self.idx_points_table)
-            cloud_filtered = self.cloud.extract_points(indices_to_keep)
-            self.cloud = cloud_filtered
-            self.cloud_backup = copy.deepcopy(self.cloud)
-            #-------------------------------------
-            self._reset_plotter()
-            self.selected_points_value.setText("0")
-            #-----------------------------------
+            try:
+                #Filtering the cloud by deleted points
+                indices_to_keep = np.in1d(np.arange(self.cloud.n_points), self.idx_points_table)
+                cloud_filtered = self.cloud.extract_points(indices_to_keep)
+                self.cloud = cloud_filtered
+                self.cloud_backup = copy.deepcopy(self.cloud)
+                #-------------------------------------
+                self._reset_plotter()
+                self.selected_points_value.setText("0")
+                #-----------------------------------
 
-            self.extract_selected_points_button.setEnabled(False)
-            self.plotter.update()
+                self.extract_selected_points_button.setEnabled(False)
+                self.plotter.update()
+            except Exception as e:
+                print("[WARNING] Failed to extract points", e)
+            finally:
+                self.idx_points_table.clear()

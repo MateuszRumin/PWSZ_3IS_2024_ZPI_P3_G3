@@ -16,7 +16,6 @@ from PyQt5 import uic, QtWidgets
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
 from PyQt5.QtCore import QLocale
 
-
 import psutil
 import time
 import signal
@@ -30,11 +29,10 @@ from functions import gui_functions
 from functions import mesh_creator
 from functions import cloud_selection
 from functions import mesh_selection
-from functions import normals_selection
 from normalization import normalization
 
 
-class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection, mesh_selection.MeshSelection, normals_selection.NormalsSelection, normalization.NormalizationClass):
+class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection, mesh_selection.MeshSelection, normalization.NormalizationClass):
 
     def __init__(self, parent=None, show=True):
         QtWidgets.QMainWindow.__init__(self, parent)
@@ -50,7 +48,6 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.plotter.camera.SetFocalPoint(0, 0, 0)
         self.plotter.camera.SetViewUp(0, 0, 0)
         self.plotter.add_axes()
-
 
 
         # Setting toolbox to scene geometries
@@ -89,8 +86,8 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.checkDistance.clicked.connect(self._distance_select)
 
 
-        # # -------------------Move object-------------------------------#
-        # Downsampling
+        # -------------------Geometry transformation-------------------#
+        # Down sampling
         self.voxel_size_slider.valueChanged.connect(self.on_downSampling_size_change)
         # Scale
         self.scale_up_button.clicked.connect(lambda: self._change_scale("+"))
@@ -98,7 +95,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         #Displacements
         self.validator = QDoubleValidator()
         locale = QLocale(QLocale.English, QLocale.UnitedStates)
-        self.validator.setLocale(locale)
+        self.validator.setLocale(locale)    #Allowing to enter dots as a separator
         #--
         self.move_x_value_field.setValidator(self.validator)
         self.move_y_value_field.setValidator(self.validator)
@@ -138,6 +135,13 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.triangles_amount_input_field.setValidator(QIntValidator(1, 100, self))
         self.triangles_amount_input_field.textChanged.connect(self._triangles_amount_changed)
         self.triangles_amount_checkbox.clicked.connect(self._enable_triangles_amount_input_field)
+        # Smooth button
+        self.smooth_button.clicked.connect(self._smooth_mesh)
+        #Cross selection
+        self.cross_selection_checkbox.clicked.connect(self._reset_plotter)
+        # Number of iterations for smooth field
+        self.smooth_number_of_iterations_field.setValidator(QIntValidator(1, 10000, self))
+        self.smooth_number_of_iterations_field.textChanged.connect(self._on_number_of_smooth_operations_value_changed)
         # Edit mesh
         self.edit_meshBtn.clicked.connect(self._edit_mesh)
         # Crop mesh
@@ -148,11 +152,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.cropMeshSelected.clicked.connect(self.crop_mesh_selected)
         # Extract mesh
         self.extractMesh.clicked.connect(self.extract_mesh)
-        # Smooth button
-        self.smooth_button.clicked.connect(self._smooth_mesh)
-        # Number of iterations for smooth field
-        self.smooth_number_of_iterations_field.setValidator(QIntValidator(1, 10000, self))
-        self.smooth_number_of_iterations_field.textChanged.connect(self._on_number_of_smooth_operations_value_changed)
+
 
         # -------------------Normalization----------------------------#
         # Normalize checkbox
@@ -196,19 +196,27 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
 
 
     def monitor_memory_usage(self):
+        #Obtaining RAM information from the system
         process = psutil.Process()
         mem_info = process.memory_info()
         virtual_memory = psutil.virtual_memory()
-        total_memory = virtual_memory.total / (1024 * 1024 * 1024)
+        #-----------------------------------------
+
+        total_memory = virtual_memory.total / (1024 * 1024 * 1024)  #Calculating total system memory
         while True:
+            #RAM status bar
             virtual_memory = psutil.virtual_memory()
             used_ram = round((virtual_memory.used / (1024 * 1024 * 1024)), 2)
             ram_usage = round(((used_ram * 100) / (total_memory - 0.5)), 0)
             self.memoryBar.setValue(int(ram_usage))
+            #---------------------------------------
+
+            #If the free RAM drops below 500 MB, the application turns off
             if round((virtual_memory.available / (1024 * 1024)), 0) < 500:
                 print("Insufficient free RAM")
                 os.kill(os.getpid(), signal.SIGTERM)
-            time.sleep(1)
+            #-------------------------------------------------------------
+            time.sleep(1)   #The condition is checked every second
 
 
     #Key function for resetting plotter called from file functions.
@@ -216,22 +224,23 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
     # You should use the function located in file_functions!
     # Do not delete!
     def reload_plotter(self):
-        # Deleting existing plotter
-        if hasattr(self, 'plotter_frame'):
-            self.vlayout.removeWidget(self.plotter_frame)
-            self.plotter_frame.deleteLater()
+        try:
+            # Deleting existing plotter
+            if hasattr(self, 'plotter_frame'):
+                self.plotter_frame.deleteLater()
 
-        # Creating new plotter
-        self.plotter_frame = QtWidgets.QFrame()
-        self.plotter = QtInteractor(self.plotter_frame)
-        self.vlayout.addWidget(self.plotter.interactor)
-        self.plotter_frame.setLayout(self.vlayout)
-        self.plotter.camera.SetFocalPoint(0, 0, 0)
-        self.plotter.camera.SetViewUp(0, 0, 0)
-        self.plotter.add_axes()
+            # Creating new plotter
+            self.plotter_frame = QtWidgets.QFrame()
+            self.plotter = QtInteractor(self.plotter_frame)
+            self.vlayout.addWidget(self.plotter.interactor)
+            self.plotter_frame.setLayout(self.vlayout)
+            self.plotter.camera.SetFocalPoint(0, 0, 0)
+            self.plotter.camera.SetViewUp(0, 0, 0)
+            self.plotter.add_axes()
 
-        self._apply_settings()
-
+            self._apply_settings()
+        except Exception as e:
+            print("[WARNING] Failed to reload plotter", e)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

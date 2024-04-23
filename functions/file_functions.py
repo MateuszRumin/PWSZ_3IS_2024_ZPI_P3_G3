@@ -74,6 +74,8 @@ class FileFunctions:
                 #-----------------------------------------------------------
             except Exception as e:
                 print("[WARNING] Failed to read points", path, e)
+            finally:
+                del pyVistaCloud
 
         elif extension == "mesh":
             try:
@@ -248,6 +250,11 @@ class FileFunctions:
             print("mesh with normals removed")
         except Exception as e:
             print("[WARNING] ", e)
+
+        try:
+            self.plotter.clear_sphere_widgets()
+        except Exception as e:
+            print("[WARNING] ", e)
         #------------------------------------
 
         #Setting all checkboxes to false
@@ -323,6 +330,12 @@ class FileFunctions:
             self.plotter.remove_actor(self.mesh_geometry_container)
         except:
             pass
+
+        try:
+            self.plotter.clear_sphere_widgets()
+        except:
+            pass
+
         # ---------------------------
 
         # Setting checkbox to false
@@ -335,6 +348,11 @@ class FileFunctions:
         # Removing cloud from plotter
         try:
             self.plotter.remove_actor(self.mesh_with_triangles_container)
+        except:
+            pass
+
+        try:
+            self.plotter.clear_sphere_widgets()
         except:
             pass
         # ---------------------------
