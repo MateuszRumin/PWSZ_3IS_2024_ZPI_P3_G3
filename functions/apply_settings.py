@@ -37,12 +37,6 @@ class ApplySettings:
         #Crop mesh button
         self.cropMeshButton.setEnabled(self.settings.enable_buttons_mesh)
         #----------------
-        #Change normals button
-        #self.change_normals_button.setEnabled(self.settings.enable_buttons_cloud)
-        #---------------------
-        #Save normals button
-        #self.save_normals_button.setEnabled(self.settings.enable_buttons_cloud)
-        #-------------------
         #Fix mesh button
         self.fix_mesh_button.setEnabled(self.settings.enable_buttons_mesh)
         #---------------

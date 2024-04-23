@@ -24,14 +24,20 @@ class MeshSelection():
 
     #Function responsible for moving parts of the grid
     def move_sphere(self, point, i):
-        idx = self.indexes[i]
-        self.create_mesh.points[idx] = point
+        try:
+            idx = self.indexes[i]
+            self.create_mesh.points[idx] = point
+        except Exception as e:
+            print("[WARNING] Failed to modify vertex", e)
 
     #Function responsible for generating spheres for mesh editing
     def select_area(self, picked):
         if isinstance(picked, pv.UnstructuredGrid):
             #Retrieving indexes of selected cells
-            indexes = picked["original_cell_ids"]
+            if self.cross_selection_checkbox.isChecked():
+                indexes = picked["orig_extract_id"]
+            else:
+                indexes = picked["original_cell_ids"]
 
             # Cleaning the plotter before marking an area.
             # Removes all unnecessary geometry causing errors.
@@ -98,7 +104,10 @@ class MeshSelection():
         if isinstance(picked, pv.UnstructuredGrid):
             self.indexes = []                                               #Resetting the index
             #-------------------------------------------------------
-            self.indexes = picked["original_cell_ids"]                      #Store indicates in indexes
+            if self.cross_selection_checkbox.isChecked():
+                self.indexes = picked["orig_extract_id"]                    # Store indicates in indexes
+            else:
+                self.indexes = picked["original_cell_ids"]                  #Store indicates in indexes
             self.selected_cells_value.setText(str(len(self.indexes)))       #Display in the gui of the number of marked points
         else:
             print("Something other than a mesh was marked.")
@@ -125,8 +134,12 @@ class MeshSelection():
 
             #Start picking
             self.plotter.disable_picking()
-            self.plotter.enable_cell_picking(callback=self.select_area, through=False, style='surface',
-                                             show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'))
+            if self.cross_selection_checkbox.isChecked():
+                self.plotter.enable_cell_picking(callback=self.select_area, through=True, style='surface',
+                                                 show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'))
+            else:
+                self.plotter.enable_cell_picking(callback=self.select_area, through=False, style='surface',
+                                                 show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'))
 
     def select_mesh_area(self):
         if self.create_mesh is not None and (self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
@@ -140,55 +153,71 @@ class MeshSelection():
 
             # Start picking
             self.plotter.disable_picking()
-            self.plotter.enable_cell_picking(callback=self.select_area_surface, through=False, style='surface',
-                                             show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'))
+            if self.cross_selection_checkbox.isChecked():
+                self.plotter.enable_cell_picking(callback=self.select_area_surface, through=True, style='surface',
+                                                 show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'))
+            else:
+                self.plotter.enable_cell_picking(callback=self.select_area_surface, through=False, style='surface',
+                                                 show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'))
 
 
     def crop_mesh_selected(self):
         if self.create_mesh is not None and (
                 self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
-            picked = self.plotter.picked_cells
+            try:
+                picked = self.plotter.picked_cells
 
-            # crop mesh
-            removed_mesh = self.create_mesh.remove_cells(picked["original_cell_ids"], inplace=False)
-            self.create_mesh = removed_mesh
+                # crop mesh
+                if self.cross_selection_checkbox.isChecked():
+                    removed_mesh = self.create_mesh.remove_cells(picked["orig_extract_id"], inplace=False)
+                else:
+                    removed_mesh = self.create_mesh.remove_cells(picked["original_cell_ids"], inplace=False)
+                self.create_mesh = removed_mesh
 
-            self._reset_plotter()
-            self.selected_cells_value.setText('0')
+                self._reset_plotter()
+                self.selected_cells_value.setText('0')
+            except Exception as e:
+                print("[WARNING] Failed to crop mesh", e)
+
+
 
     def extract_mesh(self):
         if self.create_mesh is not None and (
                 self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
-            picked = self.plotter.picked_cells
+            try:
+                picked = self.plotter.picked_cells
 
-            picked.save('./my2_selection.vtk')
+                picked.save('./my2_selection.vtk')
 
-            reader = vtk.vtkUnstructuredGridReader()
-            reader.SetFileName("./my2_selection.vtk")  # Zastąp "input.vtk" ścieżką do twojego pliku
+                reader = vtk.vtkUnstructuredGridReader()
+                reader.SetFileName("./my2_selection.vtk")  # Zastąp "input.vtk" ścieżką do twojego pliku
 
-            surface_filter = vtk.vtkDataSetSurfaceFilter()
-            surface_filter.SetInputConnection(reader.GetOutputPort())
+                surface_filter = vtk.vtkDataSetSurfaceFilter()
+                surface_filter.SetInputConnection(reader.GetOutputPort())
 
-            triangle_filter = vtk.vtkTriangleFilter()
-            triangle_filter.SetInputConnection(surface_filter.GetOutputPort())
+                triangle_filter = vtk.vtkTriangleFilter()
+                triangle_filter.SetInputConnection(surface_filter.GetOutputPort())
 
-            writer = vtk.vtkSTLWriter()
-            writer.SetFileName("./my2_selection.stl")  # Zastąp "output.stl" ścieżką do wyjściowego pliku
-            writer.SetInputConnection(triangle_filter.GetOutputPort())
-            writer.Write()
+                writer = vtk.vtkSTLWriter()
+                writer.SetFileName("./my2_selection.stl")  # Zastąp "output.stl" ścieżką do wyjściowego pliku
+                writer.SetInputConnection(triangle_filter.GetOutputPort())
+                writer.Write()
 
-            def load_mesh(file_path):
-                if file_path.lower().endswith('.stl'):
-                    mesh = pv.read(file_path)
-                    os.remove(file_path)
-                return mesh
+                def load_mesh(file_path):
+                    if file_path.lower().endswith('.stl'):
+                        mesh = pv.read(file_path)
+                    return mesh
 
-            mesh_update = load_mesh('./my2_selection.stl')
-            self.create_mesh = mesh_update
+                mesh_update = load_mesh('./my2_selection.stl')
+                self.create_mesh = mesh_update
 
-            self._reset_plotter()
-            self.selected_cells_value.setText('0')
-
+                self._reset_plotter()
+                self.selected_cells_value.setText('0')
+            except Exception as e:
+                print("[WARNING] Failed to extract mesh", e)
+            finally:
+                os.remove('my2_selection.stl')
+                os.remove('my2_selection.vtk')
 
     #Trimming the mesh
     def crop_mesh_box(self):
@@ -233,10 +262,11 @@ class MeshSelection():
 
                 #-----------------------------------------
 
-
                 self.remove_mesh()
                 self.add_mesh_to_plotter(self.create_mesh)
                 #-------------------------------------
             except Exception as e:
                 print("[WARNING] Failed: ", e)
-
+            finally:
+                os.remove('./siat333ka.vtk')
+                os.remove("output.stl")
