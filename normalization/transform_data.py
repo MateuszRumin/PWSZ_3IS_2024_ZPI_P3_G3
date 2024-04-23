@@ -49,8 +49,11 @@ class Transform:
     def inverse(self, pc: torch.Tensor) -> torch.Tensor:
         pc = pc.clone()
         pc[:, :3] = pc[:, :3] * self.scale
-        pc[:, 3:] = pc[:, 3:] * self.scale
         pc[:, :3] += self.center[None, :]
+        if pc.shape[1] > 3:
+            pc[:, 3:] = pc[:, 3:] * self.scale
+            norms = torch.norm(pc[:, 3:], dim=1, keepdim=True)
+            pc[:, 3:] = pc[:, 3:] / norms
 
         return pc
 
