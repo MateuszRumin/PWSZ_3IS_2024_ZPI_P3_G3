@@ -137,6 +137,11 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.triangles_amount_checkbox.clicked.connect(self._enable_triangles_amount_input_field)
         # Smooth button
         self.smooth_button.clicked.connect(self._smooth_mesh)
+
+
+        # Subdevide button
+        self.subdevideBtn.clicked.connect(self._subdevide_triangles)
+        self.iterationSubdevide.textChanged.connect(self._on_number_of_subdevided_value_changed)
         #Cross selection
         self.cross_selection_checkbox.clicked.connect(self._reset_plotter)
         # Number of iterations for smooth field

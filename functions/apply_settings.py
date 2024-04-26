@@ -20,6 +20,7 @@ class ApplySettings:
         self.move_y_value_field.setText(str(self.settings.object_move_in_y_direction))      # Y displacement input field
         self.move_z_value_field.setText(str(self.settings.object_move_in_z_direction))      # Z displacement input field
         self.smooth_number_of_iterations_field.setText(str(self.settings.number_of_smooth_iterations))
+        self.iterationSubdevide.setText(str(self.settings.number_of_subdevide_iteration))
         #--------------------------------------------------------------#
 
         #---------------------Enable objects---------------------------#

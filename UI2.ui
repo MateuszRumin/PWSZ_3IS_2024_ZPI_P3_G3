@@ -372,7 +372,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>217</width>
+            <width>230</width>
             <height>350</height>
            </rect>
           </property>
@@ -873,7 +873,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>217</width>
+            <width>230</width>
             <height>500</height>
            </rect>
           </property>
@@ -1632,7 +1632,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
+            <width>230</width>
             <height>250</height>
            </rect>
           </property>
@@ -1941,8 +1941,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>234</width>
-            <height>545</height>
+            <width>230</width>
+            <height>525</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -1985,9 +1985,9 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
-                <width>215</width>
-                <height>594</height>
+                <y>-200</y>
+                <width>207</width>
+                <height>743</height>
                </rect>
               </property>
               <property name="maximumSize">
@@ -2024,6 +2024,18 @@
                   <string>Mesh creation</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_19">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>10</number>
+                  </property>
                   <item>
                    <widget class="QFrame" name="frame_create_mesh">
                     <property name="minimumSize">
@@ -2356,6 +2368,118 @@
                 </widget>
                </item>
                <item>
+                <widget class="QGroupBox" name="groupBox_18">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>150</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>200</width>
+                   <height>150</height>
+                  </size>
+                 </property>
+                 <property name="title">
+                  <string>Subdivide</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_56">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>10</number>
+                  </property>
+                  <item>
+                   <widget class="QComboBox" name="subdivideselect">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>30</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>30</height>
+                     </size>
+                    </property>
+                    <property name="sizeIncrement">
+                     <size>
+                      <width>0</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>None</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Subdivide - butterfly</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Subdivide - Linear</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Subdivide - Loop</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Loop Open3D</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Midpoint Open3D</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_14">
+                    <property name="text">
+                     <string>Number od iterations:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="iterationSubdevide">
+                    <property name="inputMask">
+                     <string/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="maxLength">
+                     <number>32767</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="subdevideBtn">
+                    <property name="text">
+                     <string>Subdivide</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
                 <widget class="QGroupBox" name="groupBox_3">
                  <property name="maximumSize">
                   <size>
@@ -2367,6 +2491,18 @@
                   <string>Smoothing</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_34">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>10</number>
+                  </property>
                   <item>
                    <widget class="QFrame" name="frame_change_normals">
                     <property name="minimumSize">
@@ -2829,8 +2965,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>234</width>
-            <height>545</height>
+            <width>230</width>
+            <height>525</height>
            </rect>
           </property>
           <attribute name="label">
@@ -2856,8 +2992,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>214</width>
-                <height>525</height>
+                <width>188</width>
+                <height>536</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_23">
@@ -3740,7 +3876,7 @@ manually</string>
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>217</width>
+            <width>230</width>
             <height>250</height>
            </rect>
           </property>

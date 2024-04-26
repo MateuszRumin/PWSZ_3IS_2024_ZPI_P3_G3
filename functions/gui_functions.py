@@ -13,7 +13,7 @@ import vtk
 import numpy as np
 import pyvista as pv
 from PyQt5.QtWidgets import QColorDialog
-
+import open3d as o3d
 
 class GuiFunctions:
     #Declaration of global variables for GUI functions. They are probably not used outside this file
@@ -554,3 +554,81 @@ class GuiFunctions:
     def _on_number_of_smooth_operations_value_changed(self, value):
         self.settings.number_of_smooth_iterations = value
         self._apply_settings()
+
+    def _on_number_of_subdevided_value_changed(self, value):
+        self.settings.number_of_subdevide_iteration = value
+        self._apply_settings()
+
+    def _subdevide_triangles(self):
+        if self.subdivideselect.currentText() == 'None':
+            pass
+        elif self.subdivideselect.currentText() == 'Subdivide - Linear':
+            self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
+            self._reset_plotter()
+            # self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+
+
+        elif self.subdivideselect.currentText() == 'Subdivide - butterfly':
+            self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration),
+                                                                 'butterfly')
+            self._reset_plotter()
+        elif self.subdivideselect.currentText() == 'Subdivide - Loop':
+            self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration),
+                                                                 'loop')
+            self._reset_plotter()
+        elif self.subdivideselect.currentText() == 'Midpoint Open3D':
+            self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+            vertices = self.create_mesh.points
+            faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
+
+            o3d_vertices = o3d.utility.Vector3dVector(vertices)
+            o3d_faces = o3d.utility.Vector3iVector(faces)
+
+            o3d_mesh = o3d.geometry.TriangleMesh()
+            o3d_mesh.vertices = o3d_vertices
+            o3d_mesh.triangles = o3d_faces
+
+            mesh_in = o3d_mesh
+            vertices = np.asarray(mesh_in.vertices)
+
+            n = int(self.settings.number_of_subdevide_iteration)
+            mesh_out = mesh_in.subdivide_midpoint(number_of_iterations=n)
+
+            mesh_out.compute_vertex_normals()
+
+            v = np.asarray(mesh_out.vertices)
+            f = np.array(mesh_out.triangles)
+            f = np.c_[np.full(len(f), 3), f]
+            mesh = pv.PolyData(v, f)
+            self.create_mesh = mesh
+            self._reset_plotter()
+
+
+        elif self.subdivideselect.currentText() == 'Loop Open3D':
+            self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+            vertices = self.create_mesh.points
+            faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
+
+            o3d_vertices = o3d.utility.Vector3dVector(vertices)
+            o3d_faces = o3d.utility.Vector3iVector(faces)
+
+            o3d_mesh = o3d.geometry.TriangleMesh()
+            o3d_mesh.vertices = o3d_vertices
+            o3d_mesh.triangles = o3d_faces
+
+            mesh_in = o3d_mesh
+            vertices = np.asarray(mesh_in.vertices)
+
+            n = int(self.settings.number_of_subdevide_iteration)
+            mesh_out = mesh_in.subdivide_loop(number_of_iterations=n)
+
+            mesh_out.compute_vertex_normals()
+
+            v = np.asarray(mesh_out.vertices)
+            f = np.array(mesh_out.triangles)
+            f = np.c_[np.full(len(f), 3), f]
+            mesh = pv.PolyData(v, f)
+            self.create_mesh = mesh
+
+            self._reset_plotter()
+
