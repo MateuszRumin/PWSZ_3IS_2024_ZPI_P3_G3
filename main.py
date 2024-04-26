@@ -138,6 +138,8 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         # Smooth button
         self.smooth_button.clicked.connect(self._smooth_mesh)
 
+        self.takephoto.clicked.connect(self._take_screen)
+
 
         # Subdevide button
         self.subdevideBtn.clicked.connect(self._subdevide_triangles)
@@ -178,6 +180,9 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.curvature_treshold_slider.valueChanged.connect(self.curvature_threshold_slider_changed)
         #Neighbours
         self.neighbours_slider.valueChanged.connect(self.neighbours_slider_changed)
+
+
+
 
         # -------------------Exports-----------------------------------#
         # OBJ

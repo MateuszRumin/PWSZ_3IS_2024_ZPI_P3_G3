@@ -66,7 +66,7 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>4</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="page_scene_geometries">
           <property name="geometry">
@@ -318,6 +318,12 @@
            </item>
            <item>
             <widget class="QFrame" name="frame_35">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>60</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
                <width>216</width>
@@ -343,6 +349,13 @@
               <property name="bottomMargin">
                <number>0</number>
               </property>
+              <item>
+               <widget class="QPushButton" name="takephoto">
+                <property name="text">
+                 <string>Screenshot</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QPushButton" name="reset_layout_button">
                 <property name="minimumSize">
@@ -1985,7 +1998,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-200</y>
+                <y>0</y>
                 <width>207</width>
                 <height>743</height>
                </rect>

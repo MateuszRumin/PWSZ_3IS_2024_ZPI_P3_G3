@@ -14,7 +14,8 @@ import numpy as np
 import pyvista as pv
 from PyQt5.QtWidgets import QColorDialog
 import open3d as o3d
-
+from PIL import Image
+from tkinter import filedialog
 class GuiFunctions:
     #Declaration of global variables for GUI functions. They are probably not used outside this file
     use_distance = False
@@ -631,4 +632,21 @@ class GuiFunctions:
             self.create_mesh = mesh
 
             self._reset_plotter()
+
+    def _take_screen(self):
+
+        file_path = filedialog.asksaveasfilename(
+            initialdir="./screenshots",
+            title="Zapisz zrzut ekranu",
+            filetypes=[
+                ("PNG files", "*.png"),
+                ("PDF files", "*.pdf"),
+            ]
+        )
+        if file_path:
+            file_extension = os.path.splitext(file_path)[1]
+            if file_extension == '.pdf':
+                self.plotter.save_graphic(file_path)
+            if file_extension == '.png':
+                self.plotter.screenshot(file_path)
 
