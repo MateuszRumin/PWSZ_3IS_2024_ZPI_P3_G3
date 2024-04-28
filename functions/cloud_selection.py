@@ -8,6 +8,8 @@
 ################################################################################################
 """
 import copy
+import tempfile
+
 import pyvista as pv
 import numpy as np
 from memory_profiler import profile
@@ -69,7 +71,11 @@ class CloudSelection():
                 indices_to_keep = np.setdiff1d(np.arange(self.cloud.n_points), self.idx_points_table)
                 cloud_filtered = self.cloud.extract_points(indices_to_keep)
                 self.cloud = cloud_filtered
-                self.cloud_backup = copy.deepcopy(self.cloud)
+
+                with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
+                    self.cloud.save(self.cloud_backup.name)
+
+                #self.cloud_backup = copy.deepcopy(self.cloud)
                 #-------------------------------------
 
                 #Re-loading the cloud to the plotter
@@ -91,7 +97,11 @@ class CloudSelection():
                 indices_to_keep = np.in1d(np.arange(self.cloud.n_points), self.idx_points_table)
                 cloud_filtered = self.cloud.extract_points(indices_to_keep)
                 self.cloud = cloud_filtered
-                self.cloud_backup = copy.deepcopy(self.cloud)
+                #self.cloud_backup = copy.deepcopy(self.cloud)
+
+                with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
+                    self.cloud.save(self.cloud_backup.name)
+
                 #-------------------------------------
                 self._reset_plotter()
                 self.selected_points_value.setText("0")

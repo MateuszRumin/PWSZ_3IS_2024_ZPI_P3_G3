@@ -1,5 +1,12 @@
-
-
+"""
+################################################################################################
+||                                                                                            ||
+||                                            Main                                            ||
+||                                                                                            ||
+||                     Main application file. Contains the gui connection                     ||
+||                                                                                            ||
+################################################################################################
+"""
 import os
 os.environ["QT_API"] = "pyqt5"
 import sys
@@ -176,9 +183,6 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.curvature_treshold_slider.valueChanged.connect(self.curvature_threshold_slider_changed)
         #Neighbours
         self.neighbours_slider.valueChanged.connect(self.neighbours_slider_changed)
-
-
-
 
         # -------------------Exports-----------------------------------#
         # OBJ

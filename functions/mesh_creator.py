@@ -13,6 +13,7 @@ import numpy as np
 import pymeshfix
 import open3d as o3d
 import pyvista as pv
+import tempfile
 
 
 class MeshCreator():
@@ -61,7 +62,10 @@ class MeshCreator():
                 f = np.array(rec_mesh.triangles)
                 f = np.c_[np.full(len(f), 3), f]
                 self.create_mesh = pv.PolyData(v, f)
-                self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+
+                with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                    self.create_mesh.save(self.create_mesh_backup.name)
 
                 #Add to plotter
                 self.remove_mesh()
@@ -108,7 +112,10 @@ class MeshCreator():
                 f = np.array(rec_mesh.triangles)
                 f = np.c_[np.full(len(f), 3), f]
                 self.create_mesh = pv.PolyData(v, f)
-                self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+
+                with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                    self.create_mesh.save(self.create_mesh_backup.name)
 
                 # Reloading mesh
                 self.remove_mesh()
@@ -129,7 +136,10 @@ class MeshCreator():
                 # Repair the mesh
                 meshfix.repair(verbose=True,joincomp=False,remove_smallest_components=False)
                 self.create_mesh = meshfix.mesh
-                self.create_mesh_backup = self.create_mesh
+                #self.create_mesh_backup = self.create_mesh
+
+                with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                    self.create_mesh.save(self.create_mesh_backup.name)
 
                 # Reloading mesh
                 self.remove_mesh()
@@ -143,7 +153,11 @@ class MeshCreator():
             if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
                 if self.settings.transformation_logic_equalizer != [0, 1, 0, 0]:
                     #Overwrite backup and save changes in equalizer
-                    self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                    #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+
+                    with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                        self.create_mesh.save(self.create_mesh_backup.name)
+
                     self.settings.transformation_logic_equalizer = [0, 1, 0, 0]
                     self.settings.reset_transformation_values()
                     self.settings.reset_smooth_values()
@@ -156,7 +170,10 @@ class MeshCreator():
                     #Triangles reduction
                     print(f"Number of triangles in mesh: {self.create_mesh.n_points}")
                     if self.settings.enable_triangles_amount_input_field:
-                        self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                        #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+
+                        self.create_mesh = pv.read(self.create_mesh_backup.name)
+
                         reduction_value = ((float(self.settings.triangles_amount) - 100) * (-1)) / 100
                         if reduction_value < 1:
                             self.create_mesh = self.create_mesh.decimate(reduction_value)
@@ -175,7 +192,11 @@ class MeshCreator():
             if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
                 if self.settings.transformation_logic_equalizer != [0, 0, 1, 0]:
                     #Overwrite backup and save changes in equalizer
-                    self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                    #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+
+                    with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                        self.create_mesh.save(self.create_mesh_backup.name)
+
                     self.settings.transformation_logic_equalizer = [0, 0, 1, 0]
                     self.settings.reset_transformation_values()
                     self.settings.reset_triangles_values()
@@ -186,7 +207,10 @@ class MeshCreator():
             if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 0, 1, 0]:
                 if int(self.settings.number_of_smooth_iterations) > 0:
                     try:
-                        self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                        #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+
+                        self.create_mesh = pv.read(self.create_mesh_backup.name)
+
 
                         vertices = self.create_mesh.points
                         faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
@@ -219,6 +243,9 @@ class MeshCreator():
                     except Exception as e:
                         print("[WARNING] Failed to smooth mesh", e)
                 else:
-                    self.create_mesh = self.create_mesh_backup
+                    #self.create_mesh = self.create_mesh_backup
+
+                    self.create_mesh = pv.read(self.create_mesh_backup.name)
+
                     self.remove_mesh()
                     self.add_mesh_to_plotter(self.create_mesh)

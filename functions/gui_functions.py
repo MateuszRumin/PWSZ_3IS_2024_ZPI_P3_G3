@@ -12,6 +12,7 @@ import os
 import vtk
 import numpy as np
 import pyvista as pv
+import tempfile
 from PyQt5.QtWidgets import QColorDialog
 import open3d as o3d
 from PIL import Image
@@ -208,7 +209,11 @@ class GuiFunctions:
             if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
                 if self.settings.transformation_logic_equalizer != [1, 0, 0, 0]:
                     #Overwrite backup and save changes in equalizer
-                    self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                    #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+
+                    with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                        self.create_mesh.save(self.create_mesh_backup.name)
+
                     self.settings.transformation_logic_equalizer = [1, 0, 0, 0]
                     self.settings.reset_smooth_values()
                     self.settings.reset_triangles_values()
@@ -218,7 +223,10 @@ class GuiFunctions:
 
             if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [1, 0, 0, 0]:
                 try:
-                    self.cloud = copy.deepcopy(self.cloud_backup)   #Copy cloud form backup
+                    #self.cloud = copy.deepcopy(self.cloud_backup)   #Copy cloud form backup
+
+                    self.cloud = pv.read(self.cloud_backup.name)
+
                     self.cloud = pv.PolyData(self.cloud.points)
 
                     #-----------Read values from settings-----------#
@@ -281,7 +289,11 @@ class GuiFunctions:
             if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
                 if self.settings.transformation_logic_equalizer != [1, 0, 0, 0]:
                     #Overwrite backup and save changes in equalizer
-                    self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                    #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+
+                    with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                        self.create_mesh.save(self.create_mesh_backup.name)
+
                     self.settings.transformation_logic_equalizer = [1, 0, 0, 0]
                     self.settings.reset_smooth_values()
                     self.settings.reset_triangles_values()
@@ -291,7 +303,9 @@ class GuiFunctions:
 
             if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [1, 0, 0, 0]:
                 try:
-                    self.create_mesh = copy.deepcopy(self.create_mesh_backup)  #Copy mesh form backup
+                    #self.create_mesh = copy.deepcopy(self.create_mesh_backup)  #Copy mesh form backup
+
+                    self.create_mesh = pv.read(self.create_mesh_backup.name)
 
                     # -----------Read values from settings-----------#
                     # Displacement
@@ -572,7 +586,11 @@ class GuiFunctions:
             if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
                 if self.settings.transformation_logic_equalizer != [0, 0, 0, 1]:
                     #Overwrite backup and save changes in equalizer
-                    self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                    #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+
+                    with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                        self.create_mesh.save(self.create_mesh_backup.name)
+
                     self.settings.transformation_logic_equalizer = [0, 0, 0, 1]
                     self.settings.reset_transformation_values()
                     self.settings.reset_triangles_values()
@@ -587,7 +605,9 @@ class GuiFunctions:
                 #Linear subdivide
                 elif self.subdivideselect.currentText() == 'Subdivide - Linear':
                     try:
-                        self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
+                        #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
+                        self.create_mesh = pv.read(self.create_mesh_backup.name)
+                        self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
                         self._reset_plotter()
                         # self.create_mesh_backup = copy.deepcopy(self.create_mesh)
                     except Exception as e:
@@ -596,7 +616,9 @@ class GuiFunctions:
                 #Buteterfly subdivide
                 elif self.subdivideselect.currentText() == 'Subdivide - butterfly':
                     try:
-                        self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'butterfly')
+                        #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'butterfly')
+                        self.create_mesh = pv.read(self.create_mesh_backup.name)
+                        self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'butterfly')
                         self._reset_plotter()
                     except Exception as e:
                         print("[WARNING] Failed to subdivide mesh", e)
@@ -604,7 +626,9 @@ class GuiFunctions:
                 #Loop subdivide
                 elif self.subdivideselect.currentText() == 'Subdivide - Loop':
                     try:
-                        self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'loop')
+                        #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'loop')
+                        self.create_mesh = pv.read(self.create_mesh_backup.name)
+                        self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'loop')
                         self._reset_plotter()
                     except Exception as e:
                         print("[WARNING] Failed to subdivide mesh", e)
@@ -613,7 +637,8 @@ class GuiFunctions:
                 elif self.subdivideselect.currentText() == 'Midpoint Open3D':
                     try:
                         #Convert pyvista mesh to open3d mesh
-                        self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                        #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                        self.create_mesh = pv.read(self.create_mesh_backup.name)
                         vertices = self.create_mesh.points
                         faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
 
@@ -650,7 +675,8 @@ class GuiFunctions:
                 elif self.subdivideselect.currentText() == 'Loop Open3D':
                     try:
                         #Convert pyvista mesh to open3d mesh
-                        self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                        #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                        self.create_mesh = pv.read(self.create_mesh_backup.name)
                         vertices = self.create_mesh.points
                         faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
 

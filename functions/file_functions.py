@@ -8,13 +8,16 @@
 ||                                                                                                 ||
 #####################################################################################################
 """
-
 import numpy as np
 import pyntcloud
 import pyvista as pv
+import tempfile
 from PyQt5.QtWidgets import QFileDialog
 from pyntcloud import PyntCloud
 from stl import mesh    #pip install numpy-stl
+from memory_profiler import profile
+
+
 
 class FileFunctions:
     #Declaration of global variables for mesh and cloud available throughout the program
@@ -42,15 +45,16 @@ class FileFunctions:
             self.settings.file_path = self.filePath     #Storing the file path in the application settings
             self.load(self.filePath)                    #Calling the function that loads the cloud/mesh from the selected path
 
+    #@profile
     def load(self, path):
         self.remove_all_geometries_from_plotter()     #Clearing plotter
         self.normalization_preset_combobox.clear()    #Clear normalizations presets
 
         #Clearing variables for clouds and meshes in case of reloading
         self.cloud = None
-        self.cloud_backup = None
+        self.cloud_backup = tempfile.TemporaryFile()
         self.create_mesh = None
-        self.create_mesh_backup = None
+        self.create_mesh_backup = tempfile.TemporaryFile()
         self.settings.normals_computed_for_origin = False
         #-------------------------------------------------------------
 
@@ -111,12 +115,19 @@ class FileFunctions:
                 )
                 self.cloud = pv.PolyData(downSamplingCloud.points)
             #-----------------------------
-            self.cloud_backup = self.cloud  #Creating cloud backup
+            #self.cloud_backup = self.cloud  #Creating cloud backup
+
+            with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
+                self.cloud.save(self.cloud_backup.name)
+
             #-----------------------------
             self.add_cloud_to_plotter(self.cloud)      #Adding cloud to plotter
             #-----------------------------
         elif self.create_mesh is not None:
-            self.create_mesh_backup = self.create_mesh  #Creating mesh backup
+            #self.create_mesh_backup = self.create_mesh  #Creating mesh backup
+            with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                self.create_mesh.save(self.create_mesh_backup.name)
+
             #-----------------------------------------
             self.add_mesh_to_plotter(self.create_mesh)  #Adding mesh to plotter
             #-----------------------------------------
@@ -141,7 +152,11 @@ class FileFunctions:
                 )
                 self.cloud = pv.PolyData(downSamplingCloud.points)
             # -----------------------------
-            self.cloud_backup = self.cloud  # Creating cloud backup
+            #self.cloud_backup = self.cloud  # Creating cloud backup
+
+            with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
+                self.cloud.save(self.cloud_backup.name)
+
             # -----------------------------
             self.add_cloud_to_plotter(self.cloud)  # Adding cloud to plotter
             # -----------------------------
