@@ -1,26 +1,21 @@
-import sys
 
-# Setting the Qt bindings for QtPy
+
 import os
 os.environ["QT_API"] = "pyqt5"
-
-from qtpy import QtWidgets
-
+import sys
+import psutil
+import time
+import signal
+import threading
+import pyvista as pv
 import numpy as np
 
-import pyvista as pv
 from pyvistaqt import QtInteractor, MainWindow
-
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
 from PyQt5.QtCore import QLocale
-
-import psutil
-import time
-import signal
-
-import threading
+from qtpy import QtWidgets
 
 from settings import  Settings
 from functions import file_functions
@@ -233,7 +228,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
     # Do not use directly!
     # You should use the function located in file_functions!
     # Do not delete!
-    def reload_plotter(self):
+    def _remove_and_add_plotter_to_field_in_app(self):
         try:
             # Deleting existing plotter
             if hasattr(self, 'plotter_frame'):

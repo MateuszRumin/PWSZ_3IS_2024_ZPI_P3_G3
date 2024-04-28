@@ -80,6 +80,7 @@ class FileFunctions:
         elif extension == "mesh":
             try:
                 self.create_mesh = pv.read(path)
+                self.create_mesh = self.create_mesh.triangulate()
                 print("[Info] Successfully read", path)
             except Exception as e:
                 print("[WARNING] Failed to read mesh", path, e)
@@ -87,6 +88,7 @@ class FileFunctions:
             try:
                 self.create_mesh = pv.read(path)            #Loading a mesh from the selected location using pyvista's built-in functions
                 #self.mesh_to_calculate_area = mesh.Mesh.from_file(self.filePath)
+                self.create_mesh = self.create_mesh.triangulate()
                 print("[Info] Successfully read", path)
             except Exception as e:
                 print("[WARNING] Failed to read mesh", path, e)
@@ -275,7 +277,7 @@ class FileFunctions:
         self.plotter.clear_actors()
         self.plotter.clear_sphere_widgets()
 
-        self.reload_plotter()
+        self._remove_and_add_plotter_to_field_in_app()
 
         if self.display_cloud_checkbox.isChecked():
             self.add_cloud_to_plotter(self.cloud)
