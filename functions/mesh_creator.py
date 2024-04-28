@@ -140,17 +140,18 @@ class MeshCreator():
 
     def transform_existing_mesh(self):
         if self.create_mesh is not None:
-            if self.settings.transformation_logic_equalizer != [0, 0, 0]:
-                if self.settings.transformation_logic_equalizer != [0, 1, 0]:
+            if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
+                if self.settings.transformation_logic_equalizer != [0, 1, 0, 0]:
                     #Overwrite backup and save changes in equalizer
                     self.create_mesh_backup = copy.deepcopy(self.create_mesh)
-                    self.settings.transformation_logic_equalizer = [0, 1, 0]
+                    self.settings.transformation_logic_equalizer = [0, 1, 0, 0]
                     self.settings.reset_transformation_values()
                     self.settings.reset_smooth_values()
+                    self.settings.reset_subdivide_values()
                     self._apply_settings()
                     #----------------------------------------------
 
-            if self.settings.transformation_logic_equalizer == [0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 1, 0]:
+            if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 1, 0, 0]:
                 try:
                     #Triangles reduction
                     print(f"Number of triangles in mesh: {self.create_mesh.n_points}")
@@ -164,24 +165,25 @@ class MeshCreator():
                     # Reloading mesh
                     self.remove_mesh()
                     self.add_mesh_to_plotter(self.create_mesh)
-                    self.settings.transformation_logic_equalizer = [0, 1, 0]
+                    self.settings.transformation_logic_equalizer = [0, 1, 0, 0]
                     # ------------------------------
                 except Exception as e:
                     print("[WARNING] Failed to change number of triangles", e)
 
     def _smooth_mesh(self):
         if self.create_mesh is not None:
-            if self.settings.transformation_logic_equalizer != [0, 0, 0]:
-                if self.settings.transformation_logic_equalizer != [0, 0, 1]:
+            if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
+                if self.settings.transformation_logic_equalizer != [0, 0, 1, 0]:
                     #Overwrite backup and save changes in equalizer
                     self.create_mesh_backup = copy.deepcopy(self.create_mesh)
-                    self.settings.transformation_logic_equalizer = [0, 0, 1]
+                    self.settings.transformation_logic_equalizer = [0, 0, 1, 0]
                     self.settings.reset_transformation_values()
                     self.settings.reset_triangles_values()
+                    self.settings.reset_subdivide_values()
                     self._apply_settings()
                     #----------------------------------------------
 
-            if self.settings.transformation_logic_equalizer == [0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 0, 1]:
+            if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 0, 1, 0]:
                 if int(self.settings.number_of_smooth_iterations) > 0:
                     try:
                         self.create_mesh = copy.deepcopy(self.create_mesh_backup)
@@ -213,7 +215,7 @@ class MeshCreator():
 
                         self.remove_mesh()
                         self.add_mesh_to_plotter(self.create_mesh)
-                        self.settings.transformation_logic_equalizer = [0, 0, 1]
+                        self.settings.transformation_logic_equalizer = [0, 0, 1, 0]
                     except Exception as e:
                         print("[WARNING] Failed to smooth mesh", e)
                 else:

@@ -202,20 +202,21 @@ class GuiFunctions:
 
 
     #A function that carries out the transformation of an object.
-    # It is called by functions that retrieve the transformation values of an object.
     def _transform_object(self):
         if self.cloud is not None and self.display_cloud_checkbox.isChecked():
-            if self.settings.transformation_logic_equalizer != [0, 0, 0]:
-                if self.settings.transformation_logic_equalizer != [1, 0, 0]:
+            #Logic equalizer
+            if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
+                if self.settings.transformation_logic_equalizer != [1, 0, 0, 0]:
                     #Overwrite backup and save changes in equalizer
                     self.create_mesh_backup = copy.deepcopy(self.create_mesh)
-                    self.settings.transformation_logic_equalizer = [1, 0, 0]
+                    self.settings.transformation_logic_equalizer = [1, 0, 0, 0]
                     self.settings.reset_smooth_values()
                     self.settings.reset_triangles_values()
+                    self.settings.reset_subdivide_values()
                     self._apply_settings()
 
 
-            if self.settings.transformation_logic_equalizer == [0, 0, 0] or self.settings.transformation_logic_equalizer == [1, 0, 0]:
+            if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [1, 0, 0, 0]:
                 try:
                     self.cloud = copy.deepcopy(self.cloud_backup)   #Copy cloud form backup
                     self.cloud = pv.PolyData(self.cloud.points)
@@ -270,22 +271,25 @@ class GuiFunctions:
                     self.remove_cloud()
                     self.cloud = pv.PolyData(self.cloud.points)
                     self.add_cloud_to_plotter(self.cloud)
-                    self.settings.transformation_logic_equalizer = [1, 0, 0]
+                    self.settings.transformation_logic_equalizer = [1, 0, 0, 0]
 
                 except Exception as e:
                     print("[WARNING] Failed to transform cloud", e)
 
         if self.create_mesh is not None and (self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
-            if self.settings.transformation_logic_equalizer != [0, 0, 0]:
-                if self.settings.transformation_logic_equalizer != [1, 0, 0]:
+            #Logic equalizer
+            if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
+                if self.settings.transformation_logic_equalizer != [1, 0, 0, 0]:
                     #Overwrite backup and save changes in equalizer
                     self.create_mesh_backup = copy.deepcopy(self.create_mesh)
-                    self.settings.transformation_logic_equalizer = [1, 0, 0]
+                    self.settings.transformation_logic_equalizer = [1, 0, 0, 0]
                     self.settings.reset_smooth_values()
                     self.settings.reset_triangles_values()
+                    self.settings.reset_subdivide_values()
                     self._apply_settings()
+            #---------------
 
-            if self.settings.transformation_logic_equalizer == [0, 0, 0] or self.settings.transformation_logic_equalizer == [1, 0, 0]:
+            if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [1, 0, 0, 0]:
                 try:
                     self.create_mesh = copy.deepcopy(self.create_mesh_backup)  #Copy mesh form backup
 
@@ -320,7 +324,7 @@ class GuiFunctions:
 
                     self.remove_mesh()
                     self.add_mesh_to_plotter(self.create_mesh)
-                    self.settings.transformation_logic_equalizer = [1, 0, 0]
+                    self.settings.transformation_logic_equalizer = [1, 0, 0, 0]
                     #-------------------------------------------
                 except Exception as e:
                     print("[WARNING] Failed to transform mesh", e)
@@ -552,101 +556,149 @@ class GuiFunctions:
             self.settings.change_normals_settings_manually = False
             self._apply_settings()
 
+    #Function called after change in smooth operations input field
     def _on_number_of_smooth_operations_value_changed(self, value):
         self.settings.number_of_smooth_iterations = value
         self._apply_settings()
 
+    # Function called after change in subdivided operations input field
     def _on_number_of_subdevided_value_changed(self, value):
         self.settings.number_of_subdevide_iteration = value
         self._apply_settings()
 
     def _subdevide_triangles(self):
-        if self.subdivideselect.currentText() == 'None':
-            pass
-        elif self.subdivideselect.currentText() == 'Subdivide - Linear':
-            self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
-            self._reset_plotter()
-            # self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+        if self.create_mesh is not None:
+            #Logic equalizer
+            if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
+                if self.settings.transformation_logic_equalizer != [0, 0, 0, 1]:
+                    #Overwrite backup and save changes in equalizer
+                    self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                    self.settings.transformation_logic_equalizer = [0, 0, 0, 1]
+                    self.settings.reset_transformation_values()
+                    self.settings.reset_triangles_values()
+                    self.settings.reset_smooth_values()
+                    self._apply_settings()
+                    #----------------------------------------------
 
+            if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 0, 0, 1]:
+                if self.subdivideselect.currentText() == 'None':
+                    pass
 
-        elif self.subdivideselect.currentText() == 'Subdivide - butterfly':
-            self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration),
-                                                                 'butterfly')
-            self._reset_plotter()
-        elif self.subdivideselect.currentText() == 'Subdivide - Loop':
-            self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration),
-                                                                 'loop')
-            self._reset_plotter()
-        elif self.subdivideselect.currentText() == 'Midpoint Open3D':
-            self.create_mesh = copy.deepcopy(self.create_mesh_backup)
-            vertices = self.create_mesh.points
-            faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
+                #Linear subdivide
+                elif self.subdivideselect.currentText() == 'Subdivide - Linear':
+                    try:
+                        self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
+                        self._reset_plotter()
+                        # self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                    except Exception as e:
+                        print("[WARNING] Failed to subdivide mesh", e)
 
-            o3d_vertices = o3d.utility.Vector3dVector(vertices)
-            o3d_faces = o3d.utility.Vector3iVector(faces)
+                #Buteterfly subdivide
+                elif self.subdivideselect.currentText() == 'Subdivide - butterfly':
+                    try:
+                        self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'butterfly')
+                        self._reset_plotter()
+                    except Exception as e:
+                        print("[WARNING] Failed to subdivide mesh", e)
 
-            o3d_mesh = o3d.geometry.TriangleMesh()
-            o3d_mesh.vertices = o3d_vertices
-            o3d_mesh.triangles = o3d_faces
+                #Loop subdivide
+                elif self.subdivideselect.currentText() == 'Subdivide - Loop':
+                    try:
+                        self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'loop')
+                        self._reset_plotter()
+                    except Exception as e:
+                        print("[WARNING] Failed to subdivide mesh", e)
 
-            mesh_in = o3d_mesh
-            vertices = np.asarray(mesh_in.vertices)
+                # Midpoint subdivide in open3d
+                elif self.subdivideselect.currentText() == 'Midpoint Open3D':
+                    try:
+                        #Convert pyvista mesh to open3d mesh
+                        self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                        vertices = self.create_mesh.points
+                        faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
 
-            n = int(self.settings.number_of_subdevide_iteration)
-            mesh_out = mesh_in.subdivide_midpoint(number_of_iterations=n)
+                        o3d_vertices = o3d.utility.Vector3dVector(vertices)
+                        o3d_faces = o3d.utility.Vector3iVector(faces)
 
-            mesh_out.compute_vertex_normals()
+                        o3d_mesh = o3d.geometry.TriangleMesh()
+                        o3d_mesh.vertices = o3d_vertices
+                        o3d_mesh.triangles = o3d_faces
+                        #-----------------------------------
 
-            v = np.asarray(mesh_out.vertices)
-            f = np.array(mesh_out.triangles)
-            f = np.c_[np.full(len(f), 3), f]
-            mesh = pv.PolyData(v, f)
-            self.create_mesh = mesh
-            self._reset_plotter()
+                        #Subdivide operation
+                        mesh_in = o3d_mesh
+                        vertices = np.asarray(mesh_in.vertices)
 
+                        n = int(self.settings.number_of_subdevide_iteration)
+                        mesh_out = mesh_in.subdivide_midpoint(number_of_iterations=n)
 
-        elif self.subdivideselect.currentText() == 'Loop Open3D':
-            self.create_mesh = copy.deepcopy(self.create_mesh_backup)
-            vertices = self.create_mesh.points
-            faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
+                        mesh_out.compute_vertex_normals()
+                        #-------------------
 
-            o3d_vertices = o3d.utility.Vector3dVector(vertices)
-            o3d_faces = o3d.utility.Vector3iVector(faces)
+                        #Convert open3d mesh to pyvista
+                        v = np.asarray(mesh_out.vertices)
+                        f = np.array(mesh_out.triangles)
+                        f = np.c_[np.full(len(f), 3), f]
+                        mesh = pv.PolyData(v, f)
+                        self.create_mesh = mesh
+                        self._reset_plotter()
+                        #------------------------------
+                    except Exception as e:
+                        print("[WARNING] Failed to subdivide mesh", e)
 
-            o3d_mesh = o3d.geometry.TriangleMesh()
-            o3d_mesh.vertices = o3d_vertices
-            o3d_mesh.triangles = o3d_faces
+                #Loop subdivide in open3d
+                elif self.subdivideselect.currentText() == 'Loop Open3D':
+                    try:
+                        #Convert pyvista mesh to open3d mesh
+                        self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                        vertices = self.create_mesh.points
+                        faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
 
-            mesh_in = o3d_mesh
-            vertices = np.asarray(mesh_in.vertices)
+                        o3d_vertices = o3d.utility.Vector3dVector(vertices)
+                        o3d_faces = o3d.utility.Vector3iVector(faces)
 
-            n = int(self.settings.number_of_subdevide_iteration)
-            mesh_out = mesh_in.subdivide_loop(number_of_iterations=n)
+                        o3d_mesh = o3d.geometry.TriangleMesh()
+                        o3d_mesh.vertices = o3d_vertices
+                        o3d_mesh.triangles = o3d_faces
+                        #-----------------------------------
 
-            mesh_out.compute_vertex_normals()
+                        #Subdivide operation
+                        mesh_in = o3d_mesh
+                        vertices = np.asarray(mesh_in.vertices)
 
-            v = np.asarray(mesh_out.vertices)
-            f = np.array(mesh_out.triangles)
-            f = np.c_[np.full(len(f), 3), f]
-            mesh = pv.PolyData(v, f)
-            self.create_mesh = mesh
+                        n = int(self.settings.number_of_subdevide_iteration)
+                        mesh_out = mesh_in.subdivide_loop(number_of_iterations=n)
 
-            self._reset_plotter()
+                        mesh_out.compute_vertex_normals()
+                        #-------------------
+
+                        #Convert open3d mesh to pyvista
+                        v = np.asarray(mesh_out.vertices)
+                        f = np.array(mesh_out.triangles)
+                        f = np.c_[np.full(len(f), 3), f]
+                        mesh = pv.PolyData(v, f)
+                        self.create_mesh = mesh
+                        self._reset_plotter()
+                        #------------------------------
+                    except Exception as e:
+                        print("[WARNING] Failed to subdivide mesh", e)
 
     def _take_screen(self):
-
-        file_path = filedialog.asksaveasfilename(
-            initialdir="./screenshots",
-            title="Zapisz zrzut ekranu",
-            filetypes=[
-                ("PNG files", "*.png"),
-                ("PDF files", "*.pdf"),
-            ]
-        )
-        if file_path:
-            file_extension = os.path.splitext(file_path)[1]
-            if file_extension == '.pdf':
-                self.plotter.save_graphic(file_path)
-            if file_extension == '.png':
-                self.plotter.screenshot(file_path)
+        try:
+            file_path = filedialog.asksaveasfilename(
+                initialdir="./screenshots",
+                title="Zapisz zrzut ekranu",
+                filetypes=[
+                    ("PNG files", "*.png"),
+                    ("PDF files", "*.pdf"),
+                ]
+            )
+            if file_path:
+                file_extension = os.path.splitext(file_path)[1]
+                if file_extension == '.pdf':
+                    self.plotter.save_graphic(file_path)
+                if file_extension == '.png':
+                    self.plotter.screenshot(file_path)
+        except Exception as e:
+            print("[WARNING] Failed to take a screenshot", e)
 

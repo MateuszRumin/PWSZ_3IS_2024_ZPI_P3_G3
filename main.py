@@ -139,6 +139,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         # Subdevide button
         self.subdevideBtn.clicked.connect(self._subdevide_triangles)
         self.iterationSubdevide.textChanged.connect(self._on_number_of_subdevided_value_changed)
+        self.iterationSubdevide.setValidator(QIntValidator(1, 100, self))
         #Cross selection
         self.cross_selection_checkbox.clicked.connect(self._reset_plotter)
         # Number of iterations for smooth field

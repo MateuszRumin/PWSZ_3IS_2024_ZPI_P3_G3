@@ -1,12 +1,12 @@
 class Settings:
     def __init__(self):
-        self.file_path = None                           #Path to file
-        self.downSampling_size_slider_value = 0         #DownSampling value
-        self.scale_value = 1                            #Scale factor
-        self.triangles_amount = 100                     #Triangles amount
-        self.number_of_smooth_iterations = 1            #Smooth iterations
-        self.number_of_subdevide_iteration = 1          #Subdevided iteractions
-        self.transformation_logic_equalizer = [0, 0, 0] #Logic equalizer [transform, triangles, smooth]
+        self.file_path = None                               #Path to file
+        self.downSampling_size_slider_value = 0             #DownSampling value
+        self.scale_value = 1                                #Scale factor
+        self.triangles_amount = 100                         #Triangles amount
+        self.number_of_smooth_iterations = 1                #Smooth iterations
+        self.number_of_subdevide_iteration = 1              #Subdevided iteractions
+        self.transformation_logic_equalizer = [0, 0, 0, 0]  #Logic equalizer [transform, triangles, smooth, subdivide]
 
         #Cloud move values
         self.object_move_in_x_direction = 0
@@ -85,4 +85,6 @@ class Settings:
     def reset_triangles_values(self):
         self.triangles_amount = 100                     #Triangles amount
 
+    def reset_subdivide_values(self):
+        self.number_of_subdevide_iteration = 1
 
