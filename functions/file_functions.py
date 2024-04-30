@@ -12,6 +12,9 @@ import numpy as np
 import pyntcloud
 import pyvista as pv
 import tempfile
+import threading
+
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QFileDialog
 from pyntcloud import PyntCloud
 from stl import mesh    #pip install numpy-stl
@@ -43,20 +46,17 @@ class FileFunctions:
         self.filePath, _ = QFileDialog.getOpenFileName(self, "Choose file", "", filters, options=options)
         if self.filePath:
             self.settings.file_path = self.filePath     #Storing the file path in the application settings
-            self.load(self.filePath)                    #Calling the function that loads the cloud/mesh from the selected path
+            #self.load(self.filePath)                    #Calling the function that loads the cloud/mesh from the selected path
+            self.show_loading_window()
+            thread = threading.Thread(target=lambda: self.load(self.filePath))
+            thread.start()
+
 
     #@profile
     def load(self, path):
-        self.remove_all_geometries_from_plotter()     #Clearing plotter
-        self.normalization_preset_combobox.clear()    #Clear normalizations presets
-
-        #Clearing variables for clouds and meshes in case of reloading
-        self.cloud = None
-        self.cloud_backup = tempfile.TemporaryFile()
-        self.create_mesh = None
-        self.create_mesh_backup = tempfile.TemporaryFile()
-        self.settings.normals_computed_for_origin = False
-        #-------------------------------------------------------------
+        cloud = None
+        mesh = None
+        self.clearBeforeLoadSignal.emit()
 
         extension = path[-3:]   #Reading the extension to distinguish between cloud and mesh
 
@@ -74,7 +74,7 @@ class FileFunctions:
                 #----------------------------------------------------------
                 #Conversion of the loaded cloud to PyVista. It eliminates errors that appear with some clouds.
                 #It is responsible for loading some clouds with this intensity bar
-                self.cloud = pyVistaCloud.to_instance("pyvista", mesh=False)
+                cloud = pyVistaCloud.to_instance("pyvista", mesh=False)
                 #-----------------------------------------------------------
             except Exception as e:
                 print("[WARNING] Failed to read points", path, e)
@@ -83,27 +83,27 @@ class FileFunctions:
 
         elif extension == "mesh":
             try:
-                self.create_mesh = pv.read(path)
-                self.create_mesh = self.create_mesh.triangulate()
+                mesh = pv.read(path)
+                mesh = mesh.triangulate()
                 print("[Info] Successfully read", path)
             except Exception as e:
                 print("[WARNING] Failed to read mesh", path, e)
         else:
             try:
-                self.create_mesh = pv.read(path)            #Loading a mesh from the selected location using pyvista's built-in functions
+                mesh = pv.read(path)            #Loading a mesh from the selected location using pyvista's built-in functions
                 #self.mesh_to_calculate_area = mesh.Mesh.from_file(self.filePath)
-                self.create_mesh = self.create_mesh.triangulate()
+                mesh = mesh.triangulate()
                 print("[Info] Successfully read", path)
             except Exception as e:
                 print("[WARNING] Failed to read mesh", path, e)
         #------------------------------------------------------
 
         #Section adding the loaded cloud/mesh to the plotter
-        if self.cloud is not None:
+        if cloud is not None:
             #Cloud downsampling
             if self.settings.downSampling_size_slider_value > 0:
                 downSampling = self.settings.downSampling_size_slider_value / 1000
-                downSamplingCloud = self.cloud.clean(
+                downSamplingCloud = cloud.clean(
                     point_merging=True,
                     merge_tol=downSampling,
                     lines_to_points=False,
@@ -113,27 +113,36 @@ class FileFunctions:
                     absolute=False,
                     progress_bar=True,
                 )
-                self.cloud = pv.PolyData(downSamplingCloud.points)
+                cloud = pv.PolyData(downSamplingCloud.points)
             #-----------------------------
             #self.cloud_backup = self.cloud  #Creating cloud backup
 
-            with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
-                self.cloud.save(self.cloud_backup.name)
-
+            # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
+            #     self.cloud.save(self.cloud_backup.name)
+            self.assignCloudSignal.emit(cloud)
+            self.overwriteBackupCloudSignal.emit(cloud)
             #-----------------------------
-            self.add_cloud_to_plotter(self.cloud)      #Adding cloud to plotter
+            #self.add_cloud_to_plotter(self.cloud)      #Adding cloud to plotter
+            self.addCloudSignal.emit(cloud)
             #-----------------------------
-        elif self.create_mesh is not None:
+        elif mesh is not None:
             #self.create_mesh_backup = self.create_mesh  #Creating mesh backup
-            with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
-                self.create_mesh.save(self.create_mesh_backup.name)
-
+            # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+            #     self.create_mesh.save(self.create_mesh_backup.name)
+            self.assignMeshSignal.emit(mesh)
+            self.overwriteBackupMeshSignal.emit(mesh)
             #-----------------------------------------
-            self.add_mesh_to_plotter(self.create_mesh)  #Adding mesh to plotter
+            #self.add_mesh_to_plotter(self.create_mesh)  #Adding mesh to plotter
+            self.addMeshSignal.emit(mesh)
             #-----------------------------------------
         #-------------------------------------------------------
 
     def read_cloud_from_mesh(self):
+        self.show_loading_window()
+        thread = threading.Thread(target=self.read_cloud_from_mesh_thread)
+        thread.start()
+
+    def read_cloud_from_mesh_thread(self):
         if self.create_mesh is not None and self.cloud is None:
             self.cloud = pv.PolyData(self.create_mesh.points)
 
@@ -154,11 +163,13 @@ class FileFunctions:
             # -----------------------------
             #self.cloud_backup = self.cloud  # Creating cloud backup
 
-            with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
-                self.cloud.save(self.cloud_backup.name)
+            # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
+            #     self.cloud.save(self.cloud_backup.name)
+            self.overwriteBackupCloudSignal.emit(self.cloud)
 
             # -----------------------------
-            self.add_cloud_to_plotter(self.cloud)  # Adding cloud to plotter
+            #self.add_cloud_to_plotter(self.cloud)  # Adding cloud to plotter
+            self.addCloudSignal.emit(self.cloud)
             # -----------------------------
 
     #Function that exports mesh to obj

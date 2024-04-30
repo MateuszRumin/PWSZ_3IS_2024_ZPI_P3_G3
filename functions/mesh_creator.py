@@ -9,18 +9,29 @@
 """
 import os
 import copy
+import time
+
 import numpy as np
 import pymeshfix
 import open3d as o3d
 import pyvista as pv
 import tempfile
-
+import threading
 
 class MeshCreator():
+
     def _make_mesh(self):
+        self.show_loading_window()
+        thread = threading.Thread(target=self._make_mesh_thread)
+        thread.start()
+
+    def _make_mesh_thread(self):
         if self.normalize_checkbox.isChecked() and self.cloud is not None:
             try:
+                self.removeActorSignal.emit("mesh")
                 self.normalizeCloud()
+
+                #self.normalizeCloud()
                 cloud = self.open3d_normalized_cloud
 
                 par = np.mean(cloud.compute_nearest_neighbor_distance())
@@ -61,15 +72,21 @@ class MeshCreator():
                 v = np.asarray(rec_mesh.vertices)
                 f = np.array(rec_mesh.triangles)
                 f = np.c_[np.full(len(f), 3), f]
-                self.create_mesh = pv.PolyData(v, f)
+                mesh = pv.PolyData(v, f)
                 #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
 
-                with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
-                    self.create_mesh.save(self.create_mesh_backup.name)
+                # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                #     self.create_mesh.save(self.create_mesh_backup.name)
+
+                self.assignMeshSignal.emit(mesh)
+                self.overwriteBackupMeshSignal.emit(mesh)
 
                 #Add to plotter
-                self.remove_mesh()
-                self.add_mesh_to_plotter(self.create_mesh)
+                #self.remove_mesh()
+                self.addMeshSignal.emit(mesh)
+                #self.add_mesh_to_plotter(self.create_mesh)
+                #time.sleep(1)   #Fix for window freeze xd
+                #self.close_loading_window()
                 # ------------------------------
             except Exception as e:
                 print("[WARNING] Failed to create mesh with normals", e)
@@ -77,6 +94,7 @@ class MeshCreator():
                 del self.open3d_normalized_cloud
         else:
             try:
+                self.removeActorSignal.emit("mesh")
                 # Converting pyvista cloud to open3d cloud
                 pyvista_points = self.cloud.points
 
@@ -111,22 +129,32 @@ class MeshCreator():
                 v = np.asarray(rec_mesh.vertices)
                 f = np.array(rec_mesh.triangles)
                 f = np.c_[np.full(len(f), 3), f]
-                self.create_mesh = pv.PolyData(v, f)
+                mesh = pv.PolyData(v, f)
                 #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
 
-                with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
-                    self.create_mesh.save(self.create_mesh_backup.name)
+                # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                #     self.create_mesh.save(self.create_mesh_backup.name)
+
+                self.assignMeshSignal.emit(mesh)
+                self.overwriteBackupMeshSignal.emit(mesh)
 
                 # Reloading mesh
-                self.remove_mesh()
-                self.add_mesh_to_plotter(self.create_mesh)
+                self.addMeshSignal.emit(mesh)
+                #self.remove_mesh()
+                #self.add_mesh_to_plotter(self.create_mesh)
                 # ------------------------------
             except Exception as e:
                 print("[WARNING] Failed to create mesh without normalization", e)
 
     def repair_mesh(self):
+        self.show_loading_window()
+        thread = threading.Thread(target=self.repair_mesh_thread)
+        thread.start()
+
+    def repair_mesh_thread(self):
         if self.create_mesh is not None:
             try:
+                self.removeActorSignal.emit("mesh")
                 #cpos = [(-0.2, -0.13, 0.12), (-0.015, 0.10, -0.0), (0.28, 0.26, 0.9)]
 
                 # Generate a meshfix mesh ready for fixing and extract the holes
@@ -135,28 +163,37 @@ class MeshCreator():
 
                 # Repair the mesh
                 meshfix.repair(verbose=True,joincomp=False,remove_smallest_components=False)
-                self.create_mesh = meshfix.mesh
+                mesh = meshfix.mesh
                 #self.create_mesh_backup = self.create_mesh
 
-                with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
-                    self.create_mesh.save(self.create_mesh_backup.name)
+                # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                #     self.create_mesh.save(self.create_mesh_backup.name)
+                self.overwriteBackupMeshSignal.emit(mesh)
+                self.assignMeshSignal.emit(mesh)
 
                 # Reloading mesh
-                self.remove_mesh()
-                self.add_mesh_to_plotter(self.create_mesh)
+                self.addMeshSignal.emit(mesh)
+                #self.remove_mesh()
+                #self.add_mesh_to_plotter(self.create_mesh)
                 #------------------------------
             except Exception as e:
                 print("[WARNING] Failed to fix mesh", e)
 
     def transform_existing_mesh(self):
+        self.show_loading_window()
+        thread = threading.Thread(target=self.transform_existing_mesh_thread)
+        thread.start()
+
+    def transform_existing_mesh_thread(self):
         if self.create_mesh is not None:
             if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
                 if self.settings.transformation_logic_equalizer != [0, 1, 0, 0]:
                     #Overwrite backup and save changes in equalizer
                     #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
 
-                    with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
-                        self.create_mesh.save(self.create_mesh_backup.name)
+                    # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                    #     self.create_mesh.save(self.create_mesh_backup.name)
+                    self.overwriteBackupMeshSignal.emit(self.create_mesh)
 
                     self.settings.transformation_logic_equalizer = [0, 1, 0, 0]
                     self.settings.reset_transformation_values()
@@ -167,6 +204,7 @@ class MeshCreator():
 
             if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 1, 0, 0]:
                 try:
+                    self.removeActorSignal.emit("mesh")
                     #Triangles reduction
                     print(f"Number of triangles in mesh: {self.create_mesh.n_points}")
                     if self.settings.enable_triangles_amount_input_field:
@@ -180,22 +218,29 @@ class MeshCreator():
                     print(f"Number of triangles in mesh after reduction: {self.create_mesh.n_points}")
 
                     # Reloading mesh
-                    self.remove_mesh()
-                    self.add_mesh_to_plotter(self.create_mesh)
+                    self.addMeshSignal.emit(self.create_mesh)
+                    #self.remove_mesh()
+                    #self.add_mesh_to_plotter(self.create_mesh)
                     self.settings.transformation_logic_equalizer = [0, 1, 0, 0]
                     # ------------------------------
                 except Exception as e:
                     print("[WARNING] Failed to change number of triangles", e)
 
     def _smooth_mesh(self):
+        self.show_loading_window()
+        thread = threading.Thread(target=self._smooth_mesh_thread)
+        thread.start()
+
+    def _smooth_mesh_thread(self):
         if self.create_mesh is not None:
             if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
                 if self.settings.transformation_logic_equalizer != [0, 0, 1, 0]:
                     #Overwrite backup and save changes in equalizer
                     #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
 
-                    with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
-                        self.create_mesh.save(self.create_mesh_backup.name)
+                    # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                    #     self.create_mesh.save(self.create_mesh_backup.name)
+                    self.overwriteBackupMeshSignal.emit(self.create_mesh)
 
                     self.settings.transformation_logic_equalizer = [0, 0, 1, 0]
                     self.settings.reset_transformation_values()
@@ -207,6 +252,7 @@ class MeshCreator():
             if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 0, 1, 0]:
                 if int(self.settings.number_of_smooth_iterations) > 0:
                     try:
+                        self.removeActorSignal.emit("mesh")
                         #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
 
                         self.create_mesh = pv.read(self.create_mesh_backup.name)
@@ -237,15 +283,18 @@ class MeshCreator():
 
                         self.create_mesh = mesh
 
-                        self.remove_mesh()
-                        self.add_mesh_to_plotter(self.create_mesh)
+                        #self.remove_mesh()
+                        self.addMeshSignal.emit(self.create_mesh)
+                        #self.add_mesh_to_plotter(self.create_mesh)
                         self.settings.transformation_logic_equalizer = [0, 0, 1, 0]
                     except Exception as e:
                         print("[WARNING] Failed to smooth mesh", e)
                 else:
+                    self.removeActorSignal.emit("mesh")
                     #self.create_mesh = self.create_mesh_backup
 
                     self.create_mesh = pv.read(self.create_mesh_backup.name)
+                    self.addMeshSignal.emit(self.create_mesh)
 
-                    self.remove_mesh()
-                    self.add_mesh_to_plotter(self.create_mesh)
+                    #self.remove_mesh()
+                    #self.add_mesh_to_plotter(self.create_mesh)

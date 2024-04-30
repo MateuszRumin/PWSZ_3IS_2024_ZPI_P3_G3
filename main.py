@@ -21,7 +21,7 @@ from pyvistaqt import QtInteractor, MainWindow
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
-from PyQt5.QtCore import QLocale
+from PyQt5.QtCore import QLocale, Qt, QThread, pyqtSignal, QRunnable
 from qtpy import QtWidgets
 
 from settings import  Settings
@@ -32,14 +32,70 @@ from functions import mesh_creator
 from functions import cloud_selection
 from functions import mesh_selection
 from normalization import normalization
+from functions import thread_funtions_redirections
 
 
-class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection, mesh_selection.MeshSelection, normalization.NormalizationClass):
+class LoadingWindow(QDialog):
+    def __init__(self, parent=None):
+        super(LoadingWindow, self).__init__(parent)
+        uic.loadUi("loading_bar.ui", self)
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setWindowModality(Qt.ApplicationModal)
+
+
+    def update_progress(self, value):
+        if self.progressBar.value() == 100 and value == 99:
+            self.progressBar.setInvertedAppearance(True)
+        elif self.progressBar.value() == 0 and value == 1:
+            self.progressBar.setInvertedAppearance(False)
+
+        self.progressBar.setValue(value)
+
+class LoadingThread(QThread):
+    progressChanged = pyqtSignal(int)
+
+    def run(self):
+        while True:
+            for i in range(101):
+                time.sleep(0.01)
+                self.progressChanged.emit(i)
+
+            for i in range(100, -1, -1):
+                time.sleep(0.01)
+                self.progressChanged.emit(i)
+
+class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection, mesh_selection.MeshSelection, normalization.NormalizationClass, thread_funtions_redirections.ThreadFunctionsRedirections):
+    resetPlotterSignal = pyqtSignal()
+    assignCloudSignal = pyqtSignal(object)
+    assignMeshSignal = pyqtSignal(object)
+    removeActorSignal = pyqtSignal(object)
+    addCloudSignal = pyqtSignal(object)
+    addMeshSignal = pyqtSignal(object)
+    addMeshWithTrianglesSignal = pyqtSignal(object)
+    clearBeforeLoadSignal = pyqtSignal()
+    overwriteBackupCloudSignal = pyqtSignal(object)
+    overwriteBackupMeshSignal = pyqtSignal(object)
 
     def __init__(self, parent=None, show=True):
         QtWidgets.QMainWindow.__init__(self, parent)
         uic.loadUi("UI2.ui", self)
         self.settings = Settings()
+        self.loadingDialog = LoadingWindow(self)
+        self.loadingThread = LoadingThread()
+        self.loadingThread.progressChanged.connect(self.loadingDialog.update_progress)
+
+        #Connect functions to thread signals
+        self.resetPlotterSignal.connect(self.reset_plotter_slot)
+        self.assignCloudSignal.connect(self.assign_cloud)
+        self.assignMeshSignal.connect(self.assign_mesh)
+        self.removeActorSignal.connect(self.remove_actor_slot)
+        self.addCloudSignal.connect(self.add_cloud_slot)
+        self.addMeshSignal.connect(self.add_mesh_slot)
+        self.addMeshWithTrianglesSignal.connect(self.add_mesh_with_triangles_slot)
+        self.clearBeforeLoadSignal.connect(self.clear_before_load)
+        self.overwriteBackupCloudSignal.connect(self.overwrite_backup_cloud)
+        self.overwriteBackupMeshSignal.connect(self.overwrite_backup_mesh)
+        #----------------------------
 
 
         # plotter plain
@@ -228,6 +284,13 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
             #-------------------------------------------------------------
             time.sleep(1)   #The condition is checked every second
 
+    def show_loading_window(self):
+        self.loadingThread.start()
+        self.loadingDialog.show()
+
+    def close_loading_window(self):
+        self.loadingDialog.close()
+
 
     #Key function for resetting plotter called from file functions.
     # Do not use directly!
@@ -251,6 +314,9 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
             self._apply_settings()
         except Exception as e:
             print("[WARNING] Failed to reload plotter", e)
+
+
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
