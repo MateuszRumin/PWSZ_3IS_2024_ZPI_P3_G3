@@ -66,7 +66,7 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page_scene_geometries">
           <property name="geometry">
@@ -385,7 +385,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
+            <width>234</width>
             <height>350</height>
            </rect>
           </property>
@@ -686,6 +686,11 @@
                      <string>Volume</string>
                     </property>
                    </item>
+                   <item>
+                    <property name="text">
+                     <string>Select area</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item>
@@ -886,7 +891,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
+            <width>234</width>
             <height>500</height>
            </rect>
           </property>
@@ -1645,7 +1650,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
+            <width>234</width>
             <height>250</height>
            </rect>
           </property>
@@ -1954,8 +1959,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
-            <height>525</height>
+            <width>234</width>
+            <height>545</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -1999,8 +2004,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>207</width>
-                <height>743</height>
+                <width>215</width>
+                <height>734</height>
                </rect>
               </property>
               <property name="maximumSize">
@@ -2978,8 +2983,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
-            <height>525</height>
+            <width>234</width>
+            <height>545</height>
            </rect>
           </property>
           <attribute name="label">
@@ -3005,8 +3010,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>188</width>
-                <height>536</height>
+                <width>214</width>
+                <height>525</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_23">
@@ -3889,7 +3894,7 @@ manually</string>
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
+            <width>234</width>
             <height>250</height>
            </rect>
           </property>

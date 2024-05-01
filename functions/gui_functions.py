@@ -27,6 +27,9 @@ class GuiFunctions:
     use_area = False
     total_area = None
     label_area = None
+    path = None
+    roi = None
+    roi_area = None
     #----------------------------------------------------------------------------------------------#
 
     #Function used to write down sampling values. Calls up object transformations
@@ -510,6 +513,7 @@ class GuiFunctions:
             if self.calculate_comboBox.currentText() != 'None':
                 #Calculate values for cells
                 sized = self.create_mesh.compute_cell_sizes()
+                sel_area = None
                 #Displaying values for areas and giving them the appropriate unit
                 if self.calculate_comboBox.currentText() == 'Areas':
                     #Removing existing label from plotter if exist
@@ -555,7 +559,67 @@ class GuiFunctions:
                                                                 name='volume', position='lower_left')
                     #----------------
                     self.plotter.update()  # Update the plotter
-                #---------------------------------------------------
+                # ---------------------------------------------------
+                # Displaying values for select area and giving them the appropriate unit
+                elif self.calculate_comboBox.currentText() == "Select area":
+
+                    # Wyłączanie zaznaczania na początku funkcji
+                    self.plotter.disable_picking()
+
+                    if self.path is None:
+                        # Removing existing label from plotter if exist
+                        self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
+                        self.plotter.update()  # Update the plotter
+
+                        def cBack(path):
+                            # For picking path callback
+                            return
+
+                        # Zamiast szukać indeksów 'gmsh:physical', używamy całej siatki
+                        self.mesh_surf = self.create_mesh.extract_surface()
+
+                        # self.plotter.add_mesh(mesh_surf, show_edges=True)
+                        self.plotter.enable_geodesic_picking(cBack, tolerance=0.01, color='red')
+                        self.plotter.reset_camera()
+                        self.plotter.show()
+
+                        self.plotter.update()  # Update the plotter
+
+                    elif self.plotter.picked_geodesic is not None:
+                        # Po wybraniu ścieżki, tworzymy maskę na podstawie wybranej ścieżki
+                        self.path = self.plotter.picked_geodesic
+                        mask = self.mesh_surf.select_enclosed_points(self.path.delaunay_2d(), check_surface=False, tolerance=0.15)
+                        self.roi = mask.threshold(0.25, scalars="SelectedPoints")
+
+                        print(f"PATH:     ", self.path)
+                        print(f"MASK:     ", mask)
+                        print(f"ROI:     ", self.roi)
+
+                        self.plotter.update()  # Update the plotter
+
+                        # Wyłączenie zaznaczania
+                        self.plotter.disable_picking()
+
+                        # Obliczanie powierzchni zaznaczonego obszaru
+                        self.roi_area = self.roi.compute_cell_sizes().area
+                        print(f"ROI AREA:     ", self.roi_area)
+
+                        # Wyświetlanie obliczonej powierzchni
+                        if (self.roi_area < 0.01):
+                            self.label_area = self.plotter.add_text(
+                                f'Area of the selected area: {self.roi_area * 1000000:.2f} mm^2',
+                                name='area', position='lower_left')
+                        elif (self.roi_area < 0.1):
+                            self.label_area = self.plotter.add_text(
+                                f'Area of the selected area: {self.roi_area * 10000:.2f} cm^2',
+                                name='area', position='lower_left')
+                        else:
+                            self.label_area = self.plotter.add_text(f'Area of the selected area: {self.roi_area:.2f} m^2',
+                                                                    name='area',
+                                                                    position='lower_left')
+
+                        self.plotter.update()  # Update the plotter
+                # ---------------------------------------------------
             else:
                 #Clearing label from plotter
                 self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
