@@ -141,9 +141,10 @@ class FileFunctions:
             #-------------------------------------------------------
 
     def read_cloud_from_mesh(self):
-        self.show_loading_window()
-        thread = threading.Thread(target=self.read_cloud_from_mesh_thread)
-        thread.start()
+        if self.create_mesh is not None and self.cloud is None:
+            self.show_loading_window()
+            thread = threading.Thread(target=self.read_cloud_from_mesh_thread)
+            thread.start()
 
     def read_cloud_from_mesh_thread(self):
         if self.create_mesh is not None and self.cloud is None:
@@ -423,7 +424,7 @@ class FileFunctions:
             self.remove_mesh_with_triangles()
 
         # Adding mesh to plotter
-        self.mesh_geometry_container = self.plotter.add_mesh(mesh, show_edges=False, show_scalar_bar=False, color='white')
+        self.mesh_geometry_container = self.plotter.add_mesh(mesh, show_edges=False, show_scalar_bar=False, color=self.settings.object_color)
         self.display_mesh_checkbox.setChecked(True)
         # ----------------------
 
@@ -446,7 +447,7 @@ class FileFunctions:
             self.remove_mesh()
 
         # Adding mesh to plotter
-        self.mesh_with_triangles_container = self.plotter.add_mesh(mesh, show_edges=True, show_scalar_bar=False)
+        self.mesh_with_triangles_container = self.plotter.add_mesh(mesh, show_edges=True, show_scalar_bar=False, color=self.settings.object_color)
         self.display_triangles_checkbox.setChecked(True)
         # ----------------------
 

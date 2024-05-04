@@ -53,9 +53,10 @@ class GuiFunctions:
             self.settings.object_color = color.name()
             #-----------------
 
-            #Reloading mesh on plotter
-            self.remove_mesh()
-            self.add_mesh_to_plotter(self.create_mesh)
+            if self.create_mesh is not None:
+                #Reloading mesh on plotter
+                self.remove_mesh()
+                self.add_mesh_to_plotter(self.create_mesh)
 
 
     #Changing the colour of the text
@@ -519,53 +520,56 @@ class GuiFunctions:
                 sel_area = None
                 #Displaying values for areas and giving them the appropriate unit
                 if self.calculate_comboBox.currentText() == 'Areas':
-                    #Removing existing label from plotter if exist
-                    self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
-                    self.plotter.update()  # Update the plotter
-                    #------------------------------------------------------------
+                    MyTimer = time_factory.timer_factory()
+                    with MyTimer('Calculate surface'):
+                        #Removing existing label from plotter if exist
+                        self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
+                        self.plotter.update()  # Update the plotter
+                        #------------------------------------------------------------
 
-                    #Displaying label
-                    if (sized.area < 0.01):
-                        self.label_area = self.plotter.add_text(f'Area of the mesh: {sized.area * 1000000:.2f} mm^2',
-                                                                name='area', position='lower_left')
-                    elif (sized.area < 0.1):
-                        self.label_area = self.plotter.add_text(f'Area of the mesh: {sized.area * 10000:.2f} cm^2',
-                                                                name='area', position='lower_left')
-                    else:
-                        self.label_area = self.plotter.add_text(f'Area of the mesh: {sized.area:.2f} m^2', name='area',
-                                                                position='lower_left')
-                    #-----------------
+                        #Displaying label
+                        if (sized.area < 0.01):
+                            self.label_area = self.plotter.add_text(f'Area of the mesh: {sized.area * 1000000:.2f} mm^2',
+                                                                    name='area', position='lower_left')
+                        elif (sized.area < 0.1):
+                            self.label_area = self.plotter.add_text(f'Area of the mesh: {sized.area * 10000:.2f} cm^2',
+                                                                    name='area', position='lower_left')
+                        else:
+                            self.label_area = self.plotter.add_text(f'Area of the mesh: {sized.area:.2f} m^2', name='area',
+                                                                    position='lower_left')
+                        #-----------------
 
-                    self.plotter.update()  # Update the plotter
+                        self.plotter.update()  # Update the plotter
                 #---------------------------------------------------
                 # Displaying values for volume and giving them the appropriate unit
                 elif self.calculate_comboBox.currentText() == 'Volume':
-                    #Removing existing label from plotter if exist
-                    self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
-                    self.plotter.update()  # Update the plotter
-                    #---------------------------------------------
+                    MyTimer = time_factory.timer_factory()
+                    with MyTimer('Calculate volume'):
+                        #Removing existing label from plotter if exist
+                        self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
+                        self.plotter.update()  # Update the plotter
+                        #---------------------------------------------
 
-                    #Displaying label
-                    if (sized.volume < 0.000001):
-                        self.label_area = self.plotter.add_text(
-                            f'Volume of the mesh: {sized.volume * 1000000000:.2f} mm^3', name='volume',
-                            position='lower_left')
-                    elif (sized.volume < 0.0001):
-                        self.label_area = self.plotter.add_text(
-                            f'Volume of the mesh: {sized.volume * 1000000:.2f} cm^3', name='volume',
-                            position='lower_left')
-                    elif (sized.volume < 0.01):
-                        self.label_area = self.plotter.add_text(f'Volume of the mesh: {sized.volume * 1000:.2f} l',
-                                                                name='volume', position='lower_left')
-                    else:
-                        self.label_area = self.plotter.add_text(f'Volume of the mesh: {sized.volume:.2f} m^3',
-                                                                name='volume', position='lower_left')
-                    #----------------
-                    self.plotter.update()  # Update the plotter
-                # ---------------------------------------------------
-                # Displaying values for select area and giving them the appropriate unit
+                        #Displaying label
+                        if (sized.volume < 0.000001):
+                            self.label_area = self.plotter.add_text(
+                                f'Volume of the mesh: {sized.volume * 1000000000:.2f} mm^3', name='volume',
+                                position='lower_left')
+                        elif (sized.volume < 0.0001):
+                            self.label_area = self.plotter.add_text(
+                                f'Volume of the mesh: {sized.volume * 1000000:.2f} cm^3', name='volume',
+                                position='lower_left')
+                        elif (sized.volume < 0.01):
+                            self.label_area = self.plotter.add_text(f'Volume of the mesh: {sized.volume * 1000:.2f} l',
+                                                                    name='volume', position='lower_left')
+                        else:
+                            self.label_area = self.plotter.add_text(f'Volume of the mesh: {sized.volume:.2f} m^3',
+                                                                    name='volume', position='lower_left')
+                        #----------------
+                        self.plotter.update()  # Update the plotter
+                    # ---------------------------------------------------
+                    # Displaying values for select area and giving them the appropriate unit
                 elif self.calculate_comboBox.currentText() == "Select area":
-
                     # Wyłączanie zaznaczania na początku funkcji
                     self.plotter.disable_picking()
 
@@ -603,25 +607,27 @@ class GuiFunctions:
                         # Wyłączenie zaznaczania
                         self.plotter.disable_picking()
 
-                        # Obliczanie powierzchni zaznaczonego obszaru
-                        self.roi_area = self.roi.compute_cell_sizes().area
-                        print(f"ROI AREA:     ", self.roi_area)
+                        MyTimer = time_factory.timer_factory()
+                        with MyTimer('Calculate surface for selected area'):
+                            # Obliczanie powierzchni zaznaczonego obszaru
+                            self.roi_area = self.roi.compute_cell_sizes().area
+                            print(f"ROI AREA:     ", self.roi_area)
 
-                        # Wyświetlanie obliczonej powierzchni
-                        if (self.roi_area < 0.01):
-                            self.label_area = self.plotter.add_text(
-                                f'Area of the selected area: {self.roi_area * 1000000:.2f} mm^2',
-                                name='area', position='lower_left')
-                        elif (self.roi_area < 0.1):
-                            self.label_area = self.plotter.add_text(
-                                f'Area of the selected area: {self.roi_area * 10000:.2f} cm^2',
-                                name='area', position='lower_left')
-                        else:
-                            self.label_area = self.plotter.add_text(f'Area of the selected area: {self.roi_area:.2f} m^2',
-                                                                    name='area',
-                                                                    position='lower_left')
+                            # Wyświetlanie obliczonej powierzchni
+                            if (self.roi_area < 0.01):
+                                self.label_area = self.plotter.add_text(
+                                    f'Area of the selected area: {self.roi_area * 1000000:.2f} mm^2',
+                                    name='area', position='lower_left')
+                            elif (self.roi_area < 0.1):
+                                self.label_area = self.plotter.add_text(
+                                    f'Area of the selected area: {self.roi_area * 10000:.2f} cm^2',
+                                    name='area', position='lower_left')
+                            else:
+                                self.label_area = self.plotter.add_text(f'Area of the selected area: {self.roi_area:.2f} m^2',
+                                                                        name='area',
+                                                                        position='lower_left')
 
-                        self.plotter.update()  # Update the plotter
+                            self.plotter.update()  # Update the plotter
                 # ---------------------------------------------------
             else:
                 #Clearing label from plotter
