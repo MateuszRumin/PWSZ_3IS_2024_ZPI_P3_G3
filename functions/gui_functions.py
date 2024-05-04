@@ -511,6 +511,8 @@ class GuiFunctions:
 
 
     def _calculate_area(self):
+        self.plotter.update()  # Update the plotter
+
         #Checking if the mesh exists
         if self.create_mesh is not None:
             #Checking whether any other option is selected
@@ -570,7 +572,7 @@ class GuiFunctions:
                     # ---------------------------------------------------
                     # Displaying values for select area and giving them the appropriate unit
                 elif self.calculate_comboBox.currentText() == "Select area":
-                    # Wyłączanie zaznaczania na początku funkcji
+                    # Disable selection
                     self.plotter.disable_picking()
 
                     if self.path is None:
@@ -579,23 +581,20 @@ class GuiFunctions:
                         self.plotter.update()  # Update the plotter
 
                         def cBack(path):
-                            # For picking path callback
-                            return
+                            # Set self.path data from enable_geodesic_picking
+                            self.path = path
 
-                        # Zamiast szukać indeksów 'gmsh:physical', używamy całej siatki
                         self.mesh_surf = self.create_mesh.extract_surface()
-
-                        # self.plotter.add_mesh(mesh_surf, show_edges=True)
                         self.plotter.enable_geodesic_picking(cBack, tolerance=0.01, color='red')
                         self.plotter.reset_camera()
                         self.plotter.show()
-
                         self.plotter.update()  # Update the plotter
 
-                    elif self.plotter.picked_geodesic is not None:
+                    elif self.path is not None:
                         # Po wybraniu ścieżki, tworzymy maskę na podstawie wybranej ścieżki
-                        self.path = self.plotter.picked_geodesic
-                        mask = self.mesh_surf.select_enclosed_points(self.path.delaunay_2d(), check_surface=False, tolerance=0.15)
+                        # self.path = self.plotter.picked_geodesic
+                        mask = self.mesh_surf.select_enclosed_points(self.path.delaunay_2d(), check_surface=False,
+                                                                     tolerance=0.15)
                         self.roi = mask.threshold(0.25, scalars="SelectedPoints")
 
                         print(f"PATH:     ", self.path)
@@ -604,30 +603,27 @@ class GuiFunctions:
 
                         self.plotter.update()  # Update the plotter
 
-                        # Wyłączenie zaznaczania
-                        self.plotter.disable_picking()
+                        # Obliczanie powierzchni zaznaczonego obszaru
+                        self.roi_area = self.roi.compute_cell_sizes().area
+                        print(f"ROI AREA:     ", self.roi_area)
 
-                        MyTimer = time_factory.timer_factory()
-                        with MyTimer('Calculate surface for selected area'):
-                            # Obliczanie powierzchni zaznaczonego obszaru
-                            self.roi_area = self.roi.compute_cell_sizes().area
-                            print(f"ROI AREA:     ", self.roi_area)
+                        # Wyświetlanie obliczonej powierzchni
+                        if (self.roi_area < 0.01):
+                            self.label_area = self.plotter.add_text(
+                                f'Area of the selected area: {self.roi_area * 1000000:.2f} mm^2',
+                                name='area', position='lower_left')
+                        elif (self.roi_area < 0.1):
+                            self.label_area = self.plotter.add_text(
+                                f'Area of the selected area: {self.roi_area * 10000:.2f} cm^2',
+                                name='area', position='lower_left')
+                        else:
+                            self.label_area = self.plotter.add_text(
+                                f'Area of the selected area: {self.roi_area:.2f} m^2',
+                                name='area',
+                                position='lower_left')
 
-                            # Wyświetlanie obliczonej powierzchni
-                            if (self.roi_area < 0.01):
-                                self.label_area = self.plotter.add_text(
-                                    f'Area of the selected area: {self.roi_area * 1000000:.2f} mm^2',
-                                    name='area', position='lower_left')
-                            elif (self.roi_area < 0.1):
-                                self.label_area = self.plotter.add_text(
-                                    f'Area of the selected area: {self.roi_area * 10000:.2f} cm^2',
-                                    name='area', position='lower_left')
-                            else:
-                                self.label_area = self.plotter.add_text(f'Area of the selected area: {self.roi_area:.2f} m^2',
-                                                                        name='area',
-                                                                        position='lower_left')
+                        self.plotter.update()  # Update the plotter
 
-                            self.plotter.update()  # Update the plotter
                 # ---------------------------------------------------
             else:
                 #Clearing label from plotter
