@@ -70,8 +70,11 @@ class ThreadFunctionsRedirections:
         QCoreApplication.processEvents()
         with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
             cloud.save(self.cloud_backup.name)
+            self.cleanup_handler.files_to_delete.append(self.cloud_backup.name)
+
 
     def overwrite_backup_mesh(self, mesh):
         QCoreApplication.processEvents()
         with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
             mesh.save(self.create_mesh_backup.name)
+            self.cleanup_handler.files_to_delete.append(self.create_mesh_backup.name)

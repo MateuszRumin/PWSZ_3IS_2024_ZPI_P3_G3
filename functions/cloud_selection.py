@@ -74,6 +74,7 @@ class CloudSelection():
 
                 with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
                     self.cloud.save(self.cloud_backup.name)
+                    self.cleanup_handler.files_to_delete.append(self.cloud_backup.name)
 
                 #self.cloud_backup = copy.deepcopy(self.cloud)
                 #-------------------------------------
@@ -101,6 +102,7 @@ class CloudSelection():
 
                 with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
                     self.cloud.save(self.cloud_backup.name)
+                    self.cleanup_handler.files_to_delete.append(self.cloud_backup.name)
 
                 #-------------------------------------
                 self._reset_plotter()

@@ -7,6 +7,7 @@
 ||                                                                                            ||
 ################################################################################################
 """
+import atexit
 import os
 os.environ["QT_API"] = "pyqt5"
 import sys
@@ -21,7 +22,7 @@ from pyvistaqt import QtInteractor, MainWindow
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtWidgets
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
-from PyQt5.QtCore import QLocale, Qt, QThread, pyqtSignal, QRunnable
+from PyQt5.QtCore import QLocale, Qt, QThread, pyqtSignal, QRunnable, QObject, QCoreApplication
 from qtpy import QtWidgets
 
 from settings import  Settings
@@ -33,6 +34,7 @@ from functions import cloud_selection
 from functions import mesh_selection
 from normalization import normalization
 from functions import thread_funtions_redirections
+from functions import time_factory
 
 
 class LoadingWindow(QDialog):
@@ -63,6 +65,17 @@ class LoadingThread(QThread):
             for i in range(100, -1, -1):
                 time.sleep(0.01)
                 self.progressChanged.emit(i)
+
+class ApplicationCleanup:
+    def __init__(self):
+        self.files_to_delete = []
+
+    def cleanup(self):
+        for file in self.files_to_delete:
+            try:
+                os.remove(file)
+            except OSError as e:
+                print(f"Error: {file} : {e.strerror}")
 
 class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.ApplySettings, gui_functions.GuiFunctions, mesh_creator.MeshCreator, cloud_selection.CloudSelection, mesh_selection.MeshSelection, normalization.NormalizationClass, thread_funtions_redirections.ThreadFunctionsRedirections):
     resetPlotterSignal = pyqtSignal()
@@ -257,6 +270,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         monitor_thread.daemon = True
         monitor_thread.start()
 
+
         if show:
             self.show()
 
@@ -316,9 +330,15 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
             print("[WARNING] Failed to reload plotter", e)
 
 
-
-
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
-    window = MyMainWindow()
+    MyTimer = time_factory.timer_factory()
+    cleanup_handler = ApplicationCleanup()
+
+    with MyTimer('Application start'):
+        app = QtWidgets.QApplication(sys.argv)
+        window = MyMainWindow()
+        window.cleanup_handler = cleanup_handler
+
+
+    atexit.register(cleanup_handler.cleanup)
     sys.exit(app.exec_())

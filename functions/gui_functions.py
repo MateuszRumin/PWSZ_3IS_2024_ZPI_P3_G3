@@ -17,6 +17,7 @@ import open3d as o3d
 import threading
 import time
 from PyQt5.QtWidgets import QColorDialog
+from functions import time_factory
 
 from PIL import Image
 from tkinter import filedialog
@@ -216,88 +217,90 @@ class GuiFunctions:
 
     #A function that carries out the transformation of an object.
     def _transform_object_on_thread(self):
-        if self.cloud is not None and self.display_cloud_checkbox.isChecked():
-            #Logic equalizer
-            if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
-                if self.settings.transformation_logic_equalizer != [1, 0, 0, 0]:
-                    #Overwrite backup and save changes in equalizer
-                    #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+        MyTimer = time_factory.timer_factory()
+        with MyTimer('Geometry transformation'):
+            if self.cloud is not None and self.display_cloud_checkbox.isChecked():
+                #Logic equalizer
+                if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
+                    if self.settings.transformation_logic_equalizer != [1, 0, 0, 0]:
+                        #Overwrite backup and save changes in equalizer
+                        #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
 
-                    # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
-                    #     self.create_mesh.save(self.create_mesh_backup.name)
-                    self.overwriteBackupCloudSignal.emit(self.cloud)
+                        # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                        #     self.create_mesh.save(self.create_mesh_backup.name)
+                        self.overwriteBackupCloudSignal.emit(self.cloud)
 
-                    self.settings.transformation_logic_equalizer = [1, 0, 0, 0]
-                    self.settings.reset_smooth_values()
-                    self.settings.reset_triangles_values()
-                    self.settings.reset_subdivide_values()
-                    self._apply_settings()
+                        self.settings.transformation_logic_equalizer = [1, 0, 0, 0]
+                        self.settings.reset_smooth_values()
+                        self.settings.reset_triangles_values()
+                        self.settings.reset_subdivide_values()
+                        self._apply_settings()
 
 
-            if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [1, 0, 0, 0]:
-                try:
-                    #self.cloud = copy.deepcopy(self.cloud_backup)   #Copy cloud form backup
-                    self.removeActorSignal.emit("cloud")
+                if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [1, 0, 0, 0]:
+                    try:
+                        #self.cloud = copy.deepcopy(self.cloud_backup)   #Copy cloud form backup
+                        self.removeActorSignal.emit("cloud")
 
-                    self.cloud = pv.read(self.cloud_backup.name)
+                        self.cloud = pv.read(self.cloud_backup.name)
 
-                    self.cloud = pv.PolyData(self.cloud.points)
+                        self.cloud = pv.PolyData(self.cloud.points)
 
-                    #-----------Read values from settings-----------#
-                    #Displacement
-                    move_x = float(self.settings.object_move_in_x_direction)
-                    move_y = float(self.settings.object_move_in_y_direction)
-                    move_z = float(self.settings.object_move_in_z_direction)
-                    #------------
-                    #Rotation
-                    rotation_x = self.settings.rotate_slider_x_value
-                    rotation_y = self.settings.rotate_slider_y_value
-                    rotation_z = self.settings.rotate_slider_z_value
-                    #--------
-                    #Scale
-                    scale_value = self.settings.scale_value
-                    #-----
-                    #DownSampling
-                    downSampling = self.settings.downSampling_size_slider_value / 1000
-                    #-----------------------------------------------#
+                        #-----------Read values from settings-----------#
+                        #Displacement
+                        move_x = float(self.settings.object_move_in_x_direction)
+                        move_y = float(self.settings.object_move_in_y_direction)
+                        move_z = float(self.settings.object_move_in_z_direction)
+                        #------------
+                        #Rotation
+                        rotation_x = self.settings.rotate_slider_x_value
+                        rotation_y = self.settings.rotate_slider_y_value
+                        rotation_z = self.settings.rotate_slider_z_value
+                        #--------
+                        #Scale
+                        scale_value = self.settings.scale_value
+                        #-----
+                        #DownSampling
+                        downSampling = self.settings.downSampling_size_slider_value / 1000
+                        #-----------------------------------------------#
 
-                    #-----------Cloud Transformations---------------#
-                    #DownSampling
-                    if downSampling > 0:
-                        downSamplingCloud = self.cloud.clean(
-                            point_merging=True,
-                            merge_tol=downSampling,
-                            lines_to_points=False,
-                            polys_to_lines=False,
-                            strips_to_polys=False,
-                            inplace=False,
-                            absolute=False,
-                            progress_bar=False,
-                        )
-                        self.cloud = downSamplingCloud
-                    #------------
-                    #Displacement
-                    translation_vector = np.array([move_x, move_y, move_z])
-                    self.cloud.points += translation_vector
-                    #------------
-                    #Rotation
-                    self.cloud = self.cloud.rotate_x(rotation_x, inplace=True, point=self.cloud.center)
-                    self.cloud = self.cloud.rotate_y(rotation_y, inplace=True, point=self.cloud.center)
-                    self.cloud = self.cloud.rotate_z(rotation_z, inplace=True, point=self.cloud.center)
-                    #--------
-                    #Scale
-                    self.cloud.points *= scale_value
-                    #-----------------------------------------------#
+                        #-----------Cloud Transformations---------------#
+                        #DownSampling
+                        if downSampling > 0:
+                            downSamplingCloud = self.cloud.clean(
+                                point_merging=True,
+                                merge_tol=downSampling,
+                                lines_to_points=False,
+                                polys_to_lines=False,
+                                strips_to_polys=False,
+                                inplace=False,
+                                absolute=False,
+                                progress_bar=False,
+                            )
+                            self.cloud = downSamplingCloud
+                        #------------
+                        #Displacement
+                        translation_vector = np.array([move_x, move_y, move_z])
+                        self.cloud.points += translation_vector
+                        #------------
+                        #Rotation
+                        self.cloud = self.cloud.rotate_x(rotation_x, inplace=True, point=self.cloud.center)
+                        self.cloud = self.cloud.rotate_y(rotation_y, inplace=True, point=self.cloud.center)
+                        self.cloud = self.cloud.rotate_z(rotation_z, inplace=True, point=self.cloud.center)
+                        #--------
+                        #Scale
+                        self.cloud.points *= scale_value
+                        #-----------------------------------------------#
 
-                    #Removing old cloud and adding new to plotter
-                    #self.remove_cloud()
-                    self.cloud = pv.PolyData(self.cloud.points)
-                    #self.add_cloud_to_plotter(self.cloud)
-                    self.addCloudSignal.emit(self.cloud)
-                    self.settings.transformation_logic_equalizer = [1, 0, 0, 0]
+                        #Removing old cloud and adding new to plotter
+                        #self.remove_cloud()
+                        self.cloud = pv.PolyData(self.cloud.points)
+                        #self.add_cloud_to_plotter(self.cloud)
+                        self.addCloudSignal.emit(self.cloud)
+                        self.settings.transformation_logic_equalizer = [1, 0, 0, 0]
 
-                except Exception as e:
-                    print("[WARNING] Failed to transform cloud", e)
+                    except Exception as e:
+                        print("[WARNING] Failed to transform cloud", e)
 
         if self.create_mesh is not None and (self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
             #Logic equalizer
@@ -664,139 +667,141 @@ class GuiFunctions:
 
     def _subdevide_triangles_thread(self):
         if self.create_mesh is not None:
-            #Logic equalizer
-            if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
-                if self.settings.transformation_logic_equalizer != [0, 0, 0, 1]:
-                    #Overwrite backup and save changes in equalizer
-                    #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+            MyTimer = time_factory.timer_factory()
+            with MyTimer('Subdivide triangles'):
+                #Logic equalizer
+                if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
+                    if self.settings.transformation_logic_equalizer != [0, 0, 0, 1]:
+                        #Overwrite backup and save changes in equalizer
+                        #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
 
-                    # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
-                    #     self.create_mesh.save(self.create_mesh_backup.name)
-                    self.overwriteBackupMeshSignal.emit(self.create_mesh)
+                        # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                        #     self.create_mesh.save(self.create_mesh_backup.name)
+                        self.overwriteBackupMeshSignal.emit(self.create_mesh)
 
-                    self.settings.transformation_logic_equalizer = [0, 0, 0, 1]
-                    self.settings.reset_transformation_values()
-                    self.settings.reset_triangles_values()
-                    self.settings.reset_smooth_values()
-                    self._apply_settings()
-                    #----------------------------------------------
+                        self.settings.transformation_logic_equalizer = [0, 0, 0, 1]
+                        self.settings.reset_transformation_values()
+                        self.settings.reset_triangles_values()
+                        self.settings.reset_smooth_values()
+                        self._apply_settings()
+                        #----------------------------------------------
 
-            if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 0, 0, 1]:
-                if self.subdivideselect.currentText() == 'None':
-                    self.resetPlotterSignal.emit()
-                    pass
-
-                #Linear subdivide
-                elif self.subdivideselect.currentText() == 'Subdivide - Linear':
-                    try:
-                        #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
-                        self.create_mesh = pv.read(self.create_mesh_backup.name)
-                        self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
-                        #self._reset_plotter()
+                if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 0, 0, 1]:
+                    if self.subdivideselect.currentText() == 'None':
                         self.resetPlotterSignal.emit()
-                        # self.create_mesh_backup = copy.deepcopy(self.create_mesh)
-                    except Exception as e:
-                        print("[WARNING] Failed to subdivide mesh", e)
+                        pass
 
-                #Buteterfly subdivide
-                elif self.subdivideselect.currentText() == 'Subdivide - butterfly':
-                    try:
-                        #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'butterfly')
-                        self.create_mesh = pv.read(self.create_mesh_backup.name)
-                        self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'butterfly')
-                        #self._reset_plotter()
-                        self.resetPlotterSignal.emit()
-                    except Exception as e:
-                        print("[WARNING] Failed to subdivide mesh", e)
+                    #Linear subdivide
+                    elif self.subdivideselect.currentText() == 'Subdivide - Linear':
+                        try:
+                            #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
+                            self.create_mesh = pv.read(self.create_mesh_backup.name)
+                            self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
+                            #self._reset_plotter()
+                            self.resetPlotterSignal.emit()
+                            # self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                        except Exception as e:
+                            print("[WARNING] Failed to subdivide mesh", e)
 
-                #Loop subdivide
-                elif self.subdivideselect.currentText() == 'Subdivide - Loop':
-                    try:
-                        #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'loop')
-                        self.create_mesh = pv.read(self.create_mesh_backup.name)
-                        self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'loop')
-                        #self._reset_plotter()
-                        self.resetPlotterSignal.emit()
-                    except Exception as e:
-                        print("[WARNING] Failed to subdivide mesh", e)
+                    #Buteterfly subdivide
+                    elif self.subdivideselect.currentText() == 'Subdivide - butterfly':
+                        try:
+                            #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'butterfly')
+                            self.create_mesh = pv.read(self.create_mesh_backup.name)
+                            self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'butterfly')
+                            #self._reset_plotter()
+                            self.resetPlotterSignal.emit()
+                        except Exception as e:
+                            print("[WARNING] Failed to subdivide mesh", e)
 
-                # Midpoint subdivide in open3d
-                elif self.subdivideselect.currentText() == 'Midpoint Open3D':
-                    try:
-                        #Convert pyvista mesh to open3d mesh
-                        #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
-                        self.create_mesh = pv.read(self.create_mesh_backup.name)
-                        vertices = self.create_mesh.points
-                        faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
+                    #Loop subdivide
+                    elif self.subdivideselect.currentText() == 'Subdivide - Loop':
+                        try:
+                            #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'loop')
+                            self.create_mesh = pv.read(self.create_mesh_backup.name)
+                            self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'loop')
+                            #self._reset_plotter()
+                            self.resetPlotterSignal.emit()
+                        except Exception as e:
+                            print("[WARNING] Failed to subdivide mesh", e)
 
-                        o3d_vertices = o3d.utility.Vector3dVector(vertices)
-                        o3d_faces = o3d.utility.Vector3iVector(faces)
+                    # Midpoint subdivide in open3d
+                    elif self.subdivideselect.currentText() == 'Midpoint Open3D':
+                        try:
+                            #Convert pyvista mesh to open3d mesh
+                            #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                            self.create_mesh = pv.read(self.create_mesh_backup.name)
+                            vertices = self.create_mesh.points
+                            faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
 
-                        o3d_mesh = o3d.geometry.TriangleMesh()
-                        o3d_mesh.vertices = o3d_vertices
-                        o3d_mesh.triangles = o3d_faces
-                        #-----------------------------------
+                            o3d_vertices = o3d.utility.Vector3dVector(vertices)
+                            o3d_faces = o3d.utility.Vector3iVector(faces)
 
-                        #Subdivide operation
-                        mesh_in = o3d_mesh
-                        vertices = np.asarray(mesh_in.vertices)
+                            o3d_mesh = o3d.geometry.TriangleMesh()
+                            o3d_mesh.vertices = o3d_vertices
+                            o3d_mesh.triangles = o3d_faces
+                            #-----------------------------------
 
-                        n = int(self.settings.number_of_subdevide_iteration)
-                        mesh_out = mesh_in.subdivide_midpoint(number_of_iterations=n)
+                            #Subdivide operation
+                            mesh_in = o3d_mesh
+                            vertices = np.asarray(mesh_in.vertices)
 
-                        mesh_out.compute_vertex_normals()
-                        #-------------------
+                            n = int(self.settings.number_of_subdevide_iteration)
+                            mesh_out = mesh_in.subdivide_midpoint(number_of_iterations=n)
 
-                        #Convert open3d mesh to pyvista
-                        v = np.asarray(mesh_out.vertices)
-                        f = np.array(mesh_out.triangles)
-                        f = np.c_[np.full(len(f), 3), f]
-                        mesh = pv.PolyData(v, f)
-                        self.create_mesh = mesh
-                        #self._reset_plotter()
-                        self.resetPlotterSignal.emit()
-                        #------------------------------
-                    except Exception as e:
-                        print("[WARNING] Failed to subdivide mesh", e)
+                            mesh_out.compute_vertex_normals()
+                            #-------------------
 
-                #Loop subdivide in open3d
-                elif self.subdivideselect.currentText() == 'Loop Open3D':
-                    try:
-                        #Convert pyvista mesh to open3d mesh
-                        #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
-                        self.create_mesh = pv.read(self.create_mesh_backup.name)
-                        vertices = self.create_mesh.points
-                        faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
+                            #Convert open3d mesh to pyvista
+                            v = np.asarray(mesh_out.vertices)
+                            f = np.array(mesh_out.triangles)
+                            f = np.c_[np.full(len(f), 3), f]
+                            mesh = pv.PolyData(v, f)
+                            self.create_mesh = mesh
+                            #self._reset_plotter()
+                            self.resetPlotterSignal.emit()
+                            #------------------------------
+                        except Exception as e:
+                            print("[WARNING] Failed to subdivide mesh", e)
 
-                        o3d_vertices = o3d.utility.Vector3dVector(vertices)
-                        o3d_faces = o3d.utility.Vector3iVector(faces)
+                    #Loop subdivide in open3d
+                    elif self.subdivideselect.currentText() == 'Loop Open3D':
+                        try:
+                            #Convert pyvista mesh to open3d mesh
+                            #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                            self.create_mesh = pv.read(self.create_mesh_backup.name)
+                            vertices = self.create_mesh.points
+                            faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
 
-                        o3d_mesh = o3d.geometry.TriangleMesh()
-                        o3d_mesh.vertices = o3d_vertices
-                        o3d_mesh.triangles = o3d_faces
-                        #-----------------------------------
+                            o3d_vertices = o3d.utility.Vector3dVector(vertices)
+                            o3d_faces = o3d.utility.Vector3iVector(faces)
 
-                        #Subdivide operation
-                        mesh_in = o3d_mesh
-                        vertices = np.asarray(mesh_in.vertices)
+                            o3d_mesh = o3d.geometry.TriangleMesh()
+                            o3d_mesh.vertices = o3d_vertices
+                            o3d_mesh.triangles = o3d_faces
+                            #-----------------------------------
 
-                        n = int(self.settings.number_of_subdevide_iteration)
-                        mesh_out = mesh_in.subdivide_loop(number_of_iterations=n)
+                            #Subdivide operation
+                            mesh_in = o3d_mesh
+                            vertices = np.asarray(mesh_in.vertices)
 
-                        mesh_out.compute_vertex_normals()
-                        #-------------------
+                            n = int(self.settings.number_of_subdevide_iteration)
+                            mesh_out = mesh_in.subdivide_loop(number_of_iterations=n)
 
-                        #Convert open3d mesh to pyvista
-                        v = np.asarray(mesh_out.vertices)
-                        f = np.array(mesh_out.triangles)
-                        f = np.c_[np.full(len(f), 3), f]
-                        mesh = pv.PolyData(v, f)
-                        self.create_mesh = mesh
-                        #self._reset_plotter()
-                        self.resetPlotterSignal.emit()
-                        #------------------------------
-                    except Exception as e:
-                        print("[WARNING] Failed to subdivide mesh", e)
+                            mesh_out.compute_vertex_normals()
+                            #-------------------
+
+                            #Convert open3d mesh to pyvista
+                            v = np.asarray(mesh_out.vertices)
+                            f = np.array(mesh_out.triangles)
+                            f = np.c_[np.full(len(f), 3), f]
+                            mesh = pv.PolyData(v, f)
+                            self.create_mesh = mesh
+                            #self._reset_plotter()
+                            self.resetPlotterSignal.emit()
+                            #------------------------------
+                        except Exception as e:
+                            print("[WARNING] Failed to subdivide mesh", e)
 
     def _take_screen(self):
         try:
