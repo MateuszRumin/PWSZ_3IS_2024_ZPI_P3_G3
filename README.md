@@ -5,7 +5,6 @@
 - [Getting Started](#getting-started)
   - [Setup your Environment](#setup-your-environment)
 - [Main function in the program](#main-function-in-the-program)
-  - [Adding a new element to the gui](#ii-adding-a-new-element-to-the-gui)
 - [Documentation](#documentation)
 
 
@@ -46,13 +45,22 @@ Instructions for installing and configuring the project.
 6. Select the Python interpreter as an external library for the "env_ambitny_project".
 
 After completing each of the above steps, you should be able to run the main file "main.py" located in the project.
+The program mainly uses the pywt5 open3d, pyvista, and numpy libraries.
 
 ## Main function in the program
+![image](https://lh3.googleusercontent.com/fife/ALs6j_FVwEwSn9d6z7EK9ZZ5CjCf3N8XfRCHfaxdHORpdRgoOvgPtZcipZo8hxXPJ4cVNLrj0wApiSqz0nzrJaBYRnKWaEO-Kyv1iKv6dUNnrd4Dv1eyecQzOW4lIO39q5yddWCpBwBahJF0einTtjL1WR-D6Nqsx0eYKjR1jiXWw_21D9DhDx3MIIKimawR4eAHDeSddyF2O1P92xp2nHUFOT1-sHl_FDaTdE2fS771ZswYGgzYnmy5NlMW5PVBfyfNSAfWpsRUq9WZtW7eTcx-cI85nwtdsnP3DpY6ZG1ZT-l9l7Z5SZLra9_4ISwF-hBoIYAtwNWmrEGLSWfMHjJ3YQC9CF2CBSNEDOeqGjbgJ9LYAZY3r2HejUHQxhjEeCLvFJRRTp30ZVIYDG0RkAtf1r3H7pqnPRJCs_5Enpv4oo_FUa9ANXb0iE1GXAHrT1hHmsvJ8TPzWscGgdZ200QVnHMLAUsBMGVMF5V3A3WzwyTJx-nrto7lY-J96LqBp0WoEJJkq5N5VqCUFHYHtLXUnpFHrMHylWWjoQK1frff2eX545B5usPbqDygib3xDhI2taNz-MhRqEdKDOQjBGSXrd3y2XPBGUpWq60PAbgI6ZXXK1V-VIFnAwxnGKcUmlAX_C-7BPpJFXlUHrkl9v3wdtuFexJqj0x4hf64w36AhzyjOpu9ybqd3NY0jyK0yb188rAfRDZNdKIJ5v4ElxN_Mj60EVWQzgqk3XkYgHm9V_PqvBSFBFZk6hh5fyaAHXBMTB7rzu0mPw1riNey-TnSslO3ZcDQjk2684UmKkumWXceA4jYFdi4d7gvyK7MxRQmivW5NwgedEbV3DNwIT_cHbYq_h8LVWxAma8AgnLwdUwYThjwxF5k_Rb9SdOtGs9ROgqaVkKE3asq4_7KArcUIuE8Qwi51yFZjYHPcvrEeWHUC_W1SKtG17256XourgJHMvB8vUi4JZJqTN0c6oiUTzEFcYOxRxuQn4CYULjQzyQCc2GlSVqS1Yj_VsuMJf9T5HZSx4TAPn2e_NsZgQ0YKxzdBbxpNzZzFpoovjDSbSOGDQg_r4O5hpbzW1ObW_pwX6VeZmWTtVSguNC1PgvXwBj2LPsrthExAFiNComxcIVS53K8olfV1axgS9qnrrJ95UkwO8GFdjDpcvFA5iX0k9YJ-3srRZ307ZMzgCbpgHbHSWlbjmFgkMyCN_zdSWa4e4qsZmtYe1-TSD2iH4kTDclX4vleR1u7srcLlN8RAwfxFFt5WKCIcR_6tDRPcZJFFC4IFnDM2ZbwZfAOFr0CaS1yyrDrNsMs_bKwpbQKSko4HYtG54-Z22Ag7Iqc5_oAW4ZtTJmNSTX4zAexINcYYwXhAWsRyhIAfZqV4R0TZ1VPBxko3vLm14pcgFTRZkeDw4CBZJ1h_thivdRzSHJ-Bj0ICWwgY0t5tQvlBntad96vEBf3aDz_n2DA7OOaVW7-m5B960BCMTTeBJLttZ8-oXhM746-pL53wSN3ZmKryPJS94gnI4Xsuv01aeKtNNsG--BLuTgM5_kvodAxzkvc_XOEVlqq_H1fnsJDF__fbfRN-f5IPdFycocuiRSabEmI8jYSkQ3YtBbDEno5T56YZt5cRGCBnsE517eiDCzOq3wjcBze4R7S=w1920-h912)
+| Function | Description |
+| --- | --- |
+| Create mesh | Creating a mesh from a point cloud with appropriate normals |
+| Mesh repair | Filling holes in the mesh and modifying it and removing fragments |
+| Removing points | Deleting selected points in a point cloud |
+| Model transformations | Reposition, scale and rotate the grid and cloud |
+| Mesh calculation | Calculating area and volume in a mesh |
+| Isolation fragments | Isolation of clouds and mesh fragments. |
+| Triangle reduction | Reducing the number of triangles in the mesh |
+| Division of triangles | Dividing the mesh into more smaller triangles |
+| Mesh smoothing | Smoothing the mesh by softening the edges |
 
-
-### II. Adding a new element to the gui
-
-   
 ## Documentation
 Documentation edit: https://www.overleaf.com/read/phdhpkpsdrtz#dd7b5a
 
