@@ -40,7 +40,7 @@ class Settings:
         self.enable_area_checkbox = False
 
         #Colors
-        self.font_color_plotter = 'lightblue'
+        self.font_color_plotter = 'black'
         self.background_plotter = 'gray'
         self.object_color = 'white'
         self.colorTextPlot = 'white'

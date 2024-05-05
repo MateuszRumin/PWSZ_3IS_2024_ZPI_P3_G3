@@ -18,7 +18,7 @@ import threading
 import time
 from PyQt5.QtWidgets import QColorDialog
 from functions import time_factory
-
+import pandas as pd
 from PIL import Image
 from tkinter import filedialog
 class GuiFunctions:
@@ -88,7 +88,7 @@ class GuiFunctions:
         if self.checkDistance.isChecked():
             #Callback function called when a distance measurement is made
             def callback(a, b, distance):
-                self.label = self.plotter.add_text(f'Distance: {distance*100:.2f}', name='dist')
+                self.label = self.plotter.add_text(f'Distance: {distance*100:.2f}', name='dist', position='lower_edge')
                 self.use_distance = True
             #------------------------------------------------------------
 
@@ -106,6 +106,72 @@ class GuiFunctions:
                 self.plotter.remove_actor(self.label)   #Remove the distance label from the plotter
                 self.plotter.update()                   #Update the plotter
             #----------------------------------------------
+
+    def _distance_mesh(self):
+
+        if self.create_mesh is not None:
+
+            if self.check_distance_mesh.isChecked():
+                pointss = []
+                indexess = []
+                def callback(p):
+
+                    indexes = p["vtkOriginalPointIds"]
+                    for selected_cell_index in indexes:
+                        selected_cell = self.create_mesh.get_cell(selected_cell_index)
+
+                        point_ids = selected_cell.point_ids
+                        points_coordinates = selected_cell.points
+                        # ------------------------------------------------------------------------
+                        pointss.append(points_coordinates[0])
+                        pointss.append(points_coordinates[1])
+                        pointss.append(points_coordinates[2])
+
+                        indexess.append(point_ids[0])
+                        indexess.append(point_ids[1])
+                        indexess.append(point_ids[2])
+                        # -------------------------------------------------------------------------
+
+                    big_array = np.array(pointss)
+                    df = pd.DataFrame(big_array)
+                    df_unique = df.drop_duplicates(keep='first')
+                    pointssss = df_unique.to_numpy()
+                    # ------------------------------------------------------------
+
+                    unique_ids = list(dict.fromkeys(indexess))
+                    indexesssss = unique_ids
+                    # -------------------------------------------------------------
+
+                    if len(pointssss) > 1:
+                        distance = 0
+                        for i in range(len(indexesssss) - 1):
+                            a = indexesssss[i]
+                            b = indexesssss[i + 1]
+
+                            distance = distance + self.create_mesh.geodesic_distance(a, b)
+
+                    else:
+                        print("Not enough points to calculate distance.")
+
+                    distance = round(distance * 10, 2)
+
+                    self.total_distance = self.plotter.add_text(f"Total distance: {distance}", name='dist', position='lower_edge')
+
+
+                self.plotter.add_mesh(self.create_mesh)
+                self.plotter.enable_geodesic_picking(callback=callback, show_message=True, font_size=18,
+                                                color='red', point_size=6, line_width=4, tolerance=0.2,
+                                                show_path=True)
+
+                self.plotter.update()
+
+            else:
+                self.plotter.remove_actor(self.total_distance)
+                self.plotter.disable_picking()
+                self.plotter.clear_actors()
+                pointss = []
+                indexess = []
+
 
     # Mesh area calculation function
     def _calculate_surface_area(self):

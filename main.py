@@ -155,7 +155,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.showAllBoundsCheck.clicked.connect(self._show_All_Bounds)
         # Distance
         self.checkDistance.clicked.connect(self._distance_select)
-
+        self.check_distance_mesh.clicked.connect(self._distance_mesh)
 
         # -------------------Geometry transformation-------------------#
         # Down sampling
