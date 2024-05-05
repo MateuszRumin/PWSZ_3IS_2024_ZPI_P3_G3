@@ -16,8 +16,18 @@ import open3d as o3d
 import pyvista as pv
 import tempfile
 import threading
+import torch
 
 from functions import time_factory
+from triangulate.point_tri_net import PointTriNet_Mesher
+
+def convert_to_tensor(cloud):
+    # points =
+    # normals =
+    device = torch.device(torch.cuda.current_device() if torch.cuda.is_available() else torch.device('cpu'))
+    samples = torch.cat((torch.tensor(np.asarray(cloud.points), dtype=torch.float32, device=device).unsqueeze(0), torch.tensor(np.asarray(cloud.normals), dtype=torch.float32, device=device).unsqueeze(0)), dim=-1)
+    return samples
+
 
 
 class MeshCreator():
@@ -35,24 +45,49 @@ class MeshCreator():
 
                 MyTimer = time_factory.timer_factory()
                 with MyTimer('Mesh Creation after normalization'):
-                    #self.normalizeCloud()
-                    cloud = self.open3d_normalized_cloud
 
-                    par = np.mean(cloud.compute_nearest_neighbor_distance())
+                    model = PointTriNet_Mesher()
+                    model_path = './triangulate/model/model_state_dict.pth'
+                    model.load_state_dict(torch.load(model_path))
+                    model.eval()
+                    #self.normalizeCloud()
+                    # cloud = self.open3d_normalized_cloud
+
+                    # pre_cloud =
+                    with torch.no_grad():
+                        candidate_triangles, candidate_probs = model.predict_mesh(convert_to_tensor(self.open3d_normalized_cloud))
+                        # candidate_triangles is a (B, F, 3) index tensor, predicted triangles
+                        # candidate_probs is a (B, F) float tensor of [0,1] probabilities for each triangle
+
+                        # You are probably interested in only the high-probability triangles. For example,
+                        # get the high-probability triangles from the 0th batch entry like
+                        print(candidate_triangles.shape)
+                        b = 0
+                        prob_thresh = 0.95
+                        high_prob_faces = candidate_triangles[b, candidate_probs[b, :] > prob_thresh, :].to("cpu")
+
+
+                    rec_mesh = o3d.geometry.TriangleMesh()
+
+                    rec_mesh.vertices = o3d.utility.Vector3dVector(self.open3d_normalized_cloud.points)
+                    triangles = high_prob_faces.cpu().numpy()
+                    rec_mesh.triangles = o3d.utility.Vector3iVector(triangles)
+
+                    # par = np.mean(cloud.compute_nearest_neighbor_distance())
 
                     # Creating open3d mesh
-                    radii = [0.005, 0.01, 0.015, 0.02, 0.025]
-                    # radii = [0.9 * par, 0.91 * par, 0.92 * par, 0.93 * par, 0.94 * par, 0.95 * par, 0.96 * par, 0.97 * par,
-                    #          0.98 * par, 0.99 * par,
-                    #          1 * par, 1.01 * par, 1.02 * par, 1.03 * par, 1.04 * par, 1.05 * par, 1.06 * par, 1.07 * par,
-                    #          1.08 * par, 1.09 * par,
-                    #          1.1 * par, 1.11 * par, 1.12 * par, 1.13 * par, 1.14 * par, 1.15 * par, 1.16 * par, 1.17 * par,
-                    #          1.18 * par, 1.19 * par,
-                    #          1.2 * par, 1.21 * par, 1.22 * par, 1.23 * par, 1.24 * par, 1.25 * par, 1.26 * par, 1.27 * par,
-                    #          1.28 * par, 1.29 * par,
-                    #          1.3 * par, 1.4 * par, 1.5 * par, 1.6 * par, 1.75 * par, 0.01, 0.02, 0.04]
-                    rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud,
-                                                                                               o3d.utility.DoubleVector(radii))
+                    # radii = [0.005, 0.01, 0.015, 0.02, 0.025]
+                    # # radii = [0.9 * par, 0.91 * par, 0.92 * par, 0.93 * par, 0.94 * par, 0.95 * par, 0.96 * par, 0.97 * par,
+                    # #          0.98 * par, 0.99 * par,
+                    # #          1 * par, 1.01 * par, 1.02 * par, 1.03 * par, 1.04 * par, 1.05 * par, 1.06 * par, 1.07 * par,
+                    # #          1.08 * par, 1.09 * par,
+                    # #          1.1 * par, 1.11 * par, 1.12 * par, 1.13 * par, 1.14 * par, 1.15 * par, 1.16 * par, 1.17 * par,
+                    # #          1.18 * par, 1.19 * par,
+                    # #          1.2 * par, 1.21 * par, 1.22 * par, 1.23 * par, 1.24 * par, 1.25 * par, 1.26 * par, 1.27 * par,
+                    # #          1.28 * par, 1.29 * par,
+                    # #          1.3 * par, 1.4 * par, 1.5 * par, 1.6 * par, 1.75 * par, 0.01, 0.02, 0.04]
+                    # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud,
+                    #                                                                            o3d.utility.DoubleVector(radii))
 
                     # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(cloud, depth=6, linear_fit=False, n_threads=4 )
                     #
