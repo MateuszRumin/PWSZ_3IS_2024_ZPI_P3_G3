@@ -375,7 +375,7 @@ class GuiFunctions:
     def _show_normals_checked(self):
         if self.display_normals_checkbox.isChecked():
             #Calculates normal if they are not calculated
-            if self.settings.normals_computed_for_origin == False and self.normalize_checkbox.isChecked():
+            if self.settings.normals_computed_for_origin == True and self.normalize_checkbox.isChecked():
                 self.cloud['vectors'] = self._origin_vectors            #Assigning vectors to the cloud
                 self.settings.normals_computed_for_origin = True        #Checking in the settings that normal has been calculated
 

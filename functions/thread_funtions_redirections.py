@@ -14,10 +14,12 @@ class ThreadFunctionsRedirections:
     def assign_cloud(self, cloud):
         QCoreApplication.processEvents()
         self.cloud = cloud
+        self._apply_settings()
 
     def assign_mesh(self, mesh):
         QCoreApplication.processEvents()
         self.create_mesh = mesh
+        self._apply_settings()
 
     def remove_actor_slot(self, actor):
         QCoreApplication.processEvents()
