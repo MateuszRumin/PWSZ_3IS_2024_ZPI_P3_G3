@@ -112,7 +112,7 @@ class GuiFunctions:
         if self.create_mesh is not None:
 
             if self.check_distance_mesh.isChecked():
-                
+
                 def callback(p):
                     self.show_loading_window()
                     thread = threading.Thread(target=lambda: callback_thread(p))
@@ -129,7 +129,8 @@ class GuiFunctions:
                         distance = distance + self.create_mesh.geodesic_distance(a, b)
 
                     distance = round(distance * 100, 2)
-                    self.total_distance = self.plotter.add_text(f"Total distance: {distance} cm", name='dist', position='lower_edge')
+                    #self.total_distance = self.plotter.add_text(f"Total distance: {distance} cm", name='dist', position='lower_edge')
+                    self.addTotalDistanceToPlotterSignal.emit(distance)
 
                 self.plotter.add_mesh(self.create_mesh)
                 self.plotter.enable_geodesic_picking(callback=callback, show_message=True, font_size=18,
