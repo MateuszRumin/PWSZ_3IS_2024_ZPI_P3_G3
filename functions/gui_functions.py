@@ -112,9 +112,7 @@ class GuiFunctions:
         if self.create_mesh is not None:
 
             if self.check_distance_mesh.isChecked():
-                pointss = []
-                indexess = []
-
+                
                 def callback(p):
                     self.show_loading_window()
                     thread = threading.Thread(target=lambda: callback_thread(p))
@@ -123,51 +121,19 @@ class GuiFunctions:
                 def callback_thread(p):
 
                     indexes = p["vtkOriginalPointIds"]
-                    for selected_cell_index in indexes:
-                        selected_cell = self.create_mesh.get_cell(selected_cell_index)
+                    distance = 0
+                    for i in range(len(indexes) - 1):
+                        a = indexes[i]
+                        b = indexes[i + 1]
 
-                        point_ids = selected_cell.point_ids
-                        points_coordinates = selected_cell.points
-                        # ------------------------------------------------------------------------
-                        pointss.append(points_coordinates[0])
-                        pointss.append(points_coordinates[1])
-                        pointss.append(points_coordinates[2])
+                        distance = distance + self.create_mesh.geodesic_distance(a, b)
 
-                        indexess.append(point_ids[0])
-                        indexess.append(point_ids[1])
-                        indexess.append(point_ids[2])
-                        # -------------------------------------------------------------------------
-
-                    big_array = np.array(pointss)
-                    df = pd.DataFrame(big_array)
-                    df_unique = df.drop_duplicates(keep='first')
-                    pointssss = df_unique.to_numpy()
-                    # ------------------------------------------------------------
-
-                    unique_ids = list(dict.fromkeys(indexess))
-                    indexesssss = unique_ids
-                    # -------------------------------------------------------------
-
-                    if len(pointssss) > 1:
-                        distance = 0
-                        for i in range(len(indexesssss) - 1):
-                            a = indexesssss[i]
-                            b = indexesssss[i + 1]
-
-                            distance = distance + self.create_mesh.geodesic_distance(a, b)
-
-                    else:
-                        print("Not enough points to calculate distance.")
-
-                    distance = round(distance * 10, 2)
-
-                    #self.total_distance = self.plotter.add_text(f"Total distance: {distance}", name='dist', position='lower_edge')
-                    self.addTotalDistanceToPlotterSignal.emit(distance)
-
+                    distance = round(distance * 100, 2)
+                    self.total_distance = self.plotter.add_text(f"Total distance: {distance} cm", name='dist', position='lower_edge')
 
                 self.plotter.add_mesh(self.create_mesh)
                 self.plotter.enable_geodesic_picking(callback=callback, show_message=True, font_size=18,
-                                                color='red', point_size=6, line_width=4, tolerance=0.2,
+                                                color='red', point_size=6, line_width=4, tolerance=0.0001,
                                                 show_path=True)
 
                 self.plotter.update()
@@ -176,10 +142,6 @@ class GuiFunctions:
                 self.plotter.remove_actor(self.total_distance)
                 self.plotter.disable_picking()
                 self.plotter.clear_actors()
-                #self._reset_plotter()
-                self.plotter.update()
-                pointss = []
-                indexess = []
 
 
     # Mesh area calculation function
