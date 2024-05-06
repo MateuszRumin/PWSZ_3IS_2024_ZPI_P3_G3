@@ -638,33 +638,20 @@ class GuiFunctions:
                                                                      tolerance=0.15)
                         self.roi = mask.threshold(0.25, scalars="SelectedPoints")
 
-                        if self._origin_vectors is not None:
-                            pass
-                        else:
-                            origin = self.create_mesh.center
-                            vectors = self.roi.points - origin
-                            vectors = vectors / np.linalg.norm(vectors, axis=1)[:, None]
+                        vectors = mask.face_normals
 
-                            mean_x = np.mean(vectors[:, 0])
-                            mean_y = np.mean(vectors[:, 1])
-                            mean_z = np.mean(vectors[:, 2])
+                        mean_x = np.mean(vectors[:, 0])
+                        mean_y = np.mean(vectors[:, 1])
+                        mean_z = np.mean(vectors[:, 2])
 
-                            print(f"vectors", vectors)
+                        print(f"x mean", mean_x)
+                        print(f"y mean", mean_y)
+                        print(f"z mean", mean_z)
 
-                            print(f"x mean", mean_x)
-                            print(f"y mean", mean_y)
-                            print(f"z mean", mean_z)
-
-                            self.roi['vectors'] = vectors  # Assigning vectors to the cloud
-
-                            new_path = new_path.extrude([mean_x, mean_y, mean_z], capping=False)
-                            mesh_surf_2 = self.create_mesh.extract_surface()
-                            _new_mask = mesh_surf_2.select_enclosed_points(new_path.delaunay_2d(), check_surface=False)
-                            new_roi = _new_mask.threshold(0.25, scalars="SelectedPoints", method='upper')
-
-                            self.path = new_path
-                            mask = _new_mask
-                            self.roi = new_roi
+                        self.path = new_path.extrude([mean_x, mean_y, mean_z], capping=False)
+                        mesh_surf_2 = self.create_mesh.extract_surface()
+                        mask = mesh_surf_2.select_enclosed_points(new_path.delaunay_2d(), check_surface=False)
+                        self.roi = mask.threshold(0.25, scalars="SelectedPoints", method='upper')
 
                         print(f"PATH:     ", self.path)
                         print(f"MASK:     ", mask)
