@@ -14,6 +14,7 @@ class ThreadFunctionsRedirections:
     def assign_cloud(self, cloud):
         QCoreApplication.processEvents()
         self.cloud = cloud
+        self.settings.enable_buttons_cloud = True
         self._apply_settings()
 
     def assign_mesh(self, mesh):
@@ -43,6 +44,8 @@ class ThreadFunctionsRedirections:
     def add_cloud_slot(self, cloud):
         QCoreApplication.processEvents()
         self.add_cloud_to_plotter(cloud)
+        self.settings.enable_buttons_cloud = True
+        self._apply_settings()
         self.close_loading_window()
 
     def add_mesh_slot(self, mesh):
@@ -80,3 +83,7 @@ class ThreadFunctionsRedirections:
         with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
             mesh.save(self.create_mesh_backup.name)
             self.cleanup_handler.files_to_delete.append(self.create_mesh_backup.name)
+
+    def add_total_distance_to_plotter(self, distance):
+        self.total_distance = self.plotter.add_text(f"Total distance: {distance}", name='dist', position='lower_edge')
+        self.close_loading_window()

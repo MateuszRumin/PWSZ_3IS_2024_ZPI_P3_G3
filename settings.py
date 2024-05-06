@@ -1,7 +1,7 @@
 class Settings:
     def __init__(self):
         self.file_path = None                               #Path to file
-        self.downSampling_size_slider_value = 0             #DownSampling value
+        self.downSampling_size_slider_value = 1             #DownSampling value
         self.scale_value = 1                                #Scale factor
         self.triangles_amount = 100                         #Triangles amount
         self.number_of_smooth_iterations = 1                #Smooth iterations

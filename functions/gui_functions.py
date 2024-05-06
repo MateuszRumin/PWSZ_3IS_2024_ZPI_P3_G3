@@ -114,7 +114,13 @@ class GuiFunctions:
             if self.check_distance_mesh.isChecked():
                 pointss = []
                 indexess = []
+
                 def callback(p):
+                    self.show_loading_window()
+                    thread = threading.Thread(target=lambda: callback_thread(p))
+                    thread.start()
+
+                def callback_thread(p):
 
                     indexes = p["vtkOriginalPointIds"]
                     for selected_cell_index in indexes:
@@ -155,7 +161,8 @@ class GuiFunctions:
 
                     distance = round(distance * 10, 2)
 
-                    self.total_distance = self.plotter.add_text(f"Total distance: {distance}", name='dist', position='lower_edge')
+                    #self.total_distance = self.plotter.add_text(f"Total distance: {distance}", name='dist', position='lower_edge')
+                    self.addTotalDistanceToPlotterSignal.emit(distance)
 
 
                 self.plotter.add_mesh(self.create_mesh)
@@ -169,6 +176,8 @@ class GuiFunctions:
                 self.plotter.remove_actor(self.total_distance)
                 self.plotter.disable_picking()
                 self.plotter.clear_actors()
+                #self._reset_plotter()
+                self.plotter.update()
                 pointss = []
                 indexess = []
 
@@ -657,15 +666,54 @@ class GuiFunctions:
                         self.plotter.update()  # Update the plotter
 
                     elif self.path is not None:
+                        new_path = self.path
                         # Po wybraniu ścieżki, tworzymy maskę na podstawie wybranej ścieżki
                         # self.path = self.plotter.picked_geodesic
+                        #self.path = self.path.extrude([0.008, 0.008, 0.008], capping=False)
+
                         mask = self.mesh_surf.select_enclosed_points(self.path.delaunay_2d(), check_surface=False,
                                                                      tolerance=0.15)
                         self.roi = mask.threshold(0.25, scalars="SelectedPoints")
 
+                        if self._origin_vectors is not None:
+                            pass
+                        else:
+                            origin = self.create_mesh.center
+                            vectors = self.roi.points - origin
+                            vectors = vectors / np.linalg.norm(vectors, axis=1)[:, None]
+
+                            mean_x = np.mean(vectors[:, 0])
+                            mean_y = np.mean(vectors[:, 1])
+                            mean_z = np.mean(vectors[:, 2])
+
+                            print(f"vectors", vectors)
+
+                            print(f"x mean", mean_x)
+                            print(f"y mean", mean_y)
+                            print(f"z mean", mean_z)
+
+                            self.roi['vectors'] = vectors  # Assigning vectors to the cloud
+
+                            new_path = new_path.extrude([mean_x, mean_y, mean_z], capping=False)
+                            mesh_surf_2 = self.create_mesh.extract_surface()
+                            _new_mask = mesh_surf_2.select_enclosed_points(new_path.delaunay_2d(), check_surface=False)
+                            new_roi = _new_mask.threshold(0.25, scalars="SelectedPoints", method='upper')
+
+                            self.path = new_path
+                            mask = _new_mask
+                            self.roi = new_roi
+
                         print(f"PATH:     ", self.path)
                         print(f"MASK:     ", mask)
                         print(f"ROI:     ", self.roi)
+
+
+                        # fast_plotter = pv.Plotter()
+                        # fast_plotter.add_mesh(self.create_mesh, show_edges=True)
+                        # fast_plotter.add_mesh(self.roi, show_edges=True, color="red")
+                        # fast_plotter.add_mesh(self.path, show_edges=True, line_width=10, color="pink")
+                        # fast_plotter.show()
+
 
                         self.plotter.update()  # Update the plotter
 

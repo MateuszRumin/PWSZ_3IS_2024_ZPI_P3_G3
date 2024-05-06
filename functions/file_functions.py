@@ -37,6 +37,7 @@ class FileFunctions:
     create_mesh_backup = None               #Mesh backup
     _origin_vectors = None                  #Original cloud vectors (overwritten after time)
     open3d_normalized_cloud = None          #Cloud in open3d with calculated normals
+    total_distance = None
     #-----------------------------------------------------------------------------------
 
     #Function that takes the path to a file. It is called from the gui navigation bar

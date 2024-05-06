@@ -88,6 +88,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
     clearBeforeLoadSignal = pyqtSignal()
     overwriteBackupCloudSignal = pyqtSignal(object)
     overwriteBackupMeshSignal = pyqtSignal(object)
+    addTotalDistanceToPlotterSignal = pyqtSignal(object)
 
     def __init__(self, parent=None, show=True):
         QtWidgets.QMainWindow.__init__(self, parent)
@@ -108,6 +109,7 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         self.clearBeforeLoadSignal.connect(self.clear_before_load)
         self.overwriteBackupCloudSignal.connect(self.overwrite_backup_cloud)
         self.overwriteBackupMeshSignal.connect(self.overwrite_backup_mesh)
+        self.addTotalDistanceToPlotterSignal.connect(self.add_total_distance_to_plotter)
         #----------------------------
 
 
