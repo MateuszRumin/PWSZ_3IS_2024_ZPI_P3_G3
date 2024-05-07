@@ -88,7 +88,14 @@ class GuiFunctions:
         if self.checkDistance.isChecked():
             #Callback function called when a distance measurement is made
             def callback(a, b, distance):
-                self.label = self.plotter.add_text(f'Distance: {distance*100:.2f}', name='dist', position='lower_edge')
+                if distance >= 1000:
+                    self.label = self.plotter.add_text(f'Distance: {float(distance / 1000):.2f} km', name='dist', position='lower_edge')
+                elif distance >= 1:
+                    self.label = self.plotter.add_text(f'Distance: {distance:.2f} m', name='dist', position='lower_edge')
+                elif distance >= 0.01:
+                    self.label = self.plotter.add_text(f'Distance: {distance * 100:.2f} cm', name='dist', position='lower_edge')
+                else:
+                    self.label = self.plotter.add_text(f'Distance: {distance * 1000:.2f} mm', name='dist', position='lower_edge')
                 self.use_distance = True
             #------------------------------------------------------------
 
@@ -128,7 +135,6 @@ class GuiFunctions:
 
                         distance = distance + self.create_mesh.geodesic_distance(a, b)
 
-                    distance = round(distance * 100, 2)
                     #self.total_distance = self.plotter.add_text(f"Total distance: {distance} cm", name='dist', position='lower_edge')
                     self.addTotalDistanceToPlotterSignal.emit(distance)
 
@@ -412,63 +418,20 @@ class GuiFunctions:
     # Checkbox showing normals
     def _show_normals_checked(self):
         if self.display_normals_checkbox.isChecked():
-            #Calculates normal if they are not calculated
-            if self.settings.normals_computed_for_origin == True and self.normalize_checkbox.isChecked():
-                self.cloud['vectors'] = self._origin_vectors            #Assigning vectors to the cloud
-                self.settings.normals_computed_for_origin = True        #Checking in the settings that normal has been calculated
-
-                #Creating normal arrows
-                normals_arrows = self.cloud.glyph(
-                    orient='vectors',
-                    scale=False,
-                    factor=0.009,
-                )
-                #----------------------
-
-                print(f"vector", self.cloud['vectors'])
-                #Adding arrows to the plotter
-                self.add_normals_to_plotter(normals_arrows)
-                #----------------------------
-
-            elif self.settings.normals_computed_for_origin == False:
-                if self.cloud is None:
-                    origin = self.create_mesh.center
-                    vectors = self.create_mesh.points - origin
-                    vectors = vectors / np.linalg.norm(vectors, axis=1)[:, None]
-                    self._origin_vectors = vectors
-                else:
-                    origin = self.cloud.center
-                    vectors = self.cloud.points - origin
-                    vectors = vectors / np.linalg.norm(vectors, axis=1)[:, None]
-                    self._origin_vectors = vectors
-                self.cloud['vectors'] = self._origin_vectors  # Assigning vectors to the cloud
-                self.settings.normals_computed_for_origin = True  # Checking in the settings that normal has been calculated
+            if self.create_mesh is not None:
+                self.create_mesh['vectors'] = self.create_mesh.face_normals
 
                 # Creating normal arrows
-                normals_arrows = self.cloud.glyph(
+                normals_arrows = self.create_mesh.glyph(
                     orient='vectors',
                     scale=False,
                     factor=0.009,
                 )
                 # ----------------------
 
-                print(f"vector", self.cloud['vectors'])
                 # Adding arrows to the plotter
                 self.add_normals_to_plotter(normals_arrows)
                 # ----------------------------
-            else:
-                #If normals exist create arrows
-                arrows = self.cloud.glyph(
-                    orient='vectors',
-                    scale=False,
-                    factor=0.009,
-                )
-
-                print(f"vector" ,self.cloud['vectors'])
-                #------------------------------
-                #Adding arrows to the plotter
-                self.add_normals_to_plotter(arrows)
-                #----------------------------
         else:
             print('Checkbox is not checked')
             self.remove_normals()

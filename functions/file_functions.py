@@ -329,6 +329,25 @@ class FileFunctions:
             center = self.create_mesh.center
             self.plotter.camera.SetFocalPoint(center[0], center[1], center[2])
 
+        self.check_distance_mesh.setChecked(False)
+        self.showAllBoundsCheck.setChecked(False)
+        self.checkDistance.setChecked(False)
+        self.calculate_comboBox.setCurrentText('None')
+        self.selected_points_value.setText('0')
+        self.subdivideselect.setCurrentText('None')
+        self.iterationSubdevide.setText('1')
+        self.smooth_number_of_iterations_field.setText('1')
+        self.normalize_checkbox.setChecked(True)
+        self.change_values_manually_checkbox.setChecked(False)
+        if self.cloud is not None:
+            self.normalization_preset_combobox.setCurrentText('Default')
+
+        self._apply_settings()
+
+
+
+
+
     def remove_cloud(self):
         #Removing cloud from plotter
         try:
@@ -398,7 +417,7 @@ class FileFunctions:
 
 
     def add_cloud_to_plotter(self, cloud):
-        self.cloud_geometry_container = self.plotter.add_points(cloud, show_scalar_bar=False, render_points_as_spheres=True, color='white')  # Add points to plotter
+        self.cloud_geometry_container = self.plotter.add_points(cloud, show_scalar_bar=False, render_points_as_spheres=True, color=self.settings.object_color)  # Add points to plotter
         self.display_cloud_checkbox.setChecked(True)  # Check geometries checkbox
         self.plotter.update()  # Update the plotter to display the new mesh
 

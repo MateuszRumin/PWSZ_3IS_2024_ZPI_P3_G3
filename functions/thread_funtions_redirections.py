@@ -69,6 +69,16 @@ class ThreadFunctionsRedirections:
         self.create_mesh = None
         self.create_mesh_backup = tempfile.TemporaryFile()
         self.settings.normals_computed_for_origin = False
+        self.display_cloud_checkbox.setEnabled(False)
+        self.display_normals_checkbox.setEnabled(False)
+        self.display_mesh_checkbox.setEnabled(False)
+        self.display_triangles_checkbox.setEnabled(False)
+
+        #Export buttons
+        self.settings.enable_buttons_cloud = False
+        self.settings.enable_buttons_mesh = False
+        self.settings.normals_computed_for_origin = False
+        self.settings.changed_normals_computed = False
         # -------------------------------------------------------------
 
     def overwrite_backup_cloud(self, cloud):
@@ -85,5 +95,12 @@ class ThreadFunctionsRedirections:
             self.cleanup_handler.files_to_delete.append(self.create_mesh_backup.name)
 
     def add_total_distance_to_plotter(self, distance):
-        self.total_distance = self.plotter.add_text(f"Total distance: {distance}", name='dist', position='lower_edge')
+        if distance >= 1000:
+            self.total_distance = self.plotter.add_text(f'Total distance: {float(distance / 1000):.2f} km', name='dist', position='lower_edge')
+        elif distance >= 1:
+            self.total_distance = self.plotter.add_text(f'Total distance: {distance:.2f} m', name='dist', position='lower_edge')
+        elif distance >= 0.01:
+            self.total_distance = self.plotter.add_text(f'Total distance: {distance * 100:.2f} cm', name='dist', position='lower_edge')
+        else:
+            self.total_distance = self.plotter.add_text(f'Total distance: {distance * 1000:.2f} mm', name='dist', position='lower_edge')
         self.close_loading_window()
