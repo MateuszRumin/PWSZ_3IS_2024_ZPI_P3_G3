@@ -43,10 +43,12 @@ class MeshCreator():
                 self.normalizeCloud()
                 args = Namespace(
                     model_weights_path='./triangulate/model/model_state_dict.pth',
-                    disable_cuda=False,
+                    disable_cuda=False if torch.cuda.is_available() else True,
                     n_rounds=5,
                     prob_thresh=0.9,
                 )
+
+
                 set_args_defaults(args)
 
                 MyTimer = time_factory.timer_factory()
