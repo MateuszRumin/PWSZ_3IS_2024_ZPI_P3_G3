@@ -56,7 +56,9 @@ class MeshCreator():
 
                     model = PointTriNet_Mesher()
 
-                    model.load_state_dict(torch.load(args.model_weights_path))
+                    model.load_state_dict(torch.load(args.model_weights_path, map_location=args.device))
+
+
                     model.eval()
                     #self.normalizeCloud()
                     # cloud = self.open3d_normalized_cloud
