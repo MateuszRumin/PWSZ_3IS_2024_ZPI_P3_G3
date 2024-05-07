@@ -18,7 +18,7 @@ import threading
 import time
 from PyQt5.QtWidgets import QColorDialog
 from functions import time_factory
-
+import pandas as pd
 from PIL import Image
 from tkinter import filedialog
 class GuiFunctions:
@@ -88,7 +88,14 @@ class GuiFunctions:
         if self.checkDistance.isChecked():
             #Callback function called when a distance measurement is made
             def callback(a, b, distance):
-                self.label = self.plotter.add_text(f'Distance: {distance*100:.2f}', name='dist')
+                if distance >= 1000:
+                    self.label = self.plotter.add_text(f'Distance: {float(distance / 1000):.2f} km', name='dist', position='lower_edge')
+                elif distance >= 1:
+                    self.label = self.plotter.add_text(f'Distance: {distance:.2f} m', name='dist', position='lower_edge')
+                elif distance >= 0.01:
+                    self.label = self.plotter.add_text(f'Distance: {distance * 100:.2f} cm', name='dist', position='lower_edge')
+                else:
+                    self.label = self.plotter.add_text(f'Distance: {distance * 1000:.2f} mm', name='dist', position='lower_edge')
                 self.use_distance = True
             #------------------------------------------------------------
 
@@ -106,6 +113,43 @@ class GuiFunctions:
                 self.plotter.remove_actor(self.label)   #Remove the distance label from the plotter
                 self.plotter.update()                   #Update the plotter
             #----------------------------------------------
+
+    def _distance_mesh(self):
+
+        if self.create_mesh is not None:
+
+            if self.check_distance_mesh.isChecked():
+
+                def callback(p):
+                    self.show_loading_window()
+                    thread = threading.Thread(target=lambda: callback_thread(p))
+                    thread.start()
+
+                def callback_thread(p):
+
+                    indexes = p["vtkOriginalPointIds"]
+                    distance = 0
+                    for i in range(len(indexes) - 1):
+                        a = indexes[i]
+                        b = indexes[i + 1]
+
+                        distance = distance + self.create_mesh.geodesic_distance(a, b)
+
+                    #self.total_distance = self.plotter.add_text(f"Total distance: {distance} cm", name='dist', position='lower_edge')
+                    self.addTotalDistanceToPlotterSignal.emit(distance)
+
+                self.plotter.add_mesh(self.create_mesh)
+                self.plotter.enable_geodesic_picking(callback=callback, show_message=True, font_size=18,
+                                                color='red', point_size=6, line_width=4, tolerance=0.0001,
+                                                show_path=True)
+
+                self.plotter.update()
+
+            else:
+                self.plotter.remove_actor(self.total_distance)
+                self.plotter.disable_picking()
+                self.plotter.clear_actors()
+
 
     # Mesh area calculation function
     def _calculate_surface_area(self):
@@ -374,63 +418,20 @@ class GuiFunctions:
     # Checkbox showing normals
     def _show_normals_checked(self):
         if self.display_normals_checkbox.isChecked():
-            #Calculates normal if they are not calculated
-            if self.settings.normals_computed_for_origin == False and self.normalize_checkbox.isChecked():
-                self.cloud['vectors'] = self._origin_vectors            #Assigning vectors to the cloud
-                self.settings.normals_computed_for_origin = True        #Checking in the settings that normal has been calculated
-
-                #Creating normal arrows
-                normals_arrows = self.cloud.glyph(
-                    orient='vectors',
-                    scale=False,
-                    factor=0.009,
-                )
-                #----------------------
-
-                print(f"vector", self.cloud['vectors'])
-                #Adding arrows to the plotter
-                self.add_normals_to_plotter(normals_arrows)
-                #----------------------------
-
-            elif self.settings.normals_computed_for_origin == False:
-                if self.cloud is None:
-                    origin = self.create_mesh.center
-                    vectors = self.create_mesh.points - origin
-                    vectors = vectors / np.linalg.norm(vectors, axis=1)[:, None]
-                    self._origin_vectors = vectors
-                else:
-                    origin = self.cloud.center
-                    vectors = self.cloud.points - origin
-                    vectors = vectors / np.linalg.norm(vectors, axis=1)[:, None]
-                    self._origin_vectors = vectors
-                self.cloud['vectors'] = self._origin_vectors  # Assigning vectors to the cloud
-                self.settings.normals_computed_for_origin = True  # Checking in the settings that normal has been calculated
+            if self.create_mesh is not None:
+                self.create_mesh['vectors'] = self.create_mesh.face_normals
 
                 # Creating normal arrows
-                normals_arrows = self.cloud.glyph(
+                normals_arrows = self.create_mesh.glyph(
                     orient='vectors',
                     scale=False,
                     factor=0.009,
                 )
                 # ----------------------
 
-                print(f"vector", self.cloud['vectors'])
                 # Adding arrows to the plotter
                 self.add_normals_to_plotter(normals_arrows)
                 # ----------------------------
-            else:
-                #If normals exist create arrows
-                arrows = self.cloud.glyph(
-                    orient='vectors',
-                    scale=False,
-                    factor=0.009,
-                )
-
-                print(f"vector" ,self.cloud['vectors'])
-                #------------------------------
-                #Adding arrows to the plotter
-                self.add_normals_to_plotter(arrows)
-                #----------------------------
         else:
             print('Checkbox is not checked')
             self.remove_normals()
@@ -591,15 +592,41 @@ class GuiFunctions:
                         self.plotter.update()  # Update the plotter
 
                     elif self.path is not None:
+                        new_path = self.path
                         # Po wybraniu ścieżki, tworzymy maskę na podstawie wybranej ścieżki
                         # self.path = self.plotter.picked_geodesic
+                        #self.path = self.path.extrude([0.008, 0.008, 0.008], capping=False)
+
                         mask = self.mesh_surf.select_enclosed_points(self.path.delaunay_2d(), check_surface=False,
                                                                      tolerance=0.15)
                         self.roi = mask.threshold(0.25, scalars="SelectedPoints")
 
+                        vectors = mask.face_normals
+
+                        mean_x = np.mean(vectors[:, 0])
+                        mean_y = np.mean(vectors[:, 1])
+                        mean_z = np.mean(vectors[:, 2])
+
+                        print(f"x mean", mean_x)
+                        print(f"y mean", mean_y)
+                        print(f"z mean", mean_z)
+
+                        self.path = new_path.extrude([mean_x, mean_y, mean_z], capping=False)
+                        mesh_surf_2 = self.create_mesh.extract_surface()
+                        mask = mesh_surf_2.select_enclosed_points(new_path.delaunay_2d(), check_surface=False)
+                        self.roi = mask.threshold(0.25, scalars="SelectedPoints", method='upper')
+
                         print(f"PATH:     ", self.path)
                         print(f"MASK:     ", mask)
                         print(f"ROI:     ", self.roi)
+
+
+                        # fast_plotter = pv.Plotter()
+                        # fast_plotter.add_mesh(self.create_mesh, show_edges=True)
+                        # fast_plotter.add_mesh(self.roi, show_edges=True, color="red")
+                        # fast_plotter.add_mesh(self.path, show_edges=True, line_width=10, color="pink")
+                        # fast_plotter.show()
+
 
                         self.plotter.update()  # Update the plotter
 

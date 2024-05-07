@@ -89,6 +89,10 @@ class MeshCreator():
                     # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud,
                     #                                                                            o3d.utility.DoubleVector(radii))
 
+                    a = o3d.utility.Vector3dVector(rec_mesh.triangles)
+
+                    print(f"a", len(np.asarray(a)))
+
                     # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(cloud, depth=6, linear_fit=False, n_threads=4 )
                     #
                     # rec_mesh = o3d.geometry.TriangleMesh(rec_mesh[0])
