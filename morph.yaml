@@ -1,4 +1,4 @@
-name: deep_net
+name: morph
 channels:
   - pytorch
   - pyg
@@ -9,6 +9,7 @@ dependencies:
   - aiohttp=3.9.3=py310h2bbff1b_0
   - aiosignal=1.2.0=pyhd3eb1b0_0
   - async-timeout=4.0.3=py310haa95532_0
+  - attrs=23.2.0=pyh71513ae_0
   - blas=1.0=mkl
   - bottleneck=1.3.7=py310h9128911_0
   - brotli-python=1.0.9=py310hd77b12b_7
@@ -16,6 +17,7 @@ dependencies:
   - ca-certificates=2024.3.11=haa95532_0
   - certifi=2024.2.2=py310haa95532_0
   - chardet=5.2.0=py310h5588dad_1
+  - charset-normalizer=3.3.2=pyhd8ed1ab_0
   - colorama=0.4.6=py310haa95532_0
   - cuda-cccl=12.4.127=0
   - cuda-cudart=11.8.89=0
@@ -39,6 +41,8 @@ dependencies:
   - joblib=1.2.0=py310haa95532_0
   - jpeg=9e=h2bbff1b_1
   - lerc=3.0=hd77b12b_0
+  - libblas=3.9.0=1_h8933c1f_netlib
+  - libcblas=3.9.0=5_hd5c7e75_netlib
   - libcublas=11.11.3.6=0
   - libcublas-dev=11.11.3.6=0
   - libcufft=10.9.0.58=0
@@ -52,6 +56,7 @@ dependencies:
   - libdeflate=1.17=h2bbff1b_1
   - libffi=3.4.4=hd77b12b_0
   - libjpeg-turbo=2.0.0=h196d8e1_0
+  - liblapack=3.9.0=5_hd5c7e75_netlib
   - libnpp=11.8.0.86=0
   - libnpp-dev=11.8.0.86=0
   - libnvjpeg=11.9.0.86=0
@@ -61,6 +66,11 @@ dependencies:
   - libuv=1.44.2=h2bbff1b_0
   - libwebp-base=1.3.2=h2bbff1b_0
   - lz4-c=1.9.4=h2bbff1b_0
+  - m2w64-gcc-libgfortran=5.3.0=6
+  - m2w64-gcc-libs=5.3.0=7
+  - m2w64-gcc-libs-core=5.3.0=7
+  - m2w64-gmp=6.1.0=2
+  - m2w64-libwinpthread-git=5.0.0.4634.697f757=2
   - mkl=2023.1.0=h6b88ed4_46358
   - mkl-service=2.4.0=py310h2bbff1b_1
   - mkl_fft=1.3.8=py310h2bbff1b_0
@@ -69,6 +79,7 @@ dependencies:
   - mpfr=4.0.2=h62dcd97_1
   - mpir=3.0.0=hec2e145_1
   - mpmath=1.3.0=py310haa95532_0
+  - msys2-conda-epoch=20160418=1
   - multidict=6.0.4=py310h2bbff1b_0
   - numexpr=2.8.7=py310h2cd9be0_0
   - openjpeg=2.4.0=h4fc8c34_0
@@ -82,10 +93,10 @@ dependencies:
   - pytorch=2.2.0=py3.10_cuda11.8_cudnn8_0
   - pytorch-cuda=11.8=h24eeafa_5
   - pytorch-mutex=1.0=cuda
+  - pytz=2024.1=pyhd8ed1ab_0
   - pyyaml=6.0.1=py310h2bbff1b_0
   - requests=2.31.0=py310haa95532_1
   - scikit-learn=1.1.3=py310hd77b12b_1
-  - scipy=1.9.3=py310h309d312_2
   - setuptools=68.2.2=py310haa95532_0
   - six=1.16.0=pyhd3eb1b0_1
   - sklearn-pandas=2.2.0=py310haa95532_0
@@ -94,7 +105,8 @@ dependencies:
   - tbb=2021.8.0=h59b6b97_0
   - threadpoolctl=2.2.0=pyh0d69192_0
   - tk=8.6.12=h2bbff1b_0
-  - typing_extensions=4.9.0=py310haa95532_1
+  - tqdm=4.66.2=pyhd8ed1ab_0
+  - urllib3=2.2.1=pyhd8ed1ab_0
   - vc=14.2=h21ff451_1
   - vs2015_runtime=14.27.29016=h5e58377_2
   - wheel=0.41.2=py310haa95532_0
@@ -114,13 +126,11 @@ dependencies:
       - arrow==1.3.0
       - asttokens==2.4.1
       - async-lru==2.0.4
-      - attrs==23.2.0
       - babel==2.14.0
       - beautifulsoup4==4.12.3
       - bleach==6.1.0
       - blinker==1.7.0
       - cffi==1.16.0
-      - charset-normalizer==3.3.2
       - click==8.1.7
       - click-log==0.4.0
       - click-plugins==1.1.1
@@ -182,8 +192,11 @@ dependencies:
       - matplotlib==3.8.3
       - matplotlib-inline==0.1.6
       - mdurl==0.1.2
+      - memory-profiler==0.61.0
+      - meshio==5.3.5
       - mistune==3.0.2
       - more-itertools==10.2.0
+      - mouseinfo==0.1.3
       - natsort==8.4.0
       - nbclient==0.9.0
       - nbconvert==7.16.1
@@ -192,6 +205,7 @@ dependencies:
       - networkx==3.2.1
       - notebook-shim==0.2.4
       - numpy==1.26.4
+      - numpy-stl==3.1.1
       - open3d==0.18.0
       - ouster-mapping==0.1.1
       - ouster-sdk==0.10.0
@@ -209,27 +223,34 @@ dependencies:
       - prompt-toolkit==3.0.43
       - psutil==5.9.8
       - pure-eval==0.2.2
+      - pyautogui==0.9.54
       - pycparser==2.21
       - pydantic==2.6.4
       - pydantic-core==2.16.3
       - pydantic-settings==2.2.1
+      - pygetwindow==0.0.9
       - pygments==2.17.2
       - pylas==0.4.3
       - pymeshfix==0.16.3
+      - pymsgbox==1.0.9
       - pyntcloud==0.3.1
       - pyopengl==3.1.7
       - pyparsing==3.1.1
+      - pyperclip==1.8.2
       - pyproj==3.6.1
       - pyqt5==5.15.10
       - pyqt5-qt5==5.15.2
       - pyqt5-sip==12.13.0
       - pyquaternion==0.9.9
+      - pyrect==0.2.0
+      - pyscreeze==0.1.30
       - python-dateutil==2.9.0.post0
       - python-dotenv==1.0.1
       - python-json-logger==2.0.7
       - python-magic==0.4.27
+      - python-utils==3.8.2
       - pythreejs==2.4.2
-      - pytz==2024.1
+      - pytweening==1.2.0
       - pyvista==0.43.4
       - pyvistaqt==0.11.0
       - pywin32==306
@@ -244,6 +265,7 @@ dependencies:
       - rich==13.7.1
       - rpds-py==0.18.0
       - rtree==1.2.0
+      - scipy==1.13.0
       - scooby==0.9.2
       - send2trash==1.8.2
       - shapely==2.0.3
@@ -259,7 +281,6 @@ dependencies:
       - torchaudio==2.2.0
       - torchvision==0.17.0
       - tornado==6.4
-      - tqdm==4.66.2
       - traitlets==5.14.1
       - traittypes==0.2.1
       - trimesh==4.1.7
@@ -268,7 +289,6 @@ dependencies:
       - typing-extensions==4.10.0
       - tzdata==2024.1
       - uri-template==1.3.0
-      - urllib3==2.2.1
       - vtk==9.3.0
       - wcwidth==0.2.13
       - webcolors==1.13
@@ -279,3 +299,4 @@ dependencies:
       - zeroconf==0.58.2
       - zipp==3.17.0
       - https://data.pyg.org/whl/torch-2.2.0%2Bcu118/torch_cluster-1.6.3%2Bpt22cu118-cp310-cp310-win_amd64.whl
+      - https://data.pyg.org/whl/torch-2.2.0%2Bcu118/torch_scatter-2.1.2%2Bpt22cu118-cp310-cp310-win_amd64.whl

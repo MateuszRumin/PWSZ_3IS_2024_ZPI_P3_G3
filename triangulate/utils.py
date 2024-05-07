@@ -4,8 +4,7 @@ import time
 
 import torch
 import numpy as np
-import meshio
-import igl
+
 
 # === Argument management helpers
 
