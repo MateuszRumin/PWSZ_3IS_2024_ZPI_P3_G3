@@ -1,7 +1,3 @@
-import sys
-import torch
-
-# Globals and other world state management
 
 
 # Global argument cache
@@ -28,16 +24,3 @@ tb_tick = 0
 global train_state
 train_state = None
 
-
-class ArgsObject(object):
-    pass
-
-def args_to_str(args):
-
-    s = []
-
-    for attr, value in args.__dict__.items():
-        if(attr != ""):
-            s.append(attr + ": " + str(value))
-
-    return "\n".join(s)

@@ -337,7 +337,7 @@ class PointTriNet(torch.nn.Module):
 
         # Manage devices in the case where we are leaving data CPU-side
         input_device = verts.device
-        model_device = next(self.parameters()).device 
+        model_device = next(self.parameters()).device
         query_triangles_pos_d = query_triangles_pos.to(model_device)
         query_probs_d = query_probs.to(model_device)
         method = 'brute' if (verts[0].is_cuda and Q < 4096) else 'cpu_kd'
@@ -460,13 +460,14 @@ class PointTriNet_Mesher(torch.nn.Module):
                     # Union new candidates
                     candidate_triangles = torch.cat((candidate_triangles, gen_tris), dim=1)
                     candidate_probs = torch.cat((candidate_probs, gen_probs), dim=1)
-                
+
                     # Prune out repeats
                     candidate_triangles, candidate_probs = mesh_utils.uniqueify_triangle_prob_batch(candidate_triangles, candidate_probs)
                 
                     # Cull low-probability triangles
                     candidate_triangles, candidate_probs = mesh_utils.filter_low_prob_triangles(
                       candidate_triangles, candidate_probs, n_keep)
+
 
         if return_all:
             return working_tris, working_probs, proposal_tris, proposal_probs

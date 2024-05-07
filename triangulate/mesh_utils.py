@@ -101,29 +101,8 @@ def sample_points_on_surface(verts, faces, n_pts, return_inds_and_bary=False, fa
     else:
         return sample_pos
 
-# For each point in pointsA, return distances to each point in pointsB
-#   pointsA: (A, 3) coords
-#   pointsB: (B, 3) coords
-#   return: (A, B) dists
-def point_point_distances(pointsA, pointsB):
-
-    # Expand so both are NxMx3 tensor
-    pointsA_expand = pointsA.unsqueeze(1)
-    pointsA_expand = pointsA_expand.expand(-1, points_target.shape[0], -1)
-    pointsB_expand = pointsB.unsqueeze(0)
-    pointsB_expand = pointsB_expand.expand(pointsA.shape[0], -1, -1)
-
-    diff_mat = pointsA_expand - pointsB_expand
-    dist_mat = utils.norm(diff_mat)
-
-    return dist_mat
 
 
-# For each point in points, returns the distance^2 to each line segment
-#   points: (N, 3) coords
-#   linesA: (L, 3) coords
-#   linesB: (L, 3) coords
-#   return: (N, L) dists
 def point_line_segment_distances2(points, linesA, linesB):
     n_p = points.shape[0]
     n_l = linesA.shape[0]

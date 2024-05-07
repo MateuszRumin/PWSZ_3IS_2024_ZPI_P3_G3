@@ -17,15 +17,14 @@ import pyvista as pv
 import tempfile
 import threading
 import torch
-
+from argparse import Namespace
 from functions import time_factory
 from triangulate.point_tri_net import PointTriNet_Mesher
+from triangulate.mesh_utils import fill_holes_greedy
+from triangulate.utils import set_args_defaults
+def convert_to_tensor(cloud,device,dtype):
 
-def convert_to_tensor(cloud):
-    # points =
-    # normals =
-    device = torch.device(torch.cuda.current_device() if torch.cuda.is_available() else torch.device('cpu'))
-    samples = torch.cat((torch.tensor(np.asarray(cloud.points), dtype=torch.float32, device=device).unsqueeze(0), torch.tensor(np.asarray(cloud.normals), dtype=torch.float32, device=device).unsqueeze(0)), dim=-1)
+    samples = torch.cat((torch.tensor(np.asarray(cloud.points), dtype=dtype, device=device), torch.tensor(np.asarray(cloud.normals), dtype=dtype, device=device)), dim=-1)
     return samples
 
 
@@ -42,35 +41,40 @@ class MeshCreator():
             try:
                 self.removeActorSignal.emit("mesh")
                 self.normalizeCloud()
+                args = Namespace(
+                    model_weights_path='./triangulate/model/model_state_dict.pth',
+                    disable_cuda=False,
+                    n_rounds=5,
+                    prob_thresh=0.9,
+                )
+                set_args_defaults(args)
 
                 MyTimer = time_factory.timer_factory()
                 with MyTimer('Mesh Creation after normalization'):
 
                     model = PointTriNet_Mesher()
-                    model_path = './triangulate/model/model_state_dict.pth'
-                    model.load_state_dict(torch.load(model_path))
+
+                    model.load_state_dict(torch.load(args.model_weights_path))
                     model.eval()
                     #self.normalizeCloud()
                     # cloud = self.open3d_normalized_cloud
 
-                    # pre_cloud =
-                    with torch.no_grad():
-                        candidate_triangles, candidate_probs = model.predict_mesh(convert_to_tensor(self.open3d_normalized_cloud))
-                        # candidate_triangles is a (B, F, 3) index tensor, predicted triangles
-                        # candidate_probs is a (B, F) float tensor of [0,1] probabilities for each triangle
 
-                        # You are probably interested in only the high-probability triangles. For example,
-                        # get the high-probability triangles from the 0th batch entry like
-                        print(candidate_triangles.shape)
-                        b = 0
-                        prob_thresh = 0.95
-                        high_prob_faces = candidate_triangles[b, candidate_probs[b, :] > prob_thresh, :].to("cpu")
+
+                    with torch.no_grad():
+                        candidate_triangles, candidate_probs = model.predict_mesh(convert_to_tensor(self.open3d_normalized_cloud, args.device, args.dtype).unsqueeze(0), n_rounds=args.n_rounds)
+                        candidate_triangles = candidate_triangles.squeeze(0)
+                        candidate_probs = candidate_probs.squeeze(0)
+
+
+                        high_prob = candidate_triangles[candidate_probs > args.prob_thresh]
+                        # high_prob_faces = fill_holes_greedy(high_prob)
 
 
                     rec_mesh = o3d.geometry.TriangleMesh()
 
                     rec_mesh.vertices = o3d.utility.Vector3dVector(self.open3d_normalized_cloud.points)
-                    triangles = high_prob_faces.cpu().numpy()
+                    triangles = high_prob.cpu().numpy()
                     rec_mesh.triangles = o3d.utility.Vector3iVector(triangles)
 
                     # par = np.mean(cloud.compute_nearest_neighbor_distance())
@@ -209,7 +213,7 @@ class MeshCreator():
                     holes = meshfix.extract_holes()
 
                     # Repair the mesh
-                    meshfix.repair(verbose=True,joincomp=False,remove_smallest_components=False)
+                    meshfix.repair(verbose=True,joincomp=False,remove_smallest_components=True)
                     mesh = meshfix.mesh
                     #self.create_mesh_backup = self.create_mesh
 
