@@ -13,6 +13,17 @@ import pyvista as pv
 
 class ApplySettings:
     def _apply_settings(self):
+        # ---------------Enable values controller----------------------#
+        if self.cloud is not None:
+            self.settings.enable_buttons_cloud = True
+        else:
+            self.settings.enable_buttons_cloud = False
+        if self.create_mesh is not None:
+            self.settings.enable_buttons_mesh = True
+        else:
+            self.settings.enable_buttons_mesh = False
+        #--------------------------------------------------------------#
+
         #---------------Settings of element values---------------------#
         self.scale_value_label.setText(str(self.settings.scale_value))                      #Scale value label
         self.triangles_amount_input_field.setText(str(self.settings.triangles_amount))      #Triangles amount input field
@@ -26,26 +37,67 @@ class ApplySettings:
         #---------------------Enable objects---------------------------#
         #Export buttons
         self.export_to_ply.setEnabled(self.settings.enable_buttons_cloud)
+        self.export_mesh_to_ply.setEnabled(self.settings.enable_buttons_mesh)
         self.export_to_obj.setEnabled(self.settings.enable_buttons_mesh)
         self.export_to_stl.setEnabled(self.settings.enable_buttons_mesh)
         #------------------
         #Create mesh button
-        if self.settings.enable_buttons_cloud or self.settings.enable_create_mesh_button:
+        if self.settings.enable_buttons_cloud:
             self.create_mesh_button.setEnabled(True)
         else:
             self.create_mesh_button.setEnabled(False)
         #------------------
+        #Calculate
+        self.calculate_comboBox.setEnabled(self.settings.enable_buttons_mesh)
+        self.calculate_area_button.setEnabled(self.settings.enable_buttons_mesh)
+        #---------
         #Crop mesh button
         self.cropMeshButton.setEnabled(self.settings.enable_buttons_mesh)
         #----------------
         #Fix mesh button
         self.fix_mesh_button.setEnabled(self.settings.enable_buttons_mesh)
         #---------------
-        #Enable rotation sliders
+        #Reduce triangles button
+        self.reduce_triangles_button.setEnabled(self.settings.enable_buttons_mesh)
+        #-----------------------
+        #Subdivide
+        self.subdivideselect.setEnabled(self.settings.enable_buttons_mesh)
+        self.iterationSubdevide.setEnabled(self.settings.enable_buttons_mesh)
+        self.subdevideBtn.setEnabled(self.settings.enable_buttons_mesh)
+        #---------
+        #Smoothing
+        self.smooth_button.setEnabled(self.settings.enable_buttons_mesh)
+        self.smooth_number_of_iterations_field.setEnabled(self.settings.enable_buttons_mesh)
+        #---------
+        #Edit mesh
+        self.cross_selection_checkbox.setEnabled(self.settings.enable_buttons_mesh)
+        self.edit_meshBtn.setEnabled(self.settings.enable_buttons_mesh)
+        self.cropMeshButton.setEnabled(self.settings.enable_buttons_mesh)
+        self.select_mesh_area_button.setEnabled(self.settings.enable_buttons_mesh)
+        self.cropMeshSelected.setEnabled(self.settings.enable_buttons_mesh)
+        self.extractMesh.setEnabled(self.settings.enable_buttons_mesh)
+        #---------
+        #Enable geometry transformation elements
         if self.cloud is not None or self.create_mesh is not None:
+            self.scale_up_button.setEnabled(True)
+            self.scale_down_button.setEnabled(True)
+            self.move_x_value_field.setEnabled(True)
+            self.move_y_value_field.setEnabled(True)
+            self.move_z_value_field.setEnabled(True)
             self.rotation_x_slider.setEnabled(True)
             self.rotation_y_slider.setEnabled(True)
             self.rotation_z_slider.setEnabled(True)
+            self.apply_transformation_values_button.setEnabled(True)
+        else:
+            self.scale_up_button.setEnabled(False)
+            self.scale_down_button.setEnabled(False)
+            self.move_x_value_field.setEnabled(False)
+            self.move_y_value_field.setEnabled(False)
+            self.move_z_value_field.setEnabled(False)
+            self.rotation_x_slider.setEnabled(False)
+            self.rotation_y_slider.setEnabled(False)
+            self.rotation_z_slider.setEnabled(False)
+            self.apply_transformation_values_button.setEnabled(False)
         #-----------------------
         #Enable display checkboxs
         self.display_cloud_checkbox.setEnabled(self.settings.enable_buttons_cloud)
@@ -53,9 +105,29 @@ class ApplySettings:
         self.display_mesh_checkbox.setEnabled(self.settings.enable_buttons_mesh)
         self.display_triangles_checkbox.setEnabled(self.settings.enable_buttons_mesh)
         #------------------
+        #Enable cloud manipulation buttons
+        if self.cloud is not None:
+            self.select_points_button.setEnabled(True)
+            self.delete_points_button.setEnabled(True)
+        else:
+            self.select_points_button.setEnabled(False)
+            self.delete_points_button.setEnabled(False)
+        #---------------------------------
+
         #Enable all bounds checkbox
         if (self.settings.enable_buttons_cloud == True) or (self.settings.enable_buttons_mesh == True):
             self.showAllBoundsCheck.setEnabled(True)
+            self.checkDistance.setEnabled(True)
+        else:
+            self.showAllBoundsCheck.setEnabled(False)
+            self.checkDistance.setEnabled(False)
+        self.check_distance_mesh.setEnabled(self.settings.enable_buttons_mesh)
+
+        #Enable normalization stuff
+        self.normalize_checkbox.setEnabled(self.settings.enable_buttons_cloud)
+        self.normalization_preset_combobox.setEnabled(self.settings.enable_buttons_cloud)
+        self.change_values_manually_checkbox.setEnabled(self.settings.enable_buttons_cloud)
+        #--------------------------
         #--------------------------
         #Normalization checkbox
         self.normalize_checkbox.setChecked(self.settings.normalize_checkbox_value)

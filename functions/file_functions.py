@@ -334,9 +334,9 @@ class FileFunctions:
         self.checkDistance.setChecked(False)
         self.calculate_comboBox.setCurrentText('None')
         self.selected_points_value.setText('0')
-        self.subdivideselect.setCurrentText('None')
-        self.iterationSubdevide.setText('1')
-        self.smooth_number_of_iterations_field.setText('1')
+        # self.subdivideselect.setCurrentText('None')
+        # self.iterationSubdevide.setText('1')
+        # self.smooth_number_of_iterations_field.setText('1')
         self.normalize_checkbox.setChecked(True)
         self.change_values_manually_checkbox.setChecked(False)
         if self.cloud is not None:

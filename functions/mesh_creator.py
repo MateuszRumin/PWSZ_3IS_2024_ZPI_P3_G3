@@ -32,9 +32,10 @@ def convert_to_tensor(cloud,device,dtype):
 class MeshCreator():
 
     def _make_mesh(self):
-        self.show_loading_window()
-        thread = threading.Thread(target=self._make_mesh_thread)
-        thread.start()
+        if self.cloud is not None:
+            self.show_loading_window()
+            thread = threading.Thread(target=self._make_mesh_thread)
+            thread.start()
 
     def _make_mesh_thread(self):
         if self.normalize_checkbox.isChecked() and self.cloud is not None:
@@ -200,9 +201,10 @@ class MeshCreator():
                 print("[WARNING] Failed to create mesh without normalization", e)
 
     def repair_mesh(self):
-        self.show_loading_window()
-        thread = threading.Thread(target=self.repair_mesh_thread)
-        thread.start()
+        if self.create_mesh is not None:
+            self.show_loading_window()
+            thread = threading.Thread(target=self.repair_mesh_thread)
+            thread.start()
 
     def repair_mesh_thread(self):
         MyTimer = time_factory.timer_factory()
@@ -235,14 +237,16 @@ class MeshCreator():
                     print("[WARNING] Failed to fix mesh", e)
 
     def transform_existing_mesh(self):
-        self.show_loading_window()
-        thread = threading.Thread(target=self.transform_existing_mesh_thread)
-        thread.start()
+        if self.create_mesh is not None and self.settings.enable_triangles_amount_input_field:
+            self.show_loading_window()
+            thread = threading.Thread(target=self.transform_existing_mesh_thread)
+            thread.start()
 
     def transform_existing_mesh_thread(self):
         MyTimer = time_factory.timer_factory()
         with MyTimer('Triangles reduction'):
             if self.create_mesh is not None:
+                self.removeActorSignal.emit("mesh")
                 if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
                     if self.settings.transformation_logic_equalizer != [0, 1, 0, 0]:
                         #Overwrite backup and save changes in equalizer
@@ -261,7 +265,6 @@ class MeshCreator():
 
                 if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 1, 0, 0]:
                     try:
-                        self.removeActorSignal.emit("mesh")
                         #Triangles reduction
                         print(f"Number of triangles in mesh: {self.create_mesh.n_points}")
                         if self.settings.enable_triangles_amount_input_field:
@@ -276,6 +279,7 @@ class MeshCreator():
 
                         # Reloading mesh
                         self.addMeshSignal.emit(self.create_mesh)
+
                         #self.remove_mesh()
                         #self.add_mesh_to_plotter(self.create_mesh)
                         self.settings.transformation_logic_equalizer = [0, 1, 0, 0]
@@ -284,9 +288,10 @@ class MeshCreator():
                         print("[WARNING] Failed to change number of triangles", e)
 
     def _smooth_mesh(self):
-        self.show_loading_window()
-        thread = threading.Thread(target=self._smooth_mesh_thread)
-        thread.start()
+        if self.create_mesh is not None:
+            self.show_loading_window()
+            thread = threading.Thread(target=self._smooth_mesh_thread)
+            thread.start()
 
     def _smooth_mesh_thread(self):
         MyTimer = time_factory.timer_factory()
@@ -357,3 +362,147 @@ class MeshCreator():
 
                         #self.remove_mesh()
                         #self.add_mesh_to_plotter(self.create_mesh)
+
+    def _subdevide_triangles(self):
+        if self.create_mesh is not None:
+            self.show_loading_window()
+            thread = threading.Thread(target=self._subdevide_triangles_thread)
+            thread.start()
+
+    def _subdevide_triangles_thread(self):
+        if self.create_mesh is not None:
+            MyTimer = time_factory.timer_factory()
+            with MyTimer('Subdivide triangles'):
+                #Logic equalizer
+                if self.settings.transformation_logic_equalizer != [0, 0, 0, 0]:
+                    if self.settings.transformation_logic_equalizer != [0, 0, 0, 1]:
+                        #Overwrite backup and save changes in equalizer
+                        #self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+
+                        # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
+                        #     self.create_mesh.save(self.create_mesh_backup.name)
+                        self.overwriteBackupMeshSignal.emit(self.create_mesh)
+
+                        self.settings.transformation_logic_equalizer = [0, 0, 0, 1]
+                        self.settings.reset_transformation_values()
+                        self.settings.reset_triangles_values()
+                        self.settings.reset_smooth_values()
+                        self._apply_settings()
+                        #----------------------------------------------
+
+                if self.settings.transformation_logic_equalizer == [0, 0, 0, 0] or self.settings.transformation_logic_equalizer == [0, 0, 0, 1]:
+                    if self.subdivideselect.currentText() == 'None':
+                        self.resetPlotterSignal.emit()
+                        pass
+
+                    #Linear subdivide
+                    elif self.subdivideselect.currentText() == 'Subdivide - Linear':
+                        try:
+                            #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
+                            self.create_mesh = pv.read(self.create_mesh_backup.name)
+                            self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'linear')
+                            #self._reset_plotter()
+                            self.resetPlotterSignal.emit()
+                            # self.create_mesh_backup = copy.deepcopy(self.create_mesh)
+                        except Exception as e:
+                            print("[WARNING] Failed to subdivide mesh", e)
+
+                    #Buteterfly subdivide
+                    elif self.subdivideselect.currentText() == 'Subdivide - butterfly':
+                        try:
+                            #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'butterfly')
+                            self.create_mesh = pv.read(self.create_mesh_backup.name)
+                            self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'butterfly')
+                            #self._reset_plotter()
+                            self.resetPlotterSignal.emit()
+                        except Exception as e:
+                            print("[WARNING] Failed to subdivide mesh", e)
+
+                    #Loop subdivide
+                    elif self.subdivideselect.currentText() == 'Subdivide - Loop':
+                        try:
+                            #self.create_mesh = self.create_mesh_backup.subdivide(int(self.settings.number_of_subdevide_iteration), 'loop')
+                            self.create_mesh = pv.read(self.create_mesh_backup.name)
+                            self.create_mesh = self.create_mesh.subdivide(int(self.settings.number_of_subdevide_iteration), 'loop')
+                            #self._reset_plotter()
+                            self.resetPlotterSignal.emit()
+                        except Exception as e:
+                            print("[WARNING] Failed to subdivide mesh", e)
+
+                    # Midpoint subdivide in open3d
+                    elif self.subdivideselect.currentText() == 'Midpoint Open3D':
+                        try:
+                            #Convert pyvista mesh to open3d mesh
+                            #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                            self.create_mesh = pv.read(self.create_mesh_backup.name)
+                            vertices = self.create_mesh.points
+                            faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
+
+                            o3d_vertices = o3d.utility.Vector3dVector(vertices)
+                            o3d_faces = o3d.utility.Vector3iVector(faces)
+
+                            o3d_mesh = o3d.geometry.TriangleMesh()
+                            o3d_mesh.vertices = o3d_vertices
+                            o3d_mesh.triangles = o3d_faces
+                            #-----------------------------------
+
+                            #Subdivide operation
+                            mesh_in = o3d_mesh
+                            vertices = np.asarray(mesh_in.vertices)
+
+                            n = int(self.settings.number_of_subdevide_iteration)
+                            mesh_out = mesh_in.subdivide_midpoint(number_of_iterations=n)
+
+                            mesh_out.compute_vertex_normals()
+                            #-------------------
+
+                            #Convert open3d mesh to pyvista
+                            v = np.asarray(mesh_out.vertices)
+                            f = np.array(mesh_out.triangles)
+                            f = np.c_[np.full(len(f), 3), f]
+                            mesh = pv.PolyData(v, f)
+                            self.create_mesh = mesh
+                            #self._reset_plotter()
+                            self.resetPlotterSignal.emit()
+                            #------------------------------
+                        except Exception as e:
+                            print("[WARNING] Failed to subdivide mesh", e)
+
+                    #Loop subdivide in open3d
+                    elif self.subdivideselect.currentText() == 'Loop Open3D':
+                        try:
+                            #Convert pyvista mesh to open3d mesh
+                            #self.create_mesh = copy.deepcopy(self.create_mesh_backup)
+                            self.create_mesh = pv.read(self.create_mesh_backup.name)
+                            vertices = self.create_mesh.points
+                            faces = self.create_mesh.faces.reshape(-1, 4)[:, 1:]
+
+                            o3d_vertices = o3d.utility.Vector3dVector(vertices)
+                            o3d_faces = o3d.utility.Vector3iVector(faces)
+
+                            o3d_mesh = o3d.geometry.TriangleMesh()
+                            o3d_mesh.vertices = o3d_vertices
+                            o3d_mesh.triangles = o3d_faces
+                            #-----------------------------------
+
+                            #Subdivide operation
+                            mesh_in = o3d_mesh
+                            vertices = np.asarray(mesh_in.vertices)
+
+                            n = int(self.settings.number_of_subdevide_iteration)
+                            mesh_out = mesh_in.subdivide_loop(number_of_iterations=n)
+
+                            mesh_out.compute_vertex_normals()
+                            #-------------------
+
+                            #Convert open3d mesh to pyvista
+                            v = np.asarray(mesh_out.vertices)
+                            f = np.array(mesh_out.triangles)
+                            f = np.c_[np.full(len(f), 3), f]
+                            mesh = pv.PolyData(v, f)
+                            self.create_mesh = mesh
+                            #self._reset_plotter()
+                            self.resetPlotterSignal.emit()
+                            #------------------------------
+                        except Exception as e:
+                            print("[WARNING] Failed to subdivide mesh", e)
