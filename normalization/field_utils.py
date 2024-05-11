@@ -158,3 +158,68 @@ def strongest_field_propagation_reps(input_pc, reps, diffuse=False, weights=None
             # scale the normal back to unit because of previous weighted scaling
             pts[:, 3:] = pts[:, 3:] / weights[:, None]
     return pts
+
+
+def strongest_field_propagation(pts, patches, all_patches, diffuse=False, weights=None):
+    with torch.no_grad():
+        if weights is not None:
+            # factor in the weights for each point by scaling the normals
+            weights = weights.clamp(0.1, 1)
+            pts[:, 3:] = pts[:, 3:] * weights[:, None]
+        device = pts.device
+
+        # initialize remaining
+        remaining = []
+        pts_mask = torch.zeros(len(pts)).bool()
+        zeros = torch.zeros(len(pts)).bool()
+        E = torch.zeros_like(pts[:, :3])
+        for i in range(len(all_patches)):
+            remaining.append((i, all_patches[i]))
+
+        # find the flattest patch to start with
+        curv = [pca_eigen_values(pts[patch]) for patch in all_patches]
+        min_index = np.array([torch.as_tensor(curv[i][0], device="cpu") for i in range(len(all_patches))],dtype=object)
+        min_index = np.abs(min_index)
+        min_index = np.argmin(min_index)
+
+        # calculate the field from the initial patch
+        _, start_patch = remaining.pop(min_index)
+        pts_mask[start_patch] = True
+        E[~pts_mask] = field_grad(pts[pts_mask], pts[~pts_mask])
+
+        # prop orientation as long as there are remaining unoriented patches
+        while len(remaining) > 0:
+            # calculate the interaction between the field and all remaining patches
+            interaction = [(E[patch] * pts[patch, 3:]).sum(dim=-1).sum() for i, patch in remaining]
+
+            # orient the patch with the strongest interaction
+            max_interaction_index = torch.tensor(interaction).abs().argmax().item()
+            patch_index, patch = remaining.pop(max_interaction_index)
+            # print(f'{patch_index}')
+            if interaction[max_interaction_index] < 0:
+                pts[patch, 3:] *= -1
+            pts_mask[patch] = True
+
+            if diffuse:
+                # add the effect of the current patch to *all* other patches
+                patch_mask = zeros.clone()
+                patch_mask[patch] = True
+                dE = field_grad(pts[patch], pts[~patch_mask])
+                E[~patch_mask] = E[~patch_mask] + dE
+            else:
+                # add the effect of the current patch only to the *remaining* patches
+                dE = field_grad(pts[patch], pts[~pts_mask])
+                E[~pts_mask] = E[~pts_mask] + dE
+
+        if diffuse:
+            for patch in patches:
+                patch = patch[1]
+                interactions = (E[patch] * pts[patch, 3:]).sum(dim=-1)
+                sign = (interactions > 0).float() * 2 - 1
+                pts[patch, 3:] = pts[patch, 3:] * sign[:, None]
+
+        pts = pts.to(device)
+
+        if weights is not None:
+            # scale the normal back to unit because of previous weighted scaling
+            pts[:, 3:] = pts[:, 3:] / weights[:, None]

@@ -22,11 +22,53 @@ from functions import time_factory
 from triangulate.point_tri_net import PointTriNet_Mesher
 from triangulate.mesh_utils import fill_holes_greedy
 from triangulate.utils import set_args_defaults
+import traceback
+
+
 def convert_to_tensor(cloud,device,dtype):
 
-    samples = torch.cat((torch.tensor(np.asarray(cloud.points), dtype=dtype, device=device), torch.tensor(np.asarray(cloud.normals), dtype=dtype, device=device)), dim=-1)
+    samples = torch.tensor(np.asarray(cloud.points), dtype=dtype, device=device)
     return samples
 
+
+def calculate_radii(point_cloud, num_neighbors=2):
+    distances = np.array(point_cloud.compute_nearest_neighbor_distance())
+    avg_d = np.mean(distances)
+    par = 1* avg_d
+
+    radii = [par,1.1*par,1.2*par,1.3*par,1.4*par, 1.5*par,1.6*par,1.7*par,1.8*par,1.9*par,2*par,
+             1.9*par, 1.8*par, 1.7*par, 1.6*par, 1.5*par, 1.4*par, 1.3*par, 1.2*par, 1.1*par, par,
+             0.9*par,0.8*par,0.7*par,
+             2.1*par,2.2*par,2.3*par,2.4*par, 2.5*par,2.6*par,2.7*par,2.8*par,2.9*par, 3*par]
+    # radii = [par,2*par]
+    return radii
+
+
+def triangulate_bpa(cloud,radii):
+
+    mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud,o3d.utility.DoubleVector(radii))
+    # mesh = mesh.simplify_quadric_decimation(100000)
+    mesh.remove_degenerate_triangles()
+    mesh.remove_duplicated_triangles()
+    mesh.remove_duplicated_vertices()
+    mesh.remove_non_manifold_edges()
+    mesh.compute_vertex_normals()
+
+    return mesh
+
+
+def triangulate_poisson(cloud):
+
+
+    mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(cloud, depth=8, width=0, scale=1, linear_fit=True)
+    poisson_mesh = mesh[0]
+    bbox = cloud.get_axis_aligned_bounding_box()
+    p_mesh_crop = poisson_mesh.crop(bbox)
+    p_mesh_crop.compute_vertex_normals()
+    p_mesh_crop.paint_uniform_color([0.5, 0.5, 0.5])
+
+
+    return p_mesh_crop
 
 
 class MeshCreator():
@@ -39,48 +81,21 @@ class MeshCreator():
     def _make_mesh_thread(self):
         if self.normalize_checkbox.isChecked() and self.cloud is not None:
             try:
-                self.removeActorSignal.emit("mesh")
-                self.normalizeCloud()
-                args = Namespace(
-                    model_weights_path='./triangulate/model/model_state_dict.pth',
-                    disable_cuda=False if torch.cuda.is_available() else True,
-                    n_rounds=5,
-                    prob_thresh=0.9,
-                )
-
-
-                set_args_defaults(args)
-
                 MyTimer = time_factory.timer_factory()
                 with MyTimer('Mesh Creation after normalization'):
+                    self.removeActorSignal.emit("mesh")
+                    self.normalizeCloud()
 
-                    model = PointTriNet_Mesher()
-
-                    model.load_state_dict(torch.load(args.model_weights_path, map_location=args.device))
-
-
-                    model.eval()
-                    #self.normalizeCloud()
-                    # cloud = self.open3d_normalized_cloud
+                    cloud = self.open3d_normalized_cloud
 
 
 
-                    with torch.no_grad():
-                        candidate_triangles, candidate_probs = model.predict_mesh(convert_to_tensor(self.open3d_normalized_cloud, args.device, args.dtype).unsqueeze(0), n_rounds=args.n_rounds)
-                        candidate_triangles = candidate_triangles.squeeze(0)
-                        candidate_probs = candidate_probs.squeeze(0)
 
-
-                        high_prob = candidate_triangles[candidate_probs > args.prob_thresh]
-                        # high_prob_faces = fill_holes_greedy(high_prob)
-
-
-                    rec_mesh = o3d.geometry.TriangleMesh()
-
-                    rec_mesh.vertices = o3d.utility.Vector3dVector(self.open3d_normalized_cloud.points)
-                    triangles = high_prob.cpu().numpy()
-                    rec_mesh.triangles = o3d.utility.Vector3iVector(triangles)
-
+                    # Creating open3d mesh
+                    radii = calculate_radii(cloud)
+                    rec_mesh = triangulate_bpa(cloud,radii)
+                    rec_mesh = triangulate_poisson(cloud)
+                    # print("jestem")
                     # par = np.mean(cloud.compute_nearest_neighbor_distance())
 
                     # Creating open3d mesh
@@ -97,11 +112,11 @@ class MeshCreator():
                     # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud,
                     #                                                                            o3d.utility.DoubleVector(radii))
 
-                    a = o3d.utility.Vector3dVector(rec_mesh.triangles)
+                    # a = o3d.utility.Vector3dVector(rec_mesh.triangles)
 
-                    print(f"a", len(np.asarray(a)))
+                    # print(f"a", len(np.asarray(a)))
 
-                    # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(cloud, depth=6, linear_fit=False, n_threads=4 )
+                     # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(cloud, depth=6, linear_fit=False, n_threads=4 )
                     #
                     # rec_mesh = o3d.geometry.TriangleMesh(rec_mesh[0])
 
@@ -138,9 +153,10 @@ class MeshCreator():
                     #self.add_mesh_to_plotter(self.create_mesh)
                     #time.sleep(1)   #Fix for window freeze xd
                     #self.close_loading_window()
-                    # ------------------------------
+                        # ------------------------------
             except Exception as e:
                 print("[WARNING] Failed to create mesh with normals", e)
+                
             finally:
                 del self.open3d_normalized_cloud
         else:
@@ -148,21 +164,42 @@ class MeshCreator():
                 MyTimer = time_factory.timer_factory()
                 with MyTimer('Mesh Creation without normalization'):
                     self.removeActorSignal.emit("mesh")
+
                     # Converting pyvista cloud to open3d cloud
-                    pyvista_points = self.cloud.points
+                    args = Namespace(
+                        model_weights_path='./triangulate/model/model_state_dict.pth',
+                        disable_cuda=False if torch.cuda.is_available() else True,
+                        n_rounds=5,
+                        prob_thresh=0.9,
+                    )
 
-                    points_open3d = o3d.utility.Vector3dVector(pyvista_points)
+                    set_args_defaults(args)
 
-                    cloud = o3d.geometry.PointCloud()
-                    cloud.points = points_open3d
-                    # ----------------------------------------
+                    MyTimer = time_factory.timer_factory()
+                    with MyTimer('Mesh Creation after normalization'):
+                        model = PointTriNet_Mesher()
 
-                    cloud.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
+                        model.load_state_dict(torch.load(args.model_weights_path, map_location=args.device))
 
-                    # Creating open3d mesh
-                    radii = [0.005, 0.01, 0.02, 0.04]
-                    rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud,
-                                                                                               o3d.utility.DoubleVector(radii))
+                        model.eval()
+                        # self.normalizeCloud()
+                        # cloud = self.open3d_normalized_cloud
+
+                        with torch.no_grad():
+                            candidate_triangles, candidate_probs = model.predict_mesh(
+                                convert_to_tensor(self.cloud, args.device, args.dtype).unsqueeze(0),
+                                n_rounds=args.n_rounds)
+                            candidate_triangles = candidate_triangles.squeeze(0)
+                            candidate_probs = candidate_probs.squeeze(0)
+
+                            high_prob = candidate_triangles[candidate_probs > args.prob_thresh]
+                            # high_prob_faces = fill_holes_greedy(high_prob)
+
+                        rec_mesh = o3d.geometry.TriangleMesh()
+
+                        rec_mesh.vertices = o3d.utility.Vector3dVector(self.cloud.points)
+                        triangles = high_prob.cpu().numpy()
+                        rec_mesh.triangles = o3d.utility.Vector3iVector(triangles)
 
                     if self.settings.enable_triangles_amount_input_field:
                         triangles_amount = len(rec_mesh.triangles)
@@ -210,29 +247,28 @@ class MeshCreator():
             if self.create_mesh is not None:
                 try:
                     self.removeActorSignal.emit("mesh")
-                    #cpos = [(-0.2, -0.13, 0.12), (-0.015, 0.10, -0.0), (0.28, 0.26, 0.9)]
 
                     # Generate a meshfix mesh ready for fixing and extract the holes
                     meshfix = pymeshfix.MeshFix(self.create_mesh)
                     holes = meshfix.extract_holes()
 
                     # Repair the mesh
-                    meshfix.repair(verbose=True,joincomp=False,remove_smallest_components=True)
+                    meshfix.repair(verbose=True, joincomp=True, remove_smallest_components=True)
                     mesh = meshfix.mesh
-                    #self.create_mesh_backup = self.create_mesh
 
-                    # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.create_mesh_backup:
-                    #     self.create_mesh.save(self.create_mesh_backup.name)
+                    # Split mesh by components
+
+
                     self.overwriteBackupMeshSignal.emit(mesh)
                     self.assignMeshSignal.emit(mesh)
 
                     # Reloading mesh
                     self.addMeshSignal.emit(mesh)
-                    #self.remove_mesh()
-                    #self.add_mesh_to_plotter(self.create_mesh)
-                    #------------------------------
+
                 except Exception as e:
-                    print("[WARNING] Failed to fix mesh", e)
+                    # Wyświetl tylko ostrzeżenia, które nie są związane z izolowanymi wierzchołkami
+                    if "isolated vertices have been removed" not in str(e):
+                        print("[WARNING] Failed to fix mesh:", e)
 
     def transform_existing_mesh(self):
         self.show_loading_window()
