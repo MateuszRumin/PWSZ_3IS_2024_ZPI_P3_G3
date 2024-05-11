@@ -13,6 +13,8 @@ import vtk
 
 import pyvista as pv
 import numpy as np
+from tkinter import messagebox
+
 from memory_profiler import profile
 from functions import  time_factory
 #import pyautogui
@@ -40,6 +42,7 @@ class CloudSelection():
 
                 except Exception as e:
                     print("[WARNING] Failed to mark points", e)
+                    messagebox.showerror('Python Error', e)
                 finally:
                     del picked
             else:
@@ -94,6 +97,7 @@ class CloudSelection():
                     self.plotter.update()
                 except Exception as e:
                     print("[WARNING] Failed to delete points", e)
+                    messagebox.showerror('Python Error', e)
                 finally:
                     self.idx_points_table = vtk.vtkTypeInt32Array()
 
@@ -121,5 +125,6 @@ class CloudSelection():
                     self.plotter.update()
                 except Exception as e:
                     print("[WARNING] Failed to extract points", e)
+                    messagebox.showerror('Python Error', e)
                 finally:
                     self.idx_points_table = vtk.vtkTypeInt32Array()

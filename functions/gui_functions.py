@@ -21,6 +21,8 @@ from functions import time_factory
 import pandas as pd
 from PIL import Image
 from tkinter import filedialog
+from tkinter import messagebox
+
 class GuiFunctions:
     #Declaration of global variables for GUI functions. They are probably not used outside this file
     use_distance = False
@@ -52,11 +54,12 @@ class GuiFunctions:
             self.plotter.set_color_cycler([color.name()])
             self.settings.object_color = color.name()
             #-----------------
+            self._reset_plotter()
 
-            if self.create_mesh is not None:
-                #Reloading mesh on plotter
-                self.remove_mesh()
-                self.add_mesh_to_plotter(self.create_mesh)
+            # if self.create_mesh is not None:
+            #     #Reloading mesh on plotter
+            #     self.remove_mesh()
+            #     self.add_mesh_to_plotter(self.create_mesh)
 
 
     #Changing the colour of the text
@@ -66,7 +69,10 @@ class GuiFunctions:
             #Colour assignment
             pv.global_theme.font.color = color.name()
             self.colorText.setStyleSheet(f'background: {color.name()}')
+            self.settings.colorTextPlot = color.name()
+            self._apply_settings()
             #-----------------
+            self._reset_plotter()
 
 
     #Function that saves a scale value for setting. Calls up object transformations
@@ -202,6 +208,7 @@ class GuiFunctions:
             self.plotter.set_background(color.name())
             self.settings.background_plotter = color.name()
             #-----------------
+            self._reset_plotter()
 
     #Function that stores the value of an object's x-axis displacement in the setting. Calls up object transformations
     def move_in_x_axis(self, value):
@@ -346,6 +353,8 @@ class GuiFunctions:
 
                     except Exception as e:
                         print("[WARNING] Failed to transform cloud", e)
+                        messagebox.showerror('Python Error', e)
+                        self.resetPlotterSignal.emit()
 
         if self.create_mesh is not None and (self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
             #Logic equalizer
@@ -406,6 +415,8 @@ class GuiFunctions:
                     #-------------------------------------------
                 except Exception as e:
                     print("[WARNING] Failed to transform mesh", e)
+                    messagebox.showerror('Python Error', e)
+                    self.resetPlotterSignal.emit()
 
     #Checkbox showing point cloud
     def _show_cloud_checked(self):
@@ -419,13 +430,15 @@ class GuiFunctions:
     def _show_normals_checked(self):
         if self.display_normals_checkbox.isChecked():
             if self.create_mesh is not None:
+                max_distance_x = np.max(np.abs(self.create_mesh.points[:, 0] - self.create_mesh.points[:, 0].min()))
+                max_distance_x = max_distance_x / 25
                 self.create_mesh['vectors'] = self.create_mesh.face_normals
 
                 # Creating normal arrows
                 normals_arrows = self.create_mesh.glyph(
                     orient='vectors',
                     scale=False,
-                    factor=0.009,
+                    factor=max_distance_x,
                 )
                 # ----------------------
 
@@ -707,4 +720,5 @@ class GuiFunctions:
                     self.plotter.screenshot(file_path)
         except Exception as e:
             print("[WARNING] Failed to take a screenshot", e)
+            messagebox.showerror('Python Error', e)
 

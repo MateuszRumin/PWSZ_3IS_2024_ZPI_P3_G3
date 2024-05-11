@@ -17,6 +17,7 @@ import pyvista as pv
 import tempfile
 import threading
 import torch
+from tkinter import messagebox
 from argparse import Namespace
 from functions import time_factory
 from triangulate.point_tri_net import PointTriNet_Mesher
@@ -142,6 +143,8 @@ class MeshCreator():
                     # ------------------------------
             except Exception as e:
                 print("[WARNING] Failed to create mesh with normals", e)
+                messagebox.showerror('Python Error', e)
+                self.resetPlotterSignal.emit()
             finally:
                 del self.open3d_normalized_cloud
         else:
@@ -199,6 +202,8 @@ class MeshCreator():
                     # ------------------------------
             except Exception as e:
                 print("[WARNING] Failed to create mesh without normalization", e)
+                messagebox.showerror('Python Error', e)
+                self.resetPlotterSignal.emit()
 
     def repair_mesh(self):
         if self.create_mesh is not None:
@@ -235,6 +240,8 @@ class MeshCreator():
                     #------------------------------
                 except Exception as e:
                     print("[WARNING] Failed to fix mesh", e)
+                    messagebox.showerror('Python Error', e)
+                    self.resetPlotterSignal.emit()
 
     def transform_existing_mesh(self):
         if self.create_mesh is not None and self.settings.enable_triangles_amount_input_field:
@@ -286,6 +293,8 @@ class MeshCreator():
                         # ------------------------------
                     except Exception as e:
                         print("[WARNING] Failed to change number of triangles", e)
+                        messagebox.showerror('Python Error', e)
+                        self.resetPlotterSignal.emit()
 
     def _smooth_mesh(self):
         if self.create_mesh is not None:
@@ -353,6 +362,8 @@ class MeshCreator():
                             self.settings.transformation_logic_equalizer = [0, 0, 1, 0]
                         except Exception as e:
                             print("[WARNING] Failed to smooth mesh", e)
+                            messagebox.showerror('Python Error', e)
+                            self.resetPlotterSignal.emit()
                     else:
                         self.removeActorSignal.emit("mesh")
                         #self.create_mesh = self.create_mesh_backup
@@ -406,6 +417,8 @@ class MeshCreator():
                             # self.create_mesh_backup = copy.deepcopy(self.create_mesh)
                         except Exception as e:
                             print("[WARNING] Failed to subdivide mesh", e)
+                            messagebox.showerror('Python Error', e)
+                            self.resetPlotterSignal.emit()
 
                     #Buteterfly subdivide
                     elif self.subdivideselect.currentText() == 'Subdivide - butterfly':
@@ -417,6 +430,8 @@ class MeshCreator():
                             self.resetPlotterSignal.emit()
                         except Exception as e:
                             print("[WARNING] Failed to subdivide mesh", e)
+                            messagebox.showerror('Python Error', e)
+                            self.resetPlotterSignal.emit()
 
                     #Loop subdivide
                     elif self.subdivideselect.currentText() == 'Subdivide - Loop':
@@ -428,6 +443,8 @@ class MeshCreator():
                             self.resetPlotterSignal.emit()
                         except Exception as e:
                             print("[WARNING] Failed to subdivide mesh", e)
+                            messagebox.showerror('Python Error', e)
+                            self.resetPlotterSignal.emit()
 
                     # Midpoint subdivide in open3d
                     elif self.subdivideselect.currentText() == 'Midpoint Open3D':
@@ -467,6 +484,8 @@ class MeshCreator():
                             #------------------------------
                         except Exception as e:
                             print("[WARNING] Failed to subdivide mesh", e)
+                            messagebox.showerror('Python Error', e)
+                            self.resetPlotterSignal.emit()
 
                     #Loop subdivide in open3d
                     elif self.subdivideselect.currentText() == 'Loop Open3D':
@@ -506,3 +525,5 @@ class MeshCreator():
                             #------------------------------
                         except Exception as e:
                             print("[WARNING] Failed to subdivide mesh", e)
+                            messagebox.showerror('Python Error', e)
+                            self.resetPlotterSignal.emit()

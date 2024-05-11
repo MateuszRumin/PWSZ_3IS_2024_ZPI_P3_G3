@@ -141,6 +141,7 @@ class ApplySettings:
         self.plotter.set_color_cycler([self.settings.object_color])                         #Object color
         self.colorTextActually.setStyleSheet(f'background: {self.settings.object_color}')   #Color text actually
         self.colorText.setStyleSheet(f'background: {self.settings.colorTextPlot}')          #Color text
+        pv.global_theme.font.color = self.settings.colorTextPlot
         #---------------------------------------------------------------#
 
         #-----------------Set values to sliders and labels--------------#
