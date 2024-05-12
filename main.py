@@ -201,7 +201,8 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         # Create mesh
         self.create_mesh_button.clicked.connect(self._make_mesh)
         #Normalization type
-        self.normals_generation_type_combobox.currentTextChanged.connect(self._apply_settings)
+        self.normals_generation_type_combobox.setDuplicatesEnabled(False)
+        self.normals_generation_type_combobox.currentTextChanged.connect(self.normals_generation_type_combobox_changed)
         # Clear Normals
         self.clear_normals_btn.clicked.connect(self._clear_normals)
         # Fix mesh

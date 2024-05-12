@@ -723,3 +723,7 @@ class GuiFunctions:
         except Exception as e:
             print("[WARNING] Failed to take a screenshot", e)
             messagebox.showerror('Python Error', e)
+
+    def normals_generation_type_combobox_changed(self):
+        if self.normals_generation_type_combobox.count() > 0:
+            self._apply_settings()

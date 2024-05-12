@@ -266,14 +266,14 @@ class MeshCreator():
                     mesh = meshfix.mesh
 
                     # Split mesh by components
+                    if len(mesh.points) > 0:
+                        self.overwriteBackupMeshSignal.emit(mesh)
+                        self.assignMeshSignal.emit(mesh)
 
-
-                    self.overwriteBackupMeshSignal.emit(mesh)
-                    self.assignMeshSignal.emit(mesh)
-
-                    # Reloading mesh
-                    self.addMeshSignal.emit(mesh)
-
+                        # Reloading mesh
+                        self.addMeshSignal.emit(mesh)
+                    else:
+                        self.resetPlotterSignal.emit()
                 except Exception as e:
                     print("[WARNING] Failed to fix mesh", e)
                     messagebox.showerror('Python Error', e)

@@ -162,12 +162,12 @@ class FileFunctions:
 
     def read_cloud_from_mesh_thread(self):
         if self.create_mesh is not None and self.cloud is None:
-            self.cloud = pv.PolyData(self.create_mesh.points)
+            cloud = pv.PolyData(self.create_mesh.points)
 
             # Cloud downsampling
             if self.settings.downSampling_size_slider_value > 0:
                 downSampling = self.settings.downSampling_size_slider_value / 1000
-                downSamplingCloud = self.cloud.clean(
+                downSamplingCloud = cloud.clean(
                     point_merging=True,
                     merge_tol=downSampling,
                     lines_to_points=False,
@@ -177,17 +177,17 @@ class FileFunctions:
                     absolute=False,
                     progress_bar=True,
                 )
-                self.cloud = pv.PolyData(downSamplingCloud.points)
+                cloud = pv.PolyData(downSamplingCloud.points)
             # -----------------------------
             #self.cloud_backup = self.cloud  # Creating cloud backup
-
+            self.assignCloudSignal.emit(cloud)
             # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
             #     self.cloud.save(self.cloud_backup.name)
-            self.overwriteBackupCloudSignal.emit(self.cloud)
+            self.overwriteBackupCloudSignal.emit(cloud)
 
             # -----------------------------
             #self.add_cloud_to_plotter(self.cloud)  # Adding cloud to plotter
-            self.addCloudSignal.emit(self.cloud)
+            self.addCloudSignal.emit(cloud)
             # -----------------------------
 
     #Function that exports mesh to obj

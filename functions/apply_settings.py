@@ -214,13 +214,17 @@ class ApplySettings:
 
         #Normalization types
         if self.settings.normalize_checkbox_value is True:
-            if self.normals_generation_type_combobox.count() < 2:
+            if self.normals_generation_type_combobox.currentText() == 'None':
                 self.normals_generation_type_combobox.clear()
                 self.normals_generation_type_combobox.addItems(['BPA', 'Poisson'])
+            elif self.normals_generation_type_combobox.currentText() == '':
+                self.normals_generation_type_combobox.addItems(['BPA', 'Poisson'])
         else:
-            if self.normals_generation_type_combobox.count() != 1:
+            if self.normals_generation_type_combobox.currentText() == 'BPA' or self.normals_generation_type_combobox.currentText() == 'Poisson':
                 self.normals_generation_type_combobox.clear()
-                self.normals_generation_type_combobox.addItems(['None'])
+                self.normals_generation_type_combobox.addItem('None')
+            elif self.normals_generation_type_combobox.currentText() == '':
+                self.normals_generation_type_combobox.addItem('None')
 
         #Current normalization mode
         self.settings.current_normalization_mode = self.normals_generation_type_combobox.currentText()
