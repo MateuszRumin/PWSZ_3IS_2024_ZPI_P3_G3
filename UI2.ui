@@ -66,7 +66,7 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="page_scene_geometries">
           <property name="geometry">
@@ -385,7 +385,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
+            <width>234</width>
             <height>400</height>
            </rect>
           </property>
@@ -656,6 +656,9 @@
                  </property>
                  <item alignment="Qt::AlignLeft|Qt::AlignTop">
                   <widget class="QComboBox" name="calculate_comboBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -938,6 +941,9 @@
                  </item>
                  <item>
                   <widget class="QCheckBox" name="checkDistance">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="cursor">
                     <cursorShape>PointingHandCursor</cursorShape>
                    </property>
@@ -959,7 +965,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
+            <width>234</width>
             <height>500</height>
            </rect>
           </property>
@@ -1141,7 +1147,7 @@
                  <item>
                   <widget class="QPushButton" name="scale_up_button">
                    <property name="enabled">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                    <property name="maximumSize">
                     <size>
@@ -1159,6 +1165,9 @@
                  </item>
                  <item>
                   <widget class="QPushButton" name="scale_down_button">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -1241,7 +1250,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="move_x_value_field"/>
+                  <widget class="QLineEdit" name="move_x_value_field">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -1290,7 +1303,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="move_y_value_field"/>
+                  <widget class="QLineEdit" name="move_y_value_field">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -1339,7 +1356,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="move_z_value_field"/>
+                  <widget class="QLineEdit" name="move_z_value_field">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -1697,6 +1718,9 @@
              <layout class="QVBoxLayout" name="verticalLayout_40">
               <item>
                <widget class="QPushButton" name="apply_transformation_values_button">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>206</width>
@@ -1718,7 +1742,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
+            <width>234</width>
             <height>250</height>
            </rect>
           </property>
@@ -1847,6 +1871,9 @@
                  </property>
                  <item>
                   <widget class="QPushButton" name="select_points_button">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="cursor">
                     <cursorShape>PointingHandCursor</cursorShape>
                    </property>
@@ -1896,6 +1923,9 @@
                  </property>
                  <item>
                   <widget class="QPushButton" name="delete_points_button">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="cursor">
                     <cursorShape>PointingHandCursor</cursorShape>
                    </property>
@@ -2027,8 +2057,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
-            <height>525</height>
+            <width>234</width>
+            <height>575</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -2071,9 +2101,9 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
-                <width>207</width>
-                <height>743</height>
+                <y>-161</y>
+                <width>215</width>
+                <height>734</height>
                </rect>
               </property>
               <property name="maximumSize">
@@ -2264,6 +2294,9 @@
                      </property>
                      <item>
                       <widget class="QPushButton" name="reduce_triangles_button">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>190</width>
@@ -2485,6 +2518,9 @@
                   </property>
                   <item>
                    <widget class="QComboBox" name="subdivideselect">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="minimumSize">
                      <size>
                       <width>0</width>
@@ -2544,6 +2580,9 @@
                   </item>
                   <item>
                    <widget class="QLineEdit" name="iterationSubdevide">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="inputMask">
                      <string/>
                     </property>
@@ -2557,6 +2596,9 @@
                   </item>
                   <item>
                    <widget class="QPushButton" name="subdevideBtn">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="text">
                      <string>Subdivide</string>
                     </property>
@@ -2624,6 +2666,9 @@
                      </property>
                      <item>
                       <widget class="QPushButton" name="smooth_button">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
                        <property name="text">
                         <string>Smooth</string>
                        </property>
@@ -2673,7 +2718,11 @@
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLineEdit" name="smooth_number_of_iterations_field"/>
+                      <widget class="QLineEdit" name="smooth_number_of_iterations_field">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -2754,6 +2803,9 @@
                      </property>
                      <item>
                       <widget class="QCheckBox" name="cross_selection_checkbox">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
                        <property name="text">
                         <string>Cross-selection</string>
                        </property>
@@ -2800,6 +2852,9 @@
                      </property>
                      <item>
                       <widget class="QPushButton" name="edit_meshBtn">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
@@ -2913,6 +2968,9 @@
                      </property>
                      <item>
                       <widget class="QPushButton" name="select_mesh_area_button">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
                        <property name="text">
                         <string>Select area</string>
                        </property>
@@ -2956,6 +3014,9 @@
                      </property>
                      <item>
                       <widget class="QPushButton" name="cropMeshSelected">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
@@ -3014,6 +3075,9 @@
                      </property>
                      <item>
                       <widget class="QPushButton" name="extractMesh">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
@@ -3051,8 +3115,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
-            <height>525</height>
+            <width>234</width>
+            <height>575</height>
            </rect>
           </property>
           <attribute name="label">
@@ -3078,8 +3142,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>188</width>
-                <height>536</height>
+                <width>214</width>
+                <height>548</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_23">
@@ -3109,6 +3173,9 @@
                   </property>
                   <item>
                    <widget class="QFrame" name="frame_14">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
                     <property name="minimumSize">
                      <size>
                       <width>0</width>
@@ -3145,6 +3212,9 @@
                      </property>
                      <item>
                       <widget class="QCheckBox" name="normalize_checkbox">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
                        <property name="layoutDirection">
                         <enum>Qt::LeftToRight</enum>
                        </property>
@@ -3191,7 +3261,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QComboBox" name="normalization_preset_combobox"/>
+                      <widget class="QComboBox" name="normalization_preset_combobox">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -3207,6 +3281,9 @@
                  <layout class="QVBoxLayout" name="verticalLayout_48">
                   <item>
                    <widget class="QCheckBox" name="change_values_manually_checkbox">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="minimumSize">
                      <size>
                       <width>0</width>
@@ -3962,7 +4039,7 @@ manually</string>
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>230</width>
+            <width>234</width>
             <height>250</height>
            </rect>
           </property>
@@ -4115,6 +4192,9 @@ manually</string>
                 <layout class="QVBoxLayout" name="verticalLayout_52">
                  <item>
                   <widget class="QPushButton" name="export_mesh_to_ply">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="text">
                     <string>PLY</string>
                    </property>
@@ -4286,60 +4366,7 @@ manually</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QLabel" name="label_12">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>10</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">font: 8pt &quot;MS Shell Dlg 2&quot;;</string>
-            </property>
-            <property name="text">
-             <string>Processing:</string>
-            </property>
-           </widget>
-          </item>
          </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QProgressBar" name="progressBar">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>5</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>5</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="value">
-          <number>0</number>
-         </property>
-         <property name="textVisible">
-          <bool>false</bool>
-         </property>
-         <property name="invertedAppearance">
-          <bool>false</bool>
-         </property>
         </widget>
        </item>
       </layout>
@@ -4361,9 +4388,15 @@ manually</string>
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+   </widget>
+   <widget class="QMenu" name="menuAction">
+    <property name="title">
+     <string>Action</string>
+    </property>
     <addaction name="actionRead_cloud_from_mesh"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuAction"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionMesh">

@@ -13,6 +13,8 @@ import pyntcloud
 import pyvista as pv
 import tempfile
 import threading
+from tkinter import messagebox
+
 
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QFileDialog
@@ -82,6 +84,8 @@ class FileFunctions:
                     #-----------------------------------------------------------
                 except Exception as e:
                     print("[WARNING] Failed to read points", path, e)
+                    messagebox.showerror('Python Error', e)
+                    self.resetPlotterSignal.emit()
                 finally:
                     del pyVistaCloud
 
@@ -92,6 +96,8 @@ class FileFunctions:
                     print("[Info] Successfully read", path)
                 except Exception as e:
                     print("[WARNING] Failed to read mesh", path, e)
+                    messagebox.showerror('Python Error', e)
+                    self.resetPlotterSignal.emit()
             else:
                 try:
                     mesh = pv.read(path)            #Loading a mesh from the selected location using pyvista's built-in functions
@@ -100,6 +106,8 @@ class FileFunctions:
                     print("[Info] Successfully read", path)
                 except Exception as e:
                     print("[WARNING] Failed to read mesh", path, e)
+                    messagebox.showerror('Python Error', e)
+                    self.resetPlotterSignal.emit()
             #------------------------------------------------------
 
             #Section adding the loaded cloud/mesh to the plotter
@@ -192,6 +200,7 @@ class FileFunctions:
                 pv.save_meshio(self.filePath, self.create_mesh, file_format='obj')  #Export mesh using meshio
             except Exception as e:
                 print("[WARNING] Failed to save mesh", e)
+                messagebox.showerror('Python Error', e)
         #--------------------------------------
 
     # Function that exports mesh to stl
@@ -209,6 +218,7 @@ class FileFunctions:
                 self.create_mesh.save(self.filePath)
             except Exception as e:
                 print("[WARNING] Failed to save mesh", e)
+                messagebox.showerror('Python Error', e)
         #--------------------------------------
 
     # Function that exports cloud to ply
@@ -238,6 +248,7 @@ class FileFunctions:
                         f.write("%f %f %f\n" % (vertex[0], vertex[1], vertex[2]))
             except Exception as e:
                 print("[WARNING] Failed to save cloud", e)
+                messagebox.showerror('Python Error', e)
         #-----------------------------------------
 
     def _on_export_mesh_to_ply(self):
@@ -255,6 +266,7 @@ class FileFunctions:
                 print("Mesh was successively saved")
             except Exception as e:
                 print("[WARNING] Failed to save mesh", e)
+                messagebox.showerror('Python Error', e)
         # -----------------------------------------
 
     #Functions for removing and addings elements to plotter
@@ -334,9 +346,9 @@ class FileFunctions:
         self.checkDistance.setChecked(False)
         self.calculate_comboBox.setCurrentText('None')
         self.selected_points_value.setText('0')
-        self.subdivideselect.setCurrentText('None')
-        self.iterationSubdevide.setText('1')
-        self.smooth_number_of_iterations_field.setText('1')
+        # self.subdivideselect.setCurrentText('None')
+        # self.iterationSubdevide.setText('1')
+        # self.smooth_number_of_iterations_field.setText('1')
         self.normalize_checkbox.setChecked(True)
         self.change_values_manually_checkbox.setChecked(False)
         if self.cloud is not None:

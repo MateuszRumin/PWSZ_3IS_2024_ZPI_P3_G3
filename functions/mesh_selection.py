@@ -15,6 +15,7 @@ import pyautogui
 import vtk
 from stl import mesh    #pip install numpy-stl
 from functions import time_factory
+from tkinter import messagebox
 
 
 class MeshSelection():
@@ -30,77 +31,82 @@ class MeshSelection():
             self.create_mesh.points[idx] = point
         except Exception as e:
             print("[WARNING] Failed to modify vertex", e)
+            messagebox.showerror('Python Error', e)
 
     #Function responsible for generating spheres for mesh editing
     def select_area(self, picked):
         MyTimer = time_factory.timer_factory()
         with MyTimer('Mesh editing'):
             if isinstance(picked, pv.UnstructuredGrid):
-                #Retrieving indexes of selected cells
-                if self.cross_selection_checkbox.isChecked():
-                    indexes = picked["orig_extract_id"]
-                else:
-                    indexes = picked["original_cell_ids"]
+                try:
+                    #Retrieving indexes of selected cells
+                    if self.cross_selection_checkbox.isChecked():
+                        indexes = picked["orig_extract_id"]
+                    else:
+                        indexes = picked["original_cell_ids"]
 
-                # Cleaning the plotter before marking an area.
-                # Removes all unnecessary geometry causing errors.
-                # Do not remove under any circumstances!
-                self.plotter.clear_actors()
-                pv.global_theme.restore_defaults()
-                self.add_mesh_to_plotter(self.create_mesh)
-                self.indexes = []
-                self.points = []
-                self.plotter.clear_sphere_widgets()
-                #-------------------------------------------------
+                    # Cleaning the plotter before marking an area.
+                    # Removes all unnecessary geometry causing errors.
+                    # Do not remove under any circumstances!
+                    self.plotter.clear_actors()
+                    pv.global_theme.restore_defaults()
+                    self.add_mesh_to_plotter(self.create_mesh)
+                    self.indexes = []
+                    self.points = []
+                    self.plotter.clear_sphere_widgets()
+                    #-------------------------------------------------
 
-                for selected_cell_index in indexes:
-                    selected_cell = self.create_mesh.get_cell(selected_cell_index)  #Selecting a cell by id
+                    for selected_cell_index in indexes:
+                        selected_cell = self.create_mesh.get_cell(selected_cell_index)  #Selecting a cell by id
 
-                    #Extracting information about point indexes and coordinates from the cell
-                    point_ids = selected_cell.point_ids
-                    points_coordinates = selected_cell.points
-                    #------------------------------------------------------------------------
+                        #Extracting information about point indexes and coordinates from the cell
+                        point_ids = selected_cell.point_ids
+                        points_coordinates = selected_cell.points
+                        #------------------------------------------------------------------------
 
-                    #The values returned by the cell are grouped into 3 elements.
-                    # So we need to break down these groups and add each element one at a time
-                    #ASSUMPTION THAT THE MESH CONSISTS OF TRIANGLES!
-                    self.points.append(points_coordinates[0])
-                    self.points.append(points_coordinates[1])
-                    self.points.append(points_coordinates[2])
+                        #The values returned by the cell are grouped into 3 elements.
+                        # So we need to break down these groups and add each element one at a time
+                        #ASSUMPTION THAT THE MESH CONSISTS OF TRIANGLES!
+                        self.points.append(points_coordinates[0])
+                        self.points.append(points_coordinates[1])
+                        self.points.append(points_coordinates[2])
 
-                    self.indexes.append(point_ids[0])
-                    self.indexes.append(point_ids[1])
-                    self.indexes.append(point_ids[2])
-                    #-------------------------------------------------------------------------
+                        self.indexes.append(point_ids[0])
+                        self.indexes.append(point_ids[1])
+                        self.indexes.append(point_ids[2])
+                        #-------------------------------------------------------------------------
 
 
-                #Deleting duplicates from selected points (REQUIRES TESTING!)
-                big_array = np.array(self.points)
-                df = pd.DataFrame(big_array)
-                df_unique = df.drop_duplicates(keep='first')
-                self.points = df_unique.to_numpy()
-                #------------------------------------------------------------
+                    #Deleting duplicates from selected points (REQUIRES TESTING!)
+                    big_array = np.array(self.points)
+                    df = pd.DataFrame(big_array)
+                    df_unique = df.drop_duplicates(keep='first')
+                    self.points = df_unique.to_numpy()
+                    #------------------------------------------------------------
 
-                #Removing duplicates from selected indexes (REQUIRES TESTING!)
-                unique_ids = list(dict.fromkeys(self.indexes))
-                self.indexes = unique_ids
-                #-------------------------------------------------------------
+                    #Removing duplicates from selected indexes (REQUIRES TESTING!)
+                    unique_ids = list(dict.fromkeys(self.indexes))
+                    self.indexes = unique_ids
+                    #-------------------------------------------------------------
 
-                #Reload mesh before adding spheres. Removes the glow of the selection area
-                self.plotter.clear_actors()
-                pyautogui.press('r')
-                self.add_mesh_to_plotter(self.create_mesh)
-                #-------------------------------------------------
+                    #Reload mesh before adding spheres. Removes the glow of the selection area
+                    self.plotter.clear_actors()
+                    pyautogui.press('r')
+                    self.add_mesh_to_plotter(self.create_mesh)
+                    #-------------------------------------------------
 
-                #Adding editing spheres to plotter
-                self.plotter.add_sphere_widget(callback=self.move_sphere, center=self.points, radius=0.0010)
-                #-------------------------------------
+                    #Adding editing spheres to plotter
+                    self.plotter.add_sphere_widget(callback=self.move_sphere, center=self.points, radius=0.0010)
+                    #-------------------------------------
 
-                #Activating checkboxes
-                self.display_cloud_checkbox.setEnabled(True)
-                self.display_normals_checkbox.setEnabled(True)
-                self.display_mesh_checkbox.setEnabled(True)
-                self.display_triangles_checkbox.setEnabled(True)
+                    #Activating checkboxes
+                    self.display_cloud_checkbox.setEnabled(True)
+                    self.display_normals_checkbox.setEnabled(True)
+                    self.display_mesh_checkbox.setEnabled(True)
+                    self.display_triangles_checkbox.setEnabled(True)
+                except Exception as e:
+                    print("[WARNING] Failed to select area", e)
+                    messagebox.showerror('Python Error', e)
 
 
     def select_area_surface(self, picked):
@@ -167,117 +173,123 @@ class MeshSelection():
 
 
     def crop_mesh_selected(self):
-        MyTimer = time_factory.timer_factory()
-        with MyTimer('Crop mesh from selected area'):
-            if self.create_mesh is not None and (
-                    self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
-                try:
-                    picked = self.plotter.picked_cells
+        if self.create_mesh is not None and int(self.selected_cells_value.text()) > 0:
+            MyTimer = time_factory.timer_factory()
+            with MyTimer('Crop mesh from selected area'):
+                if self.create_mesh is not None and (
+                        self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
+                    try:
+                        picked = self.plotter.picked_cells
 
-                    # crop mesh
-                    if self.cross_selection_checkbox.isChecked():
-                        removed_mesh = self.create_mesh.remove_cells(picked["orig_extract_id"], inplace=False)
-                    else:
-                        removed_mesh = self.create_mesh.remove_cells(picked["original_cell_ids"], inplace=False)
-                    self.create_mesh = removed_mesh
+                        # crop mesh
+                        if self.cross_selection_checkbox.isChecked():
+                            removed_mesh = self.create_mesh.remove_cells(picked["orig_extract_id"], inplace=False)
+                        else:
+                            removed_mesh = self.create_mesh.remove_cells(picked["original_cell_ids"], inplace=False)
+                        self.create_mesh = removed_mesh
 
-                    self._reset_plotter()
-                    self.selected_cells_value.setText('0')
-                except Exception as e:
-                    print("[WARNING] Failed to crop mesh", e)
+                        self._reset_plotter()
+                        self.selected_cells_value.setText('0')
+                    except Exception as e:
+                        print("[WARNING] Failed to crop mesh", e)
+                        messagebox.showerror('Python Error', e)
 
 
 
     def extract_mesh(self):
-        MyTimer = time_factory.timer_factory()
-        with MyTimer('Extract mesh'):
-            if self.create_mesh is not None and (
-                    self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
-                try:
-                    picked = self.plotter.picked_cells
+        if self.create_mesh is not None and int(self.selected_cells_value.text()) > 0:
+            MyTimer = time_factory.timer_factory()
+            with MyTimer('Extract mesh'):
+                if self.create_mesh is not None and (
+                        self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
+                    try:
+                        picked = self.plotter.picked_cells
 
-                    picked.save('./my2_selection.vtk')
+                        picked.save('./my2_selection.vtk')
 
-                    reader = vtk.vtkUnstructuredGridReader()
-                    reader.SetFileName("./my2_selection.vtk")  # Zastąp "input.vtk" ścieżką do twojego pliku
+                        reader = vtk.vtkUnstructuredGridReader()
+                        reader.SetFileName("./my2_selection.vtk")  # Zastąp "input.vtk" ścieżką do twojego pliku
 
-                    surface_filter = vtk.vtkDataSetSurfaceFilter()
-                    surface_filter.SetInputConnection(reader.GetOutputPort())
+                        surface_filter = vtk.vtkDataSetSurfaceFilter()
+                        surface_filter.SetInputConnection(reader.GetOutputPort())
 
-                    triangle_filter = vtk.vtkTriangleFilter()
-                    triangle_filter.SetInputConnection(surface_filter.GetOutputPort())
+                        triangle_filter = vtk.vtkTriangleFilter()
+                        triangle_filter.SetInputConnection(surface_filter.GetOutputPort())
 
-                    writer = vtk.vtkSTLWriter()
-                    writer.SetFileName("./my2_selection.stl")  # Zastąp "output.stl" ścieżką do wyjściowego pliku
-                    writer.SetInputConnection(triangle_filter.GetOutputPort())
-                    writer.Write()
+                        writer = vtk.vtkSTLWriter()
+                        writer.SetFileName("./my2_selection.stl")  # Zastąp "output.stl" ścieżką do wyjściowego pliku
+                        writer.SetInputConnection(triangle_filter.GetOutputPort())
+                        writer.Write()
 
-                    def load_mesh(file_path):
-                        if file_path.lower().endswith('.stl'):
-                            mesh = pv.read(file_path)
-                        return mesh
+                        def load_mesh(file_path):
+                            if file_path.lower().endswith('.stl'):
+                                mesh = pv.read(file_path)
+                            return mesh
 
-                    mesh_update = load_mesh('./my2_selection.stl')
-                    self.create_mesh = mesh_update
+                        mesh_update = load_mesh('./my2_selection.stl')
+                        self.create_mesh = mesh_update
 
-                    self._reset_plotter()
-                    self.selected_cells_value.setText('0')
-                except Exception as e:
-                    print("[WARNING] Failed to extract mesh", e)
-                finally:
-                    os.remove('my2_selection.stl')
-                    os.remove('my2_selection.vtk')
+                        self._reset_plotter()
+                        self.selected_cells_value.setText('0')
+                    except Exception as e:
+                        print("[WARNING] Failed to extract mesh", e)
+                        messagebox.showerror('Python Error', e)
+                    finally:
+                        os.remove('my2_selection.stl')
+                        os.remove('my2_selection.vtk')
 
     #Trimming the mesh
     def crop_mesh_box(self):
-        MyTimer = time_factory.timer_factory()
-        with MyTimer('Crop mesh with box'):
-            if self.create_mesh is not None:
-                try:
-                    #Creating a new plotter with the possibility of trimming the grid
-                    clipped_plotter = pv.Plotter()
-                    _ = clipped_plotter.add_mesh_clip_box(self.create_mesh, color='white')
-                    clipped_plotter.show()
-                    #----------------------------------------------------------------
+        if self.create_mesh is not None:
+            MyTimer = time_factory.timer_factory()
+            with MyTimer('Crop mesh with box'):
+                if self.create_mesh is not None:
+                    try:
+                        #Creating a new plotter with the possibility of trimming the grid
+                        clipped_plotter = pv.Plotter()
+                        _ = clipped_plotter.add_mesh_clip_box(self.create_mesh, color='white')
+                        clipped_plotter.show()
+                        #----------------------------------------------------------------
 
-                    #Replacement of old mesh with cropped mesh
-                    self.create_mesh = clipped_plotter.box_clipped_meshes[0]
-                    self.create_mesh.save('./siat333ka.vtk')
-                    print(self.create_mesh)
-                    reader = vtk.vtkUnstructuredGridReader()
-                    reader.SetFileName("./siat333ka.vtk")  # Zastąp "input.vtk" ścieżką do twojego pliku
+                        #Replacement of old mesh with cropped mesh
+                        self.create_mesh = clipped_plotter.box_clipped_meshes[0]
+                        self.create_mesh.save('./siat333ka.vtk')
+                        print(self.create_mesh)
+                        reader = vtk.vtkUnstructuredGridReader()
+                        reader.SetFileName("./siat333ka.vtk")  # Zastąp "input.vtk" ścieżką do twojego pliku
 
-                    surface_filter = vtk.vtkDataSetSurfaceFilter()
-                    surface_filter.SetInputConnection(reader.GetOutputPort())
+                        surface_filter = vtk.vtkDataSetSurfaceFilter()
+                        surface_filter.SetInputConnection(reader.GetOutputPort())
 
-                    triangle_filter = vtk.vtkTriangleFilter()
-                    triangle_filter.SetInputConnection(surface_filter.GetOutputPort())
+                        triangle_filter = vtk.vtkTriangleFilter()
+                        triangle_filter.SetInputConnection(surface_filter.GetOutputPort())
 
-                    writer = vtk.vtkSTLWriter()
-                    writer.SetFileName("output.stl")  # Zastąp "output.stl" ścieżką do wyjściowego pliku
-                    writer.SetInputConnection(triangle_filter.GetOutputPort())
-                    writer.Write()
+                        writer = vtk.vtkSTLWriter()
+                        writer.SetFileName("output.stl")  # Zastąp "output.stl" ścieżką do wyjściowego pliku
+                        writer.SetInputConnection(triangle_filter.GetOutputPort())
+                        writer.Write()
 
-                    print(f'writer ----------------------', writer)
-                    print(f'filter ----------------------', triangle_filter)
+                        print(f'writer ----------------------', writer)
+                        print(f'filter ----------------------', triangle_filter)
 
-                    def load_mesh(file_path):
-                        if file_path.lower().endswith('.stl'):
-                            mesh = pv.read(file_path)
-                        return mesh
+                        def load_mesh(file_path):
+                            if file_path.lower().endswith('.stl'):
+                                mesh = pv.read(file_path)
+                            return mesh
 
-                    mesh_update = load_mesh('./output.stl')
+                        mesh_update = load_mesh('./output.stl')
 
-                    self.create_mesh = mesh_update
-                    self.plotter.update()
+                        self.create_mesh = mesh_update
+                        self.plotter.update()
 
-                    #-----------------------------------------
+                        #-----------------------------------------
 
-                    self.remove_mesh()
-                    self.add_mesh_to_plotter(self.create_mesh)
-                    #-------------------------------------
-                except Exception as e:
-                    print("[WARNING] Failed: ", e)
-                finally:
-                    os.remove('./siat333ka.vtk')
-                    os.remove("output.stl")
+                        self.remove_mesh()
+                        self.add_mesh_to_plotter(self.create_mesh)
+                        #-------------------------------------
+                    except Exception as e:
+                        print("[WARNING] Failed: ", e)
+                        messagebox.showerror('Python Error', e)
+                    finally:
+                        os.remove('./siat333ka.vtk')
+                        os.remove("output.stl")
