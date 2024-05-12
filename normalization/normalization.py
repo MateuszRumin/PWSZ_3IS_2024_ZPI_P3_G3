@@ -26,13 +26,13 @@ class NormalizationClass():
         curvature_threshold = self.settings.curvature_threshold_value / 100
         neighbours = self.settings.neighbours_value
 
-        print("Normalization")
-        print(f"Model iterations: ", model_iterations)
-        print(f"Prop iterations: ", prop_iterations)
-        print(f"Number of parts: ", number_of_parts)
-        print(f"Minimum points on path: ", min_points_on_path)
-        print(f"Curvature threshold: ", curvature_threshold)
-        print(f"neighbours: ", neighbours)
+        # print("Normalization")
+        # print(f"Model iterations: ", model_iterations)
+        # print(f"Prop iterations: ", prop_iterations)
+        # print(f"Number of parts: ", number_of_parts)
+        # print(f"Minimum points on path: ", min_points_on_path)
+        # print(f"Curvature threshold: ", curvature_threshold)
+        # print(f"neighbours: ", neighbours)
 
         # neighbours = 50
         # #----------------------------
@@ -47,7 +47,7 @@ class NormalizationClass():
             points = self.cloud.points
 
             num_points = len(o3d.utility.Vector3dVector(points))
-            print(num_points)
+            # print(num_points)
             if num_points < 7000:
                 ptc = orient_small(points, model_iterations, prop_iterations, number_of_parts, min_points_on_path,curvature_threshold, neighbours)
             elif num_points < 500000:

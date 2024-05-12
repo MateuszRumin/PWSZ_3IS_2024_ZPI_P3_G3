@@ -86,23 +86,23 @@ def orient_normal(points,model_iterations,prop_iterations,number_of_parts,min_po
     with MyTimer('nromalization'):
 
         device = torch.device(torch.cuda.current_device() if torch.cuda.is_available() else torch.device('cpu'))
-        print("Transfer do tensor")
+        # print("Transfer do tensor")
         input_pc = point_tensor(points).to(device)
-        print("Estimate normals")
+        # print("Estimate normals")
         pc = estimate_normals(input_pc, max_nn=n)
         pc, transform = Transform.trans(pc)
         input_pc = pc.clone()
         softmax = torch.nn.Softmax(dim=-1)
         models = [load_model_from_file(Path(i), device) for i in modelsPath]
-        print("devide patches")
+        # print("devide patches")
         patch_indices = divide_pc(input_pc[:, :3], number_of_parts,
                                        min_patch=min_points_on_path)
         all_patches_indices = [x.clone() for x in patch_indices]
-        print("filtering patches")
+        # print("filtering patches")
         patch_indices = fix_n_filter(input_pc, patch_indices, curvature_threshold)
         num_patches = len(patch_indices)
-        print(f'number of patches {num_patches}')
-        print('orient center')
+        # print(f'number of patches {num_patches}')
+        # print('orient center')
         for i, p in patch_indices:
             input_pc[p] = orient_center(input_pc[p])
 
@@ -144,16 +144,16 @@ def orient_small(points,model_iterations,prop_iterations,number_of_parts,min_poi
     MyTimer = functions.time_factory.timer_factory()
     with MyTimer('nromalization'):
         device = torch.device(torch.cuda.current_device() if torch.cuda.is_available() else torch.device('cpu'))
-        print("Transfer do tensor")
+        # print("Transfer do tensor")
         input_pc = point_tensor(points).to(device)
-        print("Estimate normals")
+        # print("Estimate normals")
         input_pc = estimate_normals(input_pc, max_nn=n)
         input_pc, transform = Transform.trans(input_pc)
-        print("Propagation")
+        # print("Propagation")
         strongest_field_propagation_points(input_pc, diffuse=True, starting_point=0)
         if measure_mean_potential(input_pc) < 0:
             # if average global potential is negative, flip all normals
             input_pc[:, 3:] *= -1
-        print("potential")
+        # print("potential")
         rtn = tensor_to_pc(transform.inverse(input_pc))
     return rtn
