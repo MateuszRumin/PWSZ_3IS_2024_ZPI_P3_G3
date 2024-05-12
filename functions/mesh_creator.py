@@ -36,7 +36,7 @@ def calculate_radii(point_cloud, num_neighbors=2):
     distances = np.array(point_cloud.compute_nearest_neighbor_distance())
     avg_d = np.mean(distances)
     par = 1* avg_d
-
+    print(par)
     radii = [par,1.1*par,1.2*par,1.3*par,1.4*par, 1.5*par,1.6*par,1.7*par,1.8*par,1.9*par,2*par,
              1.9*par, 1.8*par, 1.7*par, 1.6*par, 1.5*par, 1.4*par, 1.3*par, 1.2*par, 1.1*par, par,
              0.9*par,0.8*par,0.7*par,
@@ -81,7 +81,7 @@ class MeshCreator():
             thread.start()
 
     def _make_mesh_thread(self):
-        print(self.settings.current_normalization_mode)
+
 
 
         if self.normalize_checkbox.isChecked() and self.cloud is not None:
@@ -89,41 +89,24 @@ class MeshCreator():
                 MyTimer = time_factory.timer_factory()
                 with MyTimer('Mesh Creation after normalization'):
                     self.removeActorSignal.emit("mesh")
-                    self.normalizeCloud()
+                    if 'vectors' not in self.cloud.array_names:
+                        self.normalizeCloud()
+                        cloud = self.open3d_normalized_cloud
+                    else:
+                        cloud = o3d.geometry.PointCloud()
+                        cloud.points = o3d.utility.Vector3dVector(self.cloud.points)
+                        cloud.normals = o3d.utility.Vector3dVector(self.cloud["vectors"])
 
-                    cloud = self.open3d_normalized_cloud
 
 
+                    print(self.settings.current_normalization_mode)
 
+                    if self.settings.current_normalization_mode == "BPA":
+                        radii = calculate_radii(cloud)
+                        rec_mesh = triangulate_bpa(cloud,radii)
+                    elif self.settings.current_normalization_mode == "Poisson":
+                        rec_mesh = triangulate_poisson(cloud)
 
-                    # Creating open3d mesh
-                    # radii = calculate_radii(cloud)
-                    # rec_mesh = triangulate_bpa(cloud,radii)
-                    rec_mesh = triangulate_poisson(cloud)
-                    # print("jestem")
-                    # par = np.mean(cloud.compute_nearest_neighbor_distance())
-
-                    # Creating open3d mesh
-                    # radii = [0.005, 0.01, 0.015, 0.02, 0.025]
-                    # # radii = [0.9 * par, 0.91 * par, 0.92 * par, 0.93 * par, 0.94 * par, 0.95 * par, 0.96 * par, 0.97 * par,
-                    # #          0.98 * par, 0.99 * par,
-                    # #          1 * par, 1.01 * par, 1.02 * par, 1.03 * par, 1.04 * par, 1.05 * par, 1.06 * par, 1.07 * par,
-                    # #          1.08 * par, 1.09 * par,
-                    # #          1.1 * par, 1.11 * par, 1.12 * par, 1.13 * par, 1.14 * par, 1.15 * par, 1.16 * par, 1.17 * par,
-                    # #          1.18 * par, 1.19 * par,
-                    # #          1.2 * par, 1.21 * par, 1.22 * par, 1.23 * par, 1.24 * par, 1.25 * par, 1.26 * par, 1.27 * par,
-                    # #          1.28 * par, 1.29 * par,
-                    # #          1.3 * par, 1.4 * par, 1.5 * par, 1.6 * par, 1.75 * par, 0.01, 0.02, 0.04]
-                    # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(cloud,
-                    #                                                                            o3d.utility.DoubleVector(radii))
-
-                    # a = o3d.utility.Vector3dVector(rec_mesh.triangles)
-
-                    # print(f"a", len(np.asarray(a)))
-
-                     # rec_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(cloud, depth=6, linear_fit=False, n_threads=4 )
-                    #
-                    # rec_mesh = o3d.geometry.TriangleMesh(rec_mesh[0])
 
                     if self.settings.enable_triangles_amount_input_field:
                         triangles_amount = len(rec_mesh.triangles)
@@ -164,7 +147,10 @@ class MeshCreator():
                 messagebox.showerror('Python Error', e)
                 self.resetPlotterSignal.emit()
             finally:
-                del self.open3d_normalized_cloud
+                try:
+                    del self.open3d_normalized_cloud
+                except:
+                    pass
         else:
             try:
                 MyTimer = time_factory.timer_factory()
@@ -568,6 +554,6 @@ class MeshCreator():
     def _clear_normals(self):
         self.show_loading_window()
         time.sleep(1)
-        if self.open3d_normalized_cloud is not None:
-            self.open3d_normalized_cloud = None
+        if "vectors" in self.cloud.point_data.keys():
+            self.cloud.point_data.RemoveArray("vectors")
         self.close_loading_window()
