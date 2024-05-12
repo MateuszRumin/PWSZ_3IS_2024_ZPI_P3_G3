@@ -268,7 +268,7 @@ class MeshCreator():
                     self.overwriteBackupMeshSignal.emit(mesh)
                     self.assignMeshSignal.emit(mesh)
 
-             s       # Reloading mesh
+                    # Reloading mesh
                     self.addMeshSignal.emit(mesh)
 
                 except Exception as e:
