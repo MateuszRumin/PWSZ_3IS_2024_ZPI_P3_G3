@@ -519,9 +519,11 @@ class GuiFunctions:
     def normalize_checkbox_changed(self):
         if self.normalize_checkbox.isChecked():
             self.settings.normalize_checkbox_value = True   #Setting normalize_checkbox_value in settings to True
+            self._apply_settings()
         else:
             print('Checkbox is not checked')
             self.settings.normalize_checkbox_value = False  #Setting normalize_checkbox_value in settings to False
+            self._apply_settings()
 
 
     def _calculate_area(self):
@@ -721,4 +723,3 @@ class GuiFunctions:
         except Exception as e:
             print("[WARNING] Failed to take a screenshot", e)
             messagebox.showerror('Python Error', e)
-

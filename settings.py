@@ -7,6 +7,7 @@ class Settings:
         self.number_of_smooth_iterations = 1                #Smooth iterations
         self.number_of_subdevide_iteration = 1              #Subdevided iteractions
         self.transformation_logic_equalizer = [0, 0, 0, 0]  #Logic equalizer [transform, triangles, smooth, subdivide]
+        self.current_normalization_mode = None
 
         #Cloud move valuess
         self.object_move_in_x_direction = 0

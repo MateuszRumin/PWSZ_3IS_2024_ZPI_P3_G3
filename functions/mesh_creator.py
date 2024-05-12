@@ -39,6 +39,9 @@ class MeshCreator():
             thread.start()
 
     def _make_mesh_thread(self):
+        print(self.settings.current_normalization_mode)
+
+
         if self.normalize_checkbox.isChecked() and self.cloud is not None:
             try:
                 self.removeActorSignal.emit("mesh")
@@ -527,3 +530,11 @@ class MeshCreator():
                             print("[WARNING] Failed to subdivide mesh", e)
                             messagebox.showerror('Python Error', e)
                             self.resetPlotterSignal.emit()
+
+
+    def _clear_normals(self):
+        self.show_loading_window()
+        time.sleep(1)
+        if self.open3d_normalized_cloud is not None:
+            self.open3d_normalized_cloud = None
+        self.close_loading_window()

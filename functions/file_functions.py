@@ -81,6 +81,11 @@ class FileFunctions:
                     #Conversion of the loaded cloud to PyVista. It eliminates errors that appear with some clouds.
                     #It is responsible for loading some clouds with this intensity bar
                     cloud = pyVistaCloud.to_instance("pyvista", mesh=False)
+                    center = cloud.center
+
+                    print(f"center", center)
+                    cloud.points = cloud.points - center
+
                     #-----------------------------------------------------------
                 except Exception as e:
                     print("[WARNING] Failed to read points", path, e)

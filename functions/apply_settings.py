@@ -44,9 +44,14 @@ class ApplySettings:
         #Create mesh button
         if self.settings.enable_buttons_cloud:
             self.create_mesh_button.setEnabled(True)
+            self.normals_generation_type_combobox.setEnabled(True)
         else:
             self.create_mesh_button.setEnabled(False)
+            self.normals_generation_type_combobox.setEnabled(False)
         #------------------
+        #Clear normals
+        self.clear_normals_btn.setEnabled(self.settings.enable_buttons_mesh)
+        #-------------
         #Calculate
         self.calculate_comboBox.setEnabled(self.settings.enable_buttons_mesh)
         self.calculate_area_button.setEnabled(self.settings.enable_buttons_mesh)
@@ -206,6 +211,19 @@ class ApplySettings:
             self.curvature_treshold_slider.setEnabled(False)
             self.neighbours_slider.setEnabled(False)
             self.normalization_preset_combobox.setEnabled(True)
+
+        #Normalization types
+        if self.settings.normalize_checkbox_value is True:
+            if self.normals_generation_type_combobox.count() < 2:
+                self.normals_generation_type_combobox.clear()
+                self.normals_generation_type_combobox.addItems(['BPA', 'Poisson'])
+        else:
+            if self.normals_generation_type_combobox.count() != 1:
+                self.normals_generation_type_combobox.clear()
+                self.normals_generation_type_combobox.addItems(['None'])
+
+        #Current normalization mode
+        self.settings.current_normalization_mode = self.normals_generation_type_combobox.currentText()
 
 
         # #Calculate area mesh checkbox toggle

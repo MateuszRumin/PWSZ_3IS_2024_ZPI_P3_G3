@@ -200,6 +200,10 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         # -------------------Convert to mesh---------------------------#
         # Create mesh
         self.create_mesh_button.clicked.connect(self._make_mesh)
+        #Normalization type
+        self.normals_generation_type_combobox.currentTextChanged.connect(self._apply_settings)
+        # Clear Normals
+        self.clear_normals_btn.clicked.connect(self._clear_normals)
         # Fix mesh
         self.fix_mesh_button.clicked.connect(self.repair_mesh)
         # Reduce triangles
