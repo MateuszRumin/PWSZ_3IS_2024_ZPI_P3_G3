@@ -13,7 +13,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 from pyntcloud import PyntCloud
 from tqdm import tqdm
-from normalization.orient import orient_normal,orient_large
+from normalization.orient import orient_normal,orient_large,orient_small
 
 
 class NormalizationClass():
@@ -47,7 +47,10 @@ class NormalizationClass():
             points = self.cloud.points
 
             num_points = len(o3d.utility.Vector3dVector(points))
-            if num_points < 3000000:
+            print(num_points)
+            if num_points < 7000:
+                ptc = orient_small(points, model_iterations, prop_iterations, number_of_parts, min_points_on_path,curvature_threshold, neighbours)
+            elif num_points < 500000:
                 ptc = orient_normal(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours)
             else:
                 ptc = orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours)

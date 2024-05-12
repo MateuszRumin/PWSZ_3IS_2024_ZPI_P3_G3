@@ -223,3 +223,71 @@ def strongest_field_propagation(pts, patches, all_patches, diffuse=False, weight
         if weights is not None:
             # scale the normal back to unit because of previous weighted scaling
             pts[:, 3:] = pts[:, 3:] / weights[:, None]
+
+    def strongest_field_propagation_points(pts: torch.Tensor, diffuse=False, starting_point=0):
+        device = pts.device
+        pts = pts.cuda()
+        indx = torch.arange(pts.shape[0]).to(pts.device)
+
+        E = torch.zeros_like(pts[:, :3])
+        visited = torch.zeros_like(pts[:, 0]).bool()
+        visited[starting_point] = True
+        E[~(indx == starting_point)] += field_grad(pts[starting_point:(starting_point + 1)],
+                                                   pts[~(indx == starting_point), :3], eps=1e-6)
+
+        # prop orientation as long as there are remaining unoriented points
+        while not visited.all():
+            # calculate the interaction between the field and all remaining patches
+            interaction = (E[~visited] * pts[~visited, 3:]).sum(dim=-1)
+
+            # orient the patch with the strongest interaction
+            max_interaction_index = interaction.abs().argmax()
+            pts_index = indx[~visited][max_interaction_index]
+            # print(f'{patch_index}')
+            if interaction[max_interaction_index] < 0:
+                pts[pts_index, 3:] *= -1
+            visited[pts_index] = True
+
+            E[~(indx == pts_index)] += field_grad(pts[pts_index:(pts_index + 1)],
+                                                  pts[~(indx == pts_index), :3], eps=1e-6)
+
+        if diffuse:
+            interactions = (E * pts[:, 3:]).sum(dim=-1)
+            sign = (interactions > 0).float() * 2 - 1
+            pts[:, 3:] = pts[:, 3:] * sign[:, None]
+
+        pts = pts.to(device)
+
+def strongest_field_propagation_points(pts: torch.Tensor, diffuse=False, starting_point=0):
+    device = pts.device
+    pts = pts.cuda()
+    indx = torch.arange(pts.shape[0]).to(pts.device)
+
+    E = torch.zeros_like(pts[:, :3])
+    visited = torch.zeros_like(pts[:, 0]).bool()
+    visited[starting_point] = True
+    E[~(indx == starting_point)] += field_grad(pts[starting_point:(starting_point + 1)],
+                                                pts[~(indx == starting_point), :3], eps=1e-6)
+
+        # prop orientation as long as there are remaining unoriented points
+    while not visited.all():
+        # calculate the interaction between the field and all remaining patches
+        interaction = (E[~visited] * pts[~visited, 3:]).sum(dim=-1)
+
+        # orient the patch with the strongest interaction
+        max_interaction_index = interaction.abs().argmax()
+        pts_index = indx[~visited][max_interaction_index]
+        # print(f'{patch_index}')
+        if interaction[max_interaction_index] < 0:
+            pts[pts_index, 3:] *= -1
+        visited[pts_index] = True
+
+        E[~(indx == pts_index)] += field_grad(pts[pts_index:(pts_index + 1)],
+                                    pts[~(indx == pts_index), :3], eps=1e-6)
+
+    if diffuse:
+        interactions = (E * pts[:, 3:]).sum(dim=-1)
+        sign = (interactions > 0).float() * 2 - 1
+        pts[:, 3:] = pts[:, 3:] * sign[:, None]
+
+    pts = pts.to(device)

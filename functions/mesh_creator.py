@@ -92,8 +92,8 @@ class MeshCreator():
 
 
                     # Creating open3d mesh
-                    radii = calculate_radii(cloud)
-                    rec_mesh = triangulate_bpa(cloud,radii)
+                    # radii = calculate_radii(cloud)
+                    # rec_mesh = triangulate_bpa(cloud,radii)
                     rec_mesh = triangulate_poisson(cloud)
                     # print("jestem")
                     # par = np.mean(cloud.compute_nearest_neighbor_distance())
