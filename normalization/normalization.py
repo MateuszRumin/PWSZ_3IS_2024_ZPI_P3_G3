@@ -50,7 +50,7 @@ class NormalizationClass():
             # print(num_points)
             if num_points < 7000:
                 ptc = orient_small(points, model_iterations, prop_iterations, number_of_parts, min_points_on_path,curvature_threshold, neighbours)
-            elif num_points < 500000:
+            elif num_points < 200000:
                 ptc = orient_normal(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours)
             else:
                 ptc = orient_large(points,model_iterations,prop_iterations,number_of_parts,min_points_on_path,curvature_threshold,neighbours)

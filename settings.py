@@ -55,15 +55,79 @@ class Settings:
         self.neighbours_value = 50
 
         self.normalization_presets = [
-            {"name": "Default", "cloud_size": 0, "model_iterations_value": 5, "prop_iterations_value": 3,
+            {"name": "Default 1", "cloud_size": 0, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+             "neighbours_value": 30},
+            {"name": "Default 2", "cloud_size": 0, "model_iterations_value": 5, "prop_iterations_value": 3,
              "number_of_parts_value": 30, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
              "neighbours_value": 50},
-            {"name": "Small cloud", "cloud_size": 0, "model_iterations_value": 10, "prop_iterations_value": 3,
+            {"name": "Default 3", "cloud_size": 0, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+             "neighbours_value": 100},
+
+
+
+            {"name": "Mode 1 - Default", "cloud_size": 7000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+             "neighbours_value": 30},
+            {"name": "Mode 1 - small inicies", "cloud_size": 7000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 50, "curvature_threshold_value": 1,
+             "neighbours_value": 30},
+            {"name": "Mode 1 - large curv", "cloud_size": 7000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 200, "curvature_threshold_value": 1,
+             "neighbours_value": 30},
+
+            {"name": "Mode 2 - small inicies", "cloud_size": 7000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 50, "curvature_threshold_value": 1,
+             "neighbours_value": 50},
+            {"name": "Mode 2 - Default", "cloud_size": 7000, "model_iterations_value": 5, "prop_iterations_value": 3,
              "number_of_parts_value": 30, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
              "neighbours_value": 50},
-            {"name": "Large cloud", "cloud_size": 35000, "model_iterations_value": 15, "prop_iterations_value": 3,
-             "number_of_parts_value": 30, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+            {"name": "Mode 2 - large curv", "cloud_size": 7000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 200, "curvature_threshold_value": 1,
              "neighbours_value": 50},
+
+            {"name": "Mode 3 - small inicies", "cloud_size": 7000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 50, "curvature_threshold_value": 1,
+             "neighbours_value": 100},
+            {"name": "Mode 3 - Default", "cloud_size": 7000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+             "neighbours_value": 100},
+            {"name": "Mode 3 - large curv", "cloud_size": 7000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 30, "min_points_on_path_value": 200, "curvature_threshold_value": 1,
+             "neighbours_value": 100},
+
+
+
+            {"name": "ML Mode 1 - Default", "cloud_size": 20000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 50, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+             "neighbours_value": 30},
+            {"name": "ML Mode 1 - small inicies", "cloud_size": 20000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 50, "min_points_on_path_value": 50, "curvature_threshold_value": 1,
+             "neighbours_value": 30},
+            {"name": "ML Mode 1 - large curv", "cloud_size": 20000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 50, "min_points_on_path_value": 200, "curvature_threshold_value": 1,
+             "neighbours_value": 30},
+
+            {"name": "ML Mode 2 - small inicies", "cloud_size": 20000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 50, "min_points_on_path_value": 50, "curvature_threshold_value": 1,
+             "neighbours_value": 50},
+            {"name": "ML Mode 2 - Default", "cloud_size": 20000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 50, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+             "neighbours_value": 50},
+            {"name": "ML Mode 2 - large curv", "cloud_size": 20000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 50, "min_points_on_path_value": 200, "curvature_threshold_value": 1,
+             "neighbours_value": 50},
+
+            {"name": "ML Mode 3 - small inicies", "cloud_size": 20000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 50, "min_points_on_path_value": 50, "curvature_threshold_value": 1,
+             "neighbours_value": 100},
+            {"name": "ML Mode 3 - Default", "cloud_size": 20000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 50, "min_points_on_path_value": 100, "curvature_threshold_value": 1,
+             "neighbours_value": 100},
+            {"name": "ML Mode 3 - large curv", "cloud_size": 20000, "model_iterations_value": 5, "prop_iterations_value": 3,
+             "number_of_parts_value": 50, "min_points_on_path_value": 200, "curvature_threshold_value": 1,
+             "neighbours_value": 100},
         ]
 
     def reset_transformation_values(self):
