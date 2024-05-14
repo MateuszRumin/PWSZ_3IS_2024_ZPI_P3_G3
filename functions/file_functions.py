@@ -8,6 +8,8 @@
 ||                                                                                                 ||
 #####################################################################################################
 """
+import time
+
 import numpy as np
 import pyntcloud
 import pyvista as pv
@@ -163,6 +165,10 @@ class FileFunctions:
     def read_cloud_from_mesh_thread(self):
         if self.create_mesh is not None and self.cloud is None:
             cloud = pv.PolyData(self.create_mesh.points)
+            self.removeActorSignal.emit('mesh')
+            time.sleep(0.5)
+            self.clearBeforeLoadSignal.emit()
+            time.sleep(0.5)
 
             # Cloud downsampling
             if self.settings.downSampling_size_slider_value > 0:
@@ -184,7 +190,6 @@ class FileFunctions:
             # with tempfile.NamedTemporaryFile(suffix='.vtk', delete=False) as self.cloud_backup:
             #     self.cloud.save(self.cloud_backup.name)
             self.overwriteBackupCloudSignal.emit(cloud)
-
             # -----------------------------
             #self.add_cloud_to_plotter(self.cloud)  # Adding cloud to plotter
             self.addCloudSignal.emit(cloud)
@@ -195,9 +200,13 @@ class FileFunctions:
         #Selecting a location to save the file
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        filters = "OBJ Files (*.obj);;All Files (*)"
+        filters = "OBJ Files (*.obj)"
         self.filePath, _ = QFileDialog.getSaveFileName(self, "Save OBJ File", "", filters, options=options)
         #-------------------------------------
+
+        # Adding.obj extension if it's not present
+        if not self.filePath.lower().endswith('.obj'):
+            self.filePath += '.obj'
 
         #Saving the mesh to a selected location
         if self.filePath:
@@ -213,9 +222,13 @@ class FileFunctions:
         #Selecting a location to save the file
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        filters = "STL Files (*.stl);;All Files (*)"
+        filters = "STL Files (*.stl)"
         self.filePath, _ = QFileDialog.getSaveFileName(self, "Save STL File", "", filters, options=options)
         #-------------------------------------
+
+        # Adding.stl extension if it's not present
+        if not self.filePath.lower().endswith('.stl'):
+            self.filePath += '.stl'
 
         #Saving the mesh to a selected location
         if self.filePath:
@@ -231,9 +244,13 @@ class FileFunctions:
         #Selecting a location to save the file
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        filters = "PLY Files (*.ply);;All Files (*)"
+        filters = "PLY Files (*.ply)"
         self.filePath, _ = QFileDialog.getSaveFileName(self, "Save PLY File", "", filters, options=options)
         #-------------------------------------
+
+        # Adding.ply extension if it's not present
+        if not self.filePath.lower().endswith('.ply'):
+            self.filePath += '.ply'
 
         # Saving the cloud to a selected location
         if self.filePath:
@@ -260,9 +277,13 @@ class FileFunctions:
         # Selecting a location to save the file
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        filters = "PLY Files (*.ply);;All Files (*)"
+        filters = "PLY Files (*.ply)"
         self.filePath, _ = QFileDialog.getSaveFileName(self, "Save PLY File", "", filters, options=options)
         # -------------------------------------
+
+        # Adding.ply extension if it's not present
+        if not self.filePath.lower().endswith('.ply'):
+            self.filePath += '.ply'
 
         # Saving the cloud to a selected location
         if self.filePath:

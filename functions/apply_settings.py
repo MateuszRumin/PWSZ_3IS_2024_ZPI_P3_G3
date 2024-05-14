@@ -113,10 +113,8 @@ class ApplySettings:
         #Enable cloud manipulation buttons
         if self.cloud is not None:
             self.select_points_button.setEnabled(True)
-            self.delete_points_button.setEnabled(True)
         else:
             self.select_points_button.setEnabled(False)
-            self.delete_points_button.setEnabled(False)
         #---------------------------------
 
         #Enable all bounds checkbox

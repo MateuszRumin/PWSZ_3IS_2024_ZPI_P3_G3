@@ -193,7 +193,7 @@ class GuiFunctions:
     #Function displaying object boundaries called by checkbox
     def _show_All_Bounds(self):
         if self.showAllBoundsCheck.isChecked():
-            self.bounds_area = self.plotter.show_bounds(axes_ranges=[0, 100, 0, 100, 0, 100])
+            self.bounds_area = self.plotter.show_bounds()
             self.plotter.update()
         else:
             print('Checkbox is not checked')
@@ -216,9 +216,12 @@ class GuiFunctions:
             value = value.replace(',', '.')
         except:
             pass
-        print(f"x", value)
-        self.settings.object_move_in_x_direction = value
-
+        try:
+            float_value = float(value)
+            print(f"x {float_value}")
+            self.settings.object_move_in_x_direction = float_value
+        except:
+            pass
 
     #Function that stores the value of an object's y-axis displacement in the setting. Calls up object transformations
     def move_in_y_axis(self, value):
@@ -226,8 +229,13 @@ class GuiFunctions:
             value = value.replace(',', '.')
         except:
             pass
-        print(f"y", value)
-        self.settings.object_move_in_y_direction = value
+        try:
+            float_value = float(value)
+            print(f"y {float_value}")
+            self.settings.object_move_in_y_direction = float_value
+        except:
+            pass
+
 
 
 
@@ -237,8 +245,13 @@ class GuiFunctions:
             value = value.replace(',', '.')
         except:
             pass
-        print(f"z", value)
-        self.settings.object_move_in_z_direction = value
+        try:
+            float_value = float(value)
+            print(f"z {float_value}")
+            self.settings.object_move_in_z_direction = float_value
+        except:
+            pass
+
 
 
 
@@ -588,83 +601,98 @@ class GuiFunctions:
                     # ---------------------------------------------------
                     # Displaying values for select area and giving them the appropriate unit
                 elif self.calculate_comboBox.currentText() == "Select area":
-                    # Disable selection
-                    self.plotter.disable_picking()
+                    if self.create_mesh is not None and (self.display_mesh_checkbox.isChecked() or self.display_triangles_checkbox.isChecked()):
+                        # Prevent loading other geometry that does not support selection
+                        self.remove_all_geometries_from_plotter()
+                        self.add_mesh_to_plotter(self.create_mesh)
+                        self.display_cloud_checkbox.setEnabled(False)
+                        self.display_normals_checkbox.setEnabled(False)
+                        self.display_mesh_checkbox.setEnabled(False)
+                        self.display_triangles_checkbox.setEnabled(False)
 
-                    if self.path is None:
-                        # Removing existing label from plotter if exist
-                        self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
-                        self.plotter.update()  # Update the plotter
+                        # Disable selection
+                        self.plotter.disable_picking()
 
-                        def cBack(path):
-                            # Set self.path data from enable_geodesic_picking
-                            self.path = path
+                        if self.path is None:
+                            # Removing existing label from plotter if exist
+                            self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
+                            self.plotter.update()  # Update the plotter
 
-                        self.mesh_surf = self.create_mesh.extract_surface()
-                        self.plotter.enable_geodesic_picking(cBack, tolerance=0.01, color='red')
-                        self.plotter.reset_camera()
-                        self.plotter.show()
-                        self.plotter.update()  # Update the plotter
+                            def cBack(path):
+                                # Set self.path data from enable_geodesic_picking
+                                self.path = path
 
-                    elif self.path is not None:
-                        new_path = self.path
-                        # Po wybraniu ścieżki, tworzymy maskę na podstawie wybranej ścieżki
-                        # self.path = self.plotter.picked_geodesic
-                        #self.path = self.path.extrude([0.008, 0.008, 0.008], capping=False)
+                            self.mesh_surf = self.create_mesh.extract_surface()
+                            self.plotter.enable_geodesic_picking(cBack, tolerance=0.01, color='red')
+                            self.plotter.reset_camera()
+                            self.plotter.show()
+                            self.plotter.update()  # Update the plotter
 
-                        mask = self.mesh_surf.select_enclosed_points(self.path.delaunay_2d(), check_surface=False,
-                                                                     tolerance=0.15)
-                        self.roi = mask.threshold(0.25, scalars="SelectedPoints")
+                        elif self.path is not None:
+                            new_path = self.path
+                            # Po wybraniu ścieżki, tworzymy maskę na podstawie wybranej ścieżki
+                            # self.path = self.plotter.picked_geodesic
+                            #self.path = self.path.extrude([0.008, 0.008, 0.008], capping=False)
 
-                        vectors = mask.face_normals
+                            mask = self.mesh_surf.select_enclosed_points(self.path.delaunay_2d(), check_surface=False,
+                                                                         tolerance=0.15)
+                            self.roi = mask.threshold(0.25, scalars="SelectedPoints")
 
-                        mean_x = np.mean(vectors[:, 0])
-                        mean_y = np.mean(vectors[:, 1])
-                        mean_z = np.mean(vectors[:, 2])
+                            vectors = mask.face_normals
 
-                        print(f"x mean", mean_x)
-                        print(f"y mean", mean_y)
-                        print(f"z mean", mean_z)
+                            mean_x = np.mean(vectors[:, 0])
+                            mean_y = np.mean(vectors[:, 1])
+                            mean_z = np.mean(vectors[:, 2])
 
-                        self.path = new_path.extrude([mean_x, mean_y, mean_z], capping=False)
-                        mesh_surf_2 = self.create_mesh.extract_surface()
-                        mask = mesh_surf_2.select_enclosed_points(new_path.delaunay_2d(), check_surface=False)
-                        self.roi = mask.threshold(0.25, scalars="SelectedPoints", method='upper')
+                            print(f"x mean", mean_x)
+                            print(f"y mean", mean_y)
+                            print(f"z mean", mean_z)
 
-                        print(f"PATH:     ", self.path)
-                        print(f"MASK:     ", mask)
-                        print(f"ROI:     ", self.roi)
+                            self.path = new_path.extrude([mean_x, mean_y, mean_z], capping=False)
+                            mesh_surf_2 = self.create_mesh.extract_surface()
+                            mask = mesh_surf_2.select_enclosed_points(new_path.delaunay_2d(), check_surface=False)
+                            self.roi = mask.threshold(0.25, scalars="SelectedPoints", method='upper')
 
-
-                        # fast_plotter = pv.Plotter()
-                        # fast_plotter.add_mesh(self.create_mesh, show_edges=True)
-                        # fast_plotter.add_mesh(self.roi, show_edges=True, color="red")
-                        # fast_plotter.add_mesh(self.path, show_edges=True, line_width=10, color="pink")
-                        # fast_plotter.show()
+                            print(f"PATH:     ", self.path)
+                            print(f"MASK:     ", mask)
+                            print(f"ROI:     ", self.roi)
 
 
-                        self.plotter.update()  # Update the plotter
+                            # fast_plotter = pv.Plotter()
+                            # fast_plotter.add_mesh(self.create_mesh, show_edges=True)
+                            # fast_plotter.add_mesh(self.roi, show_edges=True, color="red")
+                            # fast_plotter.add_mesh(self.path, show_edges=True, line_width=10, color="pink")
+                            # fast_plotter.show()
 
-                        # Obliczanie powierzchni zaznaczonego obszaru
-                        self.roi_area = self.roi.compute_cell_sizes().area
-                        print(f"ROI AREA:     ", self.roi_area)
 
-                        # Wyświetlanie obliczonej powierzchni
-                        if (self.roi_area < 0.01):
-                            self.label_area = self.plotter.add_text(
-                                f'Area of the selected area: {self.roi_area * 1000000:.2f} mm^2',
-                                name='area', position='lower_left')
-                        elif (self.roi_area < 0.1):
-                            self.label_area = self.plotter.add_text(
-                                f'Area of the selected area: {self.roi_area * 10000:.2f} cm^2',
-                                name='area', position='lower_left')
-                        else:
-                            self.label_area = self.plotter.add_text(
-                                f'Area of the selected area: {self.roi_area:.2f} m^2',
-                                name='area',
-                                position='lower_left')
+                            self.plotter.update()  # Update the plotter
 
-                        self.plotter.update()  # Update the plotter
+                            # Obliczanie powierzchni zaznaczonego obszaru
+                            self.roi_area = self.roi.compute_cell_sizes().area
+                            print(f"ROI AREA:     ", self.roi_area)
+
+                            # Wyświetlanie obliczonej powierzchni
+                            if (self.roi_area < 0.01):
+                                self.label_area = self.plotter.add_text(
+                                    f'Area of the selected area: {self.roi_area * 1000000:.2f} mm^2',
+                                    name='area', position='lower_left')
+                            elif (self.roi_area < 0.1):
+                                self.label_area = self.plotter.add_text(
+                                    f'Area of the selected area: {self.roi_area * 10000:.2f} cm^2',
+                                    name='area', position='lower_left')
+                            else:
+                                self.label_area = self.plotter.add_text(
+                                    f'Area of the selected area: {self.roi_area:.2f} m^2',
+                                    name='area',
+                                    position='lower_left')
+
+                            # Activating checkboxes
+                            self.display_cloud_checkbox.setEnabled(True)
+                            self.display_normals_checkbox.setEnabled(True)
+                            self.display_mesh_checkbox.setEnabled(True)
+                            self.display_triangles_checkbox.setEnabled(True)
+                            self.plotter.update()
+                            self.plotter.update()  # Update the plotter
 
                 # ---------------------------------------------------
             else:
@@ -712,8 +740,19 @@ class GuiFunctions:
                 filetypes=[
                     ("PNG files", "*.png"),
                     ("PDF files", "*.pdf"),
-                ]
+                ],
+                defaultextension=''
             )
+            # # Adding.ply extension if it's not present
+            # if not file_path.lower().endswith('.pdf'):
+            #     file_path += '.pdf'
+            #
+            # if not file_path.lower().endswith('.png'):
+            #     file_path += '.png'
+            print(f"file path", file_path)
+            print(f"file extension", os.path.splitext(file_path)[1])
+
+
             if file_path:
                 file_extension = os.path.splitext(file_path)[1]
                 if file_extension == '.pdf':

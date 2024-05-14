@@ -63,13 +63,6 @@ class CloudSelection():
             self.plotter.enable_cell_picking(self.showSelectedArea, style='surface',
                                              show_message=('Naciśnij R aby włąćzyć/wyłączyć zaznaczanie'), color='blue')
 
-    #Function to mark a single point
-    def _select_single_point(self):
-        if self.cloud is not None and self.display_cloud_checkbox.isChecked():
-            self.plotter.disable_picking()
-            self.plotter.enable_point_picking(self.showSelectedPoints, style='surface',
-                                              show_message=('Naciśnij P aby zaznaczyć punkt'), color='blue')
-
     #Function to delete marked points
     def _delete_selected_points(self):
         MyTimer = time_factory.timer_factory()

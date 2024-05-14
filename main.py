@@ -190,8 +190,6 @@ class MyMainWindow(MainWindow, file_functions.FileFunctions, apply_settings.Appl
         # -------------------Selections--------------------------------#
         # Select Points
         self.select_points_button.clicked.connect(self._select_points)
-        # Select Single point
-        self.delete_points_button.clicked.connect(self._select_single_point)
         # Delete Selected Points
         self.delete_selected_points_button.clicked.connect(self._delete_selected_points)
         # Extract selected points
