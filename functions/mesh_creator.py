@@ -552,8 +552,10 @@ class MeshCreator():
 
 
     def _clear_normals(self):
-        self.show_loading_window()
-        time.sleep(1)
-        if "vectors" in self.cloud.point_data.keys():
-            self.cloud.point_data.RemoveArray("vectors")
-        self.close_loading_window()
+
+       if self.cloud is not None:
+           self.show_loading_window()
+           time.sleep(1)
+           if "vectors" in self.cloud.point_data.keys():
+               self.cloud.point_data.RemoveArray("vectors")
+           self.close_loading_window()

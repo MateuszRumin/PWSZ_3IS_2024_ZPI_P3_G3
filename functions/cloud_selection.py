@@ -87,6 +87,8 @@ class CloudSelection():
                     #-----------------------------------
 
                     self.delete_selected_points_button.setEnabled(False)    #Deactivating delete points button
+                    self.extract_selected_points_button.setEnabled(False)
+
                     self.plotter.update()
                 except Exception as e:
                     print("[WARNING] Failed to delete points", e)
@@ -115,6 +117,8 @@ class CloudSelection():
                     #-----------------------------------
 
                     self.extract_selected_points_button.setEnabled(False)
+                    self.delete_selected_points_button.setEnabled(False)
+
                     self.plotter.update()
                 except Exception as e:
                     print("[WARNING] Failed to extract points", e)

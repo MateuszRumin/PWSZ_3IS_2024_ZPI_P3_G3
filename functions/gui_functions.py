@@ -33,6 +33,7 @@ class GuiFunctions:
     path = None
     roi = None
     roi_area = None
+    bounds_area = None
     #----------------------------------------------------------------------------------------------#
 
     #Function used to write down sampling values. Calls up object transformations
@@ -95,13 +96,13 @@ class GuiFunctions:
             #Callback function called when a distance measurement is made
             def callback(a, b, distance):
                 if distance >= 1000:
-                    self.label = self.plotter.add_text(f'Distance: {float(distance / 1000):.2f} km', name='dist', position='lower_edge')
+                    self.label = self.plotter.add_text(f'Distance: {float(distance / 1000):.2f} km', name='area', position='lower_edge')
                 elif distance >= 1:
-                    self.label = self.plotter.add_text(f'Distance: {distance:.2f} m', name='dist', position='lower_edge')
+                    self.label = self.plotter.add_text(f'Distance: {distance:.2f} m', name='area', position='lower_edge')
                 elif distance >= 0.01:
-                    self.label = self.plotter.add_text(f'Distance: {distance * 100:.2f} cm', name='dist', position='lower_edge')
+                    self.label = self.plotter.add_text(f'Distance: {distance * 100:.2f} cm', name='area', position='lower_edge')
                 else:
-                    self.label = self.plotter.add_text(f'Distance: {distance * 1000:.2f} mm', name='dist', position='lower_edge')
+                    self.label = self.plotter.add_text(f'Distance: {distance * 1000:.2f} mm', name='area', position='lower_edge')
                 self.use_distance = True
             #------------------------------------------------------------
 
@@ -125,7 +126,8 @@ class GuiFunctions:
         if self.create_mesh is not None:
 
             if self.check_distance_mesh.isChecked():
-
+                # Disable selection
+                self.plotter.disable_picking()
                 def callback(p):
                     self.show_loading_window()
                     thread = threading.Thread(target=lambda: callback_thread(p))
@@ -144,7 +146,7 @@ class GuiFunctions:
                     #self.total_distance = self.plotter.add_text(f"Total distance: {distance} cm", name='dist', position='lower_edge')
                     self.addTotalDistanceToPlotterSignal.emit(distance)
 
-                self.plotter.add_mesh(self.create_mesh)
+                # self.plotter.add_mesh(self.create_mesh)
                 self.plotter.enable_geodesic_picking(callback=callback, show_message=True, font_size=18,
                                                 color='red', point_size=6, line_width=4, tolerance=0.0001,
                                                 show_path=True)
@@ -153,8 +155,9 @@ class GuiFunctions:
 
             else:
                 self.plotter.remove_actor(self.total_distance)
-                self.plotter.disable_picking()
-                self.plotter.clear_actors()
+                # self.plotter.disable_picking()
+                # self.plotter.clear_actors()
+                self._reset_plotter()
 
 
     # Mesh area calculation function
@@ -306,7 +309,7 @@ class GuiFunctions:
                     try:
                         #self.cloud = copy.deepcopy(self.cloud_backup)   #Copy cloud form backup
                         self.removeActorSignal.emit("cloud")
-
+                        time.sleep(0.5)
                         self.cloud = pv.read(self.cloud_backup.name)
 
                         self.cloud = pv.PolyData(self.cloud.points)
@@ -391,6 +394,7 @@ class GuiFunctions:
                 try:
                     #self.create_mesh = copy.deepcopy(self.create_mesh_backup)  #Copy mesh form backup
                     self.removeActorSignal.emit("mesh")
+                    time.sleep(0.5)
                     self.create_mesh = pv.read(self.create_mesh_backup.name)
 
                     # -----------Read values from settings-----------#
@@ -545,6 +549,9 @@ class GuiFunctions:
         #Checking if the mesh exists
         if self.create_mesh is not None:
             #Checking whether any other option is selected
+
+
+
             if self.calculate_comboBox.currentText() != 'None':
                 #Calculate values for cells
                 sized = self.create_mesh.compute_cell_sizes()
@@ -584,18 +591,18 @@ class GuiFunctions:
                         #Displaying label
                         if (sized.volume < 0.000001):
                             self.label_area = self.plotter.add_text(
-                                f'Volume of the mesh: {sized.volume * 1000000000:.2f} mm^3', name='volume',
+                                f'Volume of the mesh: {sized.volume * 1000000000:.2f} mm^3', name='area',
                                 position='lower_left')
                         elif (sized.volume < 0.0001):
                             self.label_area = self.plotter.add_text(
-                                f'Volume of the mesh: {sized.volume * 1000000:.2f} cm^3', name='volume',
+                                f'Volume of the mesh: {sized.volume * 1000000:.2f} cm^3', name='area',
                                 position='lower_left')
                         elif (sized.volume < 0.01):
                             self.label_area = self.plotter.add_text(f'Volume of the mesh: {sized.volume * 1000:.2f} l',
-                                                                    name='volume', position='lower_left')
+                                                                    name='area', position='lower_left')
                         else:
                             self.label_area = self.plotter.add_text(f'Volume of the mesh: {sized.volume:.2f} m^3',
-                                                                    name='volume', position='lower_left')
+                                                                    name='area', position='lower_left')
                         #----------------
                         self.plotter.update()  # Update the plotter
                     # ---------------------------------------------------
@@ -613,22 +620,22 @@ class GuiFunctions:
                         # Disable selection
                         self.plotter.disable_picking()
 
-                        if self.path is None:
-                            # Removing existing label from plotter if exist
-                            self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
-                            self.plotter.update()  # Update the plotter
 
-                            def cBack(path):
-                                # Set self.path data from enable_geodesic_picking
-                                self.path = path
+                        # Removing existing label from plotter if exist
+                        self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
+                        self.plotter.update()  # Update the plotter
 
-                            self.mesh_surf = self.create_mesh.extract_surface()
-                            self.plotter.enable_geodesic_picking(cBack, tolerance=0.01, color='red')
-                            self.plotter.reset_camera()
-                            self.plotter.show()
-                            self.plotter.update()  # Update the plotter
+                        def cBack(path):
+                            # Set self.path data from enable_geodesic_picking
+                            self.path = path
 
-                        elif self.path is not None:
+                        self.mesh_surf = self.create_mesh.extract_surface()
+                        self.plotter.enable_geodesic_picking(cBack, tolerance=0.01, color='red')
+                        self.plotter.reset_camera()
+                        self.plotter.show()
+                        self.plotter.update()  # Update the plotter
+
+                        if self.path is not None:
                             new_path = self.path
                             # Po wybraniu ścieżki, tworzymy maskę na podstawie wybranej ścieżki
                             # self.path = self.plotter.picked_geodesic
@@ -697,8 +704,10 @@ class GuiFunctions:
                 # ---------------------------------------------------
             else:
                 #Clearing label from plotter
+
                 self.plotter.remove_actor(self.label_area)  # Remove the area label from the plotter
                 self.plotter.update()  # Update the plotter
+                self._reset_plotter()
 
     #Saving selected preset to settings
     def _normalize_preset_changed(self, text):
