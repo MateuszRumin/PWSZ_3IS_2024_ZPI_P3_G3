@@ -5,7 +5,6 @@
 - [Getting Started](#getting-started)
   - [Setup your Environment](#setup-your-environment)
 - [Main function in the program](#main-function-in-the-program)
-- [Documentation](#documentation)
 
 
 
@@ -39,10 +38,10 @@ Instructions for installing and configuring the project.
 
 1. Install [Anaconda](https://www.anaconda.com/download)
 2. Clone repositorium or if you're not into package management, just [download a ZIP](https://github.com/MateuszRumin/PWSZ_3IS_2024_ZPI_P3_G3/archive/refs/heads/main.zip) file.
-3. Choose the file named 'env_ambitious_project' and import it into the "Anaconda" environment.
+3. Choose the file named 'morph' and import it into the "Anaconda" environment.
 4. If you don't have the "PyCharm" program installed, please download and install it from the official website: [download PyCharm](https://www.jetbrains.com/pycharm/download/download-thanks.html?platform=windows&code=PCC).
 5. After installation, run the PyCharm program.
-6. Select the Python interpreter as an external library for the "env_ambitny_project".
+6. Select the Python interpreter as an external library for the "morph".
 
 After completing each of the above steps, you should be able to run the main file "main.py" located in the project.
 The program mainly uses the pywt5 open3d, pyvista, and numpy libraries.
@@ -61,9 +60,5 @@ The program mainly uses the pywt5 open3d, pyvista, and numpy libraries.
 | Division of triangles | Dividing the mesh into more smaller triangles |
 | Mesh smoothing | Smoothing the mesh by softening the edges |
 
-## Documentation
-Documentation edit: https://www.overleaf.com/read/phdhpkpsdrtz#dd7b5a
-
-Documentation preview: https://www.overleaf.com/3296276632yzbrygbrswrq#2b2940
 
 
