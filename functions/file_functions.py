@@ -85,8 +85,23 @@ class FileFunctions:
                     cloud = pyVistaCloud.to_instance("pyvista", mesh=False)
                     center = cloud.center
 
-                    print(f"center", center)
+                    
                     cloud.points = cloud.points - center
+
+                    try:
+
+                        if all(coord in cloud.point_data for coord in ['nx', 'ny', 'nz']):
+                            cloud['vectors'] = np.vstack(
+                                (cloud.point_data['nx'], cloud.point_data['ny'], cloud.point_data['nz'])).T
+                            del cloud.point_data['nx']
+                            del cloud.point_data['ny']
+                            del cloud.point_data['nz']
+
+
+                    except Exception:
+                        pass
+
+
 
                     #-----------------------------------------------------------
                 except Exception as e:
@@ -133,6 +148,12 @@ class FileFunctions:
                         progress_bar=True,
                     )
                     cloud = pv.PolyData(downSamplingCloud.points)
+                    try:
+                        cloud['vectors'] = downSamplingCloud['vectors']
+                    except Exception:
+                        pass
+
+
                 #-----------------------------
                 #self.cloud_backup = self.cloud  #Creating cloud backup
 
@@ -184,6 +205,7 @@ class FileFunctions:
                     progress_bar=True,
                 )
                 cloud = pv.PolyData(downSamplingCloud.points)
+
             # -----------------------------
             #self.cloud_backup = self.cloud  # Creating cloud backup
             self.assignCloudSignal.emit(cloud)
