@@ -5,7 +5,7 @@
 - [Getting Started](#getting-started)
   - [Setup your Environment](#setup-your-environment)
 - [Main function in the program](#main-function-in-the-program)
-
+- [Sources](#solutions-sources)
 
 
 
@@ -60,7 +60,7 @@ The program mainly uses the pywt5 open3d, pyvista, and numpy libraries.
 | Division of triangles | Dividing the mesh into more smaller triangles |
 | Mesh smoothing | Smoothing the mesh by softening the edges |
 
-## Solutions Sources:
+## Solutions Sources
 
 This project uses ideas and code from the following repositories: 
 
