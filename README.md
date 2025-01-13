@@ -60,7 +60,7 @@ The program mainly uses the pywt5 open3d, pyvista, and numpy libraries.
 | Division of triangles | Dividing the mesh into more smaller triangles |
 | Mesh smoothing | Smoothing the mesh by softening the edges |
 
-## solutions sources
+## Solutions Sources:
 
 This project uses ideas and code from the following repositories: 
 
