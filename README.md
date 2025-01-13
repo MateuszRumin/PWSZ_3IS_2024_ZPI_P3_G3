@@ -60,5 +60,11 @@ The program mainly uses the pywt5 open3d, pyvista, and numpy libraries.
 | Division of triangles | Dividing the mesh into more smaller triangles |
 | Mesh smoothing | Smoothing the mesh by softening the edges |
 
+## solutions sources
+
+This project uses ideas and code from the following repositories:  
+[galmetzer/dipole-normal-prop](https://github.com/galmetzer/dipole-normal-prop)
+[nmwsharp/learned-triangulation](https://github.com/nmwsharp/learned-triangulation?tab=MIT-1-ov-file)
+
 
 
